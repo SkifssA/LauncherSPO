@@ -15,6 +15,10 @@ class AvtoJ:
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_subject_rows',
             # Получение студентов группы
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_rows',
+            #Закрытие занятия
+            'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_close_lesson_action',
+            #Открыть занятие
+            'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_open_lesson_action',
         ]
         self.load = ''
         self.cookie = ''
@@ -93,12 +97,12 @@ class AvtoJ:
 
     '''Получение студентов группы'''
 
-    def student_rows(self, id_group, subject_id, date_from='01.01.2023'):
+    def student_rows(self, id_group, subject_id, date_from='01.01.2023', prac = ''):
         nums = re.findall(r'\d+', subject_id)
         data = {
             'slave_mode': '1',
             'empty_item': '1',
-            'practical': '',
+            'practical': prac,
             'unit_id': '22',
             'period_id': '30',
             'date_from': date_from,
@@ -118,7 +122,7 @@ class AvtoJ:
     '''Создание списка практических и теоретических журналов'''
 
     def creat_str(self, name, id_group, subject_id, student_id):
-        s = f'"name": "{name}", "id_group": "{id_group}", "subject_id": '+f"'{subject_id}'"+f', "student_id": "{student_id}"'
+        s = f'"name": "{name}", "id_group": "{id_group}", "subject_id": ' + f"'{subject_id}'" + f', "student_id": "{student_id}"'
         return '\t{' + s + '},\n'
 
     '''Создание списков для работы'''
@@ -128,7 +132,6 @@ class AvtoJ:
         theo = 'Theory = [\n'
         for group in self.group_rows()['rows']:
             name = group['name'][:group['name'].index(' ')]
-            self.load = name
             for disc in self.disc_rows(group['id'])['rows']:
                 student = self.student_rows(group['id'], disc['id'])
                 if student['total'] <= 5:
@@ -153,3 +156,36 @@ class AvtoJ:
                 f.write(list_disc[0].encode('utf-8'))
                 f.write(list_disc[1].encode('utf-8'))
             reload(ListOfDisciplines)
+        else:
+            self.load = '-1'
+
+
+    ''''''
+
+    def id_lesson_row(self, id_group, subject_id, prac=''):
+        return tuple(x['id'] for x in self.student_rows(id_group, subject_id, prac=prac)['rows'][0]['lessons'])
+
+    def close_open_lesson(self, id_group, subject_id, student_id, date_from='01.01.2023', prac='', open = False):
+        url = 4 if open else 3
+        print(url, len(self.url))
+        nums = re.findall(r'\d+', subject_id)
+        for lesson in self.id_lesson_row(id_group, subject_id, prac=prac):
+            data={
+                'lesson_id': lesson,
+                'student_id': student_id,
+                'practical': prac,
+                'unit_id': '22',
+                'period_id': '30',
+                'date_from': date_from,
+                'date_to': datetime.today().strftime('%d.%m.%Y'),
+                'slave_mode': '1',
+                'month':'',
+                'group_id': id_group,
+                'subject': '0',
+                'subject_gen_pr_id': '0',
+                'exam_subject_id': '0',
+                'subject_sub_group_obj': subject_id,
+                'subject_id': nums[0],
+                'view_lessons': 'false',
+            }
+            print(self.session.post(self.url[url], headers=self.head(), data=data).json())
