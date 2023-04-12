@@ -15,9 +15,9 @@ class AvtoJ:
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_subject_rows',
             # Получение студентов группы
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_rows',
-            #Закрытие занятия
+            # Закрытие занятия
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_close_lesson_action',
-            #Открыть занятие
+            # Открыть занятие
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_open_lesson_action',
         ]
         self.load = ''
@@ -97,7 +97,7 @@ class AvtoJ:
 
     '''Получение студентов группы'''
 
-    def student_rows(self, id_group, subject_id, date_from='01.01.2023', prac = ''):
+    def student_rows(self, id_group, subject_id, date_from='01.01.2023', prac=''):
         nums = re.findall(r'\d+', subject_id)
         data = {
             'slave_mode': '1',
@@ -159,18 +159,18 @@ class AvtoJ:
         else:
             self.load = '-1'
 
-
-    ''''''
+    '''Вывод всех занятий в журнале'''
 
     def id_lesson_row(self, id_group, subject_id, prac=''):
         return tuple(x['id'] for x in self.student_rows(id_group, subject_id, prac=prac)['rows'][0]['lessons'])
 
-    def close_open_lesson(self, id_group, subject_id, student_id, date_from='01.01.2023', prac='', open = False):
+    '''Закрытие/открытие занятий'''
+
+    def close_open_lesson(self, id_group, subject_id, student_id, date_from='01.01.2023', prac='', open=False):
         url = 4 if open else 3
-        print(url, len(self.url))
         nums = re.findall(r'\d+', subject_id)
         for lesson in self.id_lesson_row(id_group, subject_id, prac=prac):
-            data={
+            data = {
                 'lesson_id': lesson,
                 'student_id': student_id,
                 'practical': prac,
@@ -179,7 +179,7 @@ class AvtoJ:
                 'date_from': date_from,
                 'date_to': datetime.today().strftime('%d.%m.%Y'),
                 'slave_mode': '1',
-                'month':'',
+                'month': '',
                 'group_id': id_group,
                 'subject': '0',
                 'subject_gen_pr_id': '0',
@@ -188,4 +188,4 @@ class AvtoJ:
                 'subject_id': nums[0],
                 'view_lessons': 'false',
             }
-            print(self.session.post(self.url[url], headers=self.head(), data=data).json())
+            self.session.post(self.url[url], headers=self.head(), data=data).json()
