@@ -6,6 +6,58 @@ import ListOfDisciplines
 from importlib import reload
 from threading import Thread
 
+'''Форма для проверки явки'''
+
+
+class StudentFrame(CTkScrollableFrame):
+    def __init__(self, master, session, dics, prac, **kwargs):
+        super().__init__(master, **kwargs)
+        self.session = session
+        self.disc = dics
+        self.prac = prac
+        self.rows = session.student_rows(dics['id_group'], dics['subject_id'], prac=prac,
+                                         date_from='10.04.2023'''''datetime.today().strftime('%d.%m.%Y')''')['rows']
+        self.value_combobox = ['', 'Н', 'Б', 'У', 'О']
+        self.combo = []
+        self.label = []
+        for j, i in enumerate(self.rows):
+            self.student_lesson(i, j)
+
+    '''Метод создания явки на 1 студента'''
+
+    def student_lesson(self, student, j):
+        self.label.append(CTkLabel(self, text=student['student_name']))
+        self.label[-1].grid(row=j, column=0, padx=20, pady=5)
+        self.combo.append([])
+        for i, n in enumerate(student['lessons']):
+            self.combo[-1].append(
+                CTkOptionMenu(self, values=self.value_combobox, width=50, command=lambda x: self.p(j, x)))
+            self.combo[-1][-1].grid(row=j, column=i + 1, padx=5, pady=5)
+            self.combo[-1][-1].set(n['attendance']['value'])
+
+    '''Метод проставления значений студенту до конца занятий'''
+
+    def p(self, j, x):
+        if x != 'О':
+            set_box = False
+            for box in self.combo[j]:
+                if box.get() == x:
+                    set_box = True
+                elif set_box:
+                    box.set(x)
+
+    '''Выставление явки в журнал'''
+
+    def turnout(self):
+        for id_student, student in enumerate(self.combo):
+            for id_lesson, lesson in enumerate(student):
+                if lesson.get() != '':
+                    self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
+                                                 self.rows[id_student]['student_id'],
+                                                 self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
+                                                 prac=self.prac)
+
+
 '''Форма процесса загрузки данных'''
 
 
@@ -45,6 +97,8 @@ class GroupFrame(CTkScrollableFrame):
         self.label = None
         self.check_var = []
 
+    '''Создание "галачек" с группами'''
+
     def create_group_checkbox(self, group_list):
         self.check_var = []
         # add widgets onto the frame...
@@ -54,9 +108,13 @@ class GroupFrame(CTkScrollableFrame):
                                    variable=self.check_var[-1], onvalue="on", offvalue="off")
             checkbox.pack(padx=20, pady=10, anchor='w')
 
+    '''Метот для выделения всех групп'''
+
     def all_check(self, on_off):
         for check in self.check_var:
             check.set(on_off)
+
+    '''Возвращение вех выделенных групп'''
 
     def get_check_group(self):
         return tuple(i for i, x in enumerate(self.check_var) if x.get() == 'on')
@@ -82,6 +140,8 @@ class TabView(CTkTabview):
         self.frame_tr = GroupFrame(self.tab('Теория'), width=self.width, height=self.height)
         self.frame_tr.create_group_checkbox(ListOfDisciplines.Theory)
         self.frame_tr.pack()
+
+    '''Выделение всех групп'''
 
     def all_check_in_tabl(self, name_tabl, on_off):
         if name_tabl == 'Практика':
@@ -166,6 +226,8 @@ class APP(CTk):
         else:
             self.destroy()
 
+    '''Функция для открытия/закрытия занятий'''
+
     def button_close_open_lesson(self, open):
         for group_idl in self.tab.frame_tr.get_check_group():
             group = ListOfDisciplines.Theory[group_idl]
@@ -175,14 +237,37 @@ class APP(CTk):
             self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'],
                                            prac='1', open=open)
 
+    '''Функция создания формы для явки'''
+
+    def create_student_frame(self):
+        tr = self.tab.frame_tr.get_check_group()
+        pr = self.tab.frame_pr.get_check_group()
+        if len(tr) + len(pr) == 1:
+            if len(tr) == 1:
+                self.studen_frame = StudentFrame(self, self.session, ListOfDisciplines.Theory[tr[0]], '', width=610,
+                                                 height=500)
+            elif len(pr) == 1:
+                self.studen_frame = StudentFrame(self, self.session, ListOfDisciplines.Practice[pr[0]], '1', width=610,
+                                                 height=500)
+            self.studen_frame.grid(row=0, column=3, pady=10, padx=10, columnspan=3)
+        else:
+            showerror(title="Ошибка", message="Надо выбрать 1 группу")
+
+    '''Основная функция отрисовки виджетов'''
+
     def degin_I(self):
         self.tab = TabView(self)
-        self.tab.pack()
+        self.studen_frame = None
+        self.tab.grid(row=0, column=0, pady=10, padx=10, columnspan=3)
         button = CTkButton(self, text='Выбрать всё', command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'on'))
-        button.pack()
+        button.grid(row=1, column=0, pady=10, padx=10)
         button = CTkButton(self, text='Снять всё', command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'off'))
-        button.pack()
+        button.grid(row=2, column=0, pady=10, padx=10)
         button = CTkButton(self, text='Открыть занятия', command=lambda: self.button_close_open_lesson(True))
-        button.pack()
+        button.grid(row=1, column=1, pady=10, padx=10)
         button = CTkButton(self, text='Закрыть занятия', command=lambda: self.button_close_open_lesson(False))
-        button.pack()
+        button.grid(row=2, column=1, pady=10, padx=10)
+        button = CTkButton(self, text='Проверить явку', command=lambda: self.create_student_frame())
+        button.grid(row=1, column=2, pady=10, padx=10)
+        button = CTkButton(self, text='Сохранить явку', command=lambda: self.studen_frame.turnout())
+        button.grid(row=2, column=2, pady=10, padx=10)

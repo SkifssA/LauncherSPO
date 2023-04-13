@@ -19,6 +19,8 @@ class AvtoJ:
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_close_lesson_action',
             # Открыть занятие
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_open_lesson_action',
+            # Выставить явку
+            'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/save_lesson_score',
         ]
         self.load = ''
         self.cookie = ''
@@ -188,4 +190,25 @@ class AvtoJ:
                 'subject_id': nums[0],
                 'view_lessons': 'false',
             }
-            self.session.post(self.url[url], headers=self.head(), data=data).json()
+            self.session.post(self.url[url], headers=self.head(), data=data)
+
+    def setting_turnout(self, id_group, subject_id, student_id, lesson, x, date_from='01.01.2023', prac=''):
+        nums = re.findall(r'\d+', subject_id)
+        data = {
+            'data': '{'+f'"lesson_id":{lesson},"attendance":"{x}","student_id":{student_id}'+'}',
+            'practical': prac,
+            'unit_id': '22',
+            'period_id': '30',
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'slave_mode': '1',
+            'month': '',
+            'group_id': id_group,
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_sub_group_obj': subject_id,
+            'subject_id': nums[0],
+            'view_lessons': 'false',
+        }
+        self.session.post(self.url[5], headers=self.head(), data=data)
