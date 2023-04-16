@@ -265,7 +265,6 @@ class APP(CTk):
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
 
 
-
     '''Основная функция отрисовки виджетов'''
 
     def degin_I(self):
