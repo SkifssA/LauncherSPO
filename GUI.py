@@ -5,6 +5,7 @@ from ReJ import AvtoJ
 import ListOfDisciplines
 from importlib import reload
 from threading import Thread
+from datetime import *
 
 '''Форма для проверки явки'''
 
@@ -16,7 +17,7 @@ class StudentFrame(CTkScrollableFrame):
         self.disc = dics
         self.prac = prac
         self.rows = session.student_rows(dics['id_group'], dics['subject_id'], prac=prac,
-                                         date_from='10.04.2023'''''datetime.today().strftime('%d.%m.%Y')''')['rows']
+                                         date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
         self.value_combobox = ['', 'Н', 'Б', 'У', 'О']
         self.combo = []
         self.label = []
@@ -219,7 +220,7 @@ class APP(CTk):
 
         LoginForm(self.session)
         if self.session.cookie != '':  # Основная отработка
-            # ProgressForm(self.session)
+            #ProgressForm(self.session)
 
             self.degin_I()
             self.mainloop()
@@ -271,3 +272,7 @@ class APP(CTk):
         button.grid(row=1, column=2, pady=10, padx=10)
         button = CTkButton(self, text='Сохранить явку', command=lambda: self.studen_frame.turnout())
         button.grid(row=2, column=2, pady=10, padx=10)
+
+
+if __name__ == '__main__':
+    APP()

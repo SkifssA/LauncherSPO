@@ -21,6 +21,12 @@ class AvtoJ:
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_open_lesson_action',
             # Выставить явку
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/save_lesson_score',
+            # Создание поля для оценок
+            'https://ssuz.vip.edu35.ru/actions/lesson_work/objectsaveaction',
+            # Получение id оценок
+            'https://ssuz.vip.edu35.ru/actions/lesson_work/objectrowsaction',
+            # Выставление оценок
+            'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/save_lesson_score',
         ]
         self.load = ''
         self.cookie = ''
@@ -212,3 +218,73 @@ class AvtoJ:
             'view_lessons': 'false',
         }
         self.session.post(self.url[5], headers=self.head(), data=data)
+
+
+    def create_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
+        nums = re.findall(r'\d+', subject_id)
+        data = {
+            'lesson_id': lesson,
+            'practical': prac,
+            'unit_id': '22',
+            'period_id': '30',
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'slave_mode': '1',
+            'month': '',
+            'group_id': id_group,
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_sub_group_obj': subject_id,
+            'subject_id': nums[0],
+            'view_lessons': 'false',
+            'type_id': '82',
+            'description': '',
+            'lesson_work_id': '0',
+        }
+        self.session.post(self.url[6], headers=self.head(), data=data)
+
+    def show_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
+        nums = re.findall(r'\d+', subject_id)
+        data = {
+            'lesson_id': lesson,
+            'practical': prac,
+            'unit_id': '22',
+            'period_id': '30',
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'slave_mode': '1',
+            'month': '',
+            'group_id': id_group,
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_sub_group_obj': subject_id,
+            'subject_id': nums[0],
+            'view_lessons': 'false',
+            'type_id': '82',
+            'description': '',
+            'lesson_work_id': '0',
+        }
+        return self.session.post(self.url[7], headers=self.head(), data=data).json()
+
+    def expose_score(self, id_group, subject_id, lesson, wokr_id, score, student_id, date_from='01.01.2023', prac=''):
+        nums = re.findall(r'\d+', subject_id)
+        data = {
+            'data': '{'+f'"lesson_id": {lesson}, "attendance": "", "work_id": "{wokr_id}", "score_type_id": "36", "score": "{score}", "student_id": {student_id}'+'}',
+            'practical': prac,
+            'unit_id': '22',
+            'period_id': '30',
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'slave_mode': '1',
+            'month': '',
+            'group_id': id_group,
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_sub_group_obj': subject_id,
+            'subject_id': nums[0],
+            'view_lessons': 'false',
+        }
+        self.session.post(self.url[8], headers=self.head(), data=data)
