@@ -16,13 +16,22 @@ class StudentFrame(CTkScrollableFrame):
         self.session = session
         self.disc = dics
         self.prac = prac
-        self.rows = session.student_rows(dics['id_group'], dics['subject_id'], prac=prac,
+        self.rows = session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,
                                          date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
+        self.disc2 = None
+        self.rows2 = None
         self.value_combobox = ['', 'Н', 'Б', 'У', 'О']
         self.combo = []
         self.label = []
         for j, i in enumerate(self.rows):
             self.student_lesson(i, j)
+
+    def add_v_group(self, dics):
+        self.disc2 = dics
+        self.rows2 = self.session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,
+                                         date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
+        for j, i in enumerate(self.rows2):
+            self.student_lesson(i, j+len(self.rows))
 
     '''Метод создания явки на 1 студента'''
 
@@ -50,13 +59,22 @@ class StudentFrame(CTkScrollableFrame):
     '''Выставление явки в журнал'''
 
     def turnout(self):
-        for id_student, student in enumerate(self.combo):
+        n = len(self.rows)
+        for id_student, student in enumerate(self.combo[:n]):
             for id_lesson, lesson in enumerate(student):
                 if lesson.get() != '':
                     self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
                                                  self.rows[id_student]['student_id'],
                                                  self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
                                                  prac=self.prac)
+        if self.rows2 is not None:
+            for id_student, student in enumerate(self.combo[n:]):
+                for id_lesson, lesson in enumerate(student):
+                    if lesson.get() != '':
+                        self.session.setting_turnout(self.disc2['id_group'], self.disc2['subject_id'],
+                                                     self.rows2[id_student]['student_id'],
+                                                     self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
+                                                     prac=self.prac)
 
 
 '''Форма процесса загрузки данных'''
@@ -247,9 +265,12 @@ class APP(CTk):
             if len(tr) == 1:
                 self.studen_frame = StudentFrame(self, self.session, ListOfDisciplines.Theory[tr[0]], '', width=610,
                                                  height=500)
+                self.studen_frame.add_v_group(ListOfDisciplines.Theory[tr[0]+1])
             elif len(pr) == 1:
                 self.studen_frame = StudentFrame(self, self.session, ListOfDisciplines.Practice[pr[0]], '1', width=610,
                                                  height=500)
+                if ListOfDisciplines.Practice[pr[0]]['name'].find('/2') != -1:
+                    self.studen_frame.add_v_group(ListOfDisciplines.Practice[pr[0] + 1])
             self.studen_frame.grid(row=0, column=3, pady=10, padx=10, columnspan=3)
         else:
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
