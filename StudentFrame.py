@@ -26,7 +26,11 @@ class StudentFrame(CTkScrollableFrame):
         button.grid(row=2, column=0, pady=10, padx=10)
         button = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
         button.grid(row=2, column=1, pady=10, padx=10)
+        button = CTkButton(self.root, text='Сохранить оценки', command=lambda: self.add_score())
+        button.grid(row=2, column=2, pady=10, padx=10)
         self.root.focus()
+
+
 
     def add_score_ui(self):
         for com in range(len(self.combo)):
