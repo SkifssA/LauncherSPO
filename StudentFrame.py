@@ -6,6 +6,7 @@ from datetime import *
 
 class StudentFrame(CTkScrollableFrame):
     def __init__(self, session, dics, prac, **kwargs):
+
         self.root = CTkToplevel()
         super().__init__(self.root, **kwargs)
         self.session = session
@@ -18,11 +19,27 @@ class StudentFrame(CTkScrollableFrame):
         self.value_combobox = ['', 'Н', 'Б', 'У', 'О']
         self.combo = []
         self.label = []
+        self.entry = []
         for j, i in enumerate(self.rows):
             self.student_lesson(i, j)
         button = CTkButton(self.root, text='Сохранить явку', command=lambda: self.turnout())
         button.grid(row=2, column=0, pady=10, padx=10)
-        self.root.focus_set()
+        button = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
+        button.grid(row=2, column=1, pady=10, padx=10)
+        self.root.focus()
+
+    def add_score_ui(self):
+        for com in range(len(self.combo)):
+            self.entry.append(CTkEntry(self, width=10))
+            self.entry[-1].grid(row=com, column=len(self.combo[0])+1, pady=5, padx=5)
+
+    def add_score(self):
+        self.add_score_ui()
+        self.session.create_score_pole(self.disc['id_group'], self.disc['subject_id'],
+                                       self.rows[0]['lessons'][-1]['id'])
+        if self.rows2 is not None:
+            self.session.create_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
+                                           self.rows2[0]['lessons'][-1]['id'])
 
     def add_v_group(self, dics):
         self.disc2 = dics
