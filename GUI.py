@@ -254,6 +254,3 @@ class APP(CTk):
 
 if __name__ == '__main__':
     APP()
-
-
-
