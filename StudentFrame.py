@@ -35,6 +35,7 @@ class StudentFrame(CTkScrollableFrame):
         self.add_score_ui()
         self.root.focus()
 
+
     def save_score(self):
         n = len(self.rows)
         for i, entry in enumerate(self.entry[:n]):

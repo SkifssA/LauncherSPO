@@ -206,6 +206,7 @@ class APP(CTk):
 
     '''Функция создания формы для явки'''
 
+
     def create_student_frame(self):
         tr = self.tab.frame_tr.get_check_group()
         pr = self.tab.frame_pr.get_check_group()
