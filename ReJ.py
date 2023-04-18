@@ -5,6 +5,7 @@ import ListOfDisciplines
 from importlib import reload
 
 
+
 class AvtoJ:
     def __init__(self):
         self.session = requests.session()
