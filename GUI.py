@@ -4,45 +4,7 @@ from customtkinter import *
 from ReJ import AvtoJ
 import ListOfDisciplines
 from importlib import reload
-from threading import Thread
-from datetime import *
 from StudentFrame import StudentFrame
-
-
-
-
-
-
-'''Форма процесса загрузки данных'''
-
-
-class ProgressForm(CTkToplevel):
-    def __init__(self, session):
-        super().__init__()
-        self.sessoin = session
-        x = (self.winfo_screenwidth() - 210) / 2
-        y = (self.winfo_screenheight() - 200) / 2
-        self.geometry("210x200+%d+%d" % (x, y))
-        self.title('')
-        self.resizable(False, False)
-        self.val = StringVar()
-        # Создание формы
-        label = CTkLabel(self, text="Идёт загрузка подождите")
-        label.pack()
-        label = CTkLabel(self, textvariable=self.val)
-        label.pack()
-        # Ожидание закрытия окна
-        th = Thread(target=self.xx)
-        th.start()
-        self.grab_set()
-        self.wait_window()
-
-
-    def xx(self):
-        print('=' * 20)
-        self.sessoin.save_file_disc()
-        reload(ListOfDisciplines)
-        self.destroy()
 
 
 '''Фрейм списка групп'''
@@ -162,6 +124,8 @@ class LoginForm(CTkToplevel):
             if self.check_var == 'on':
                 with open('cash', 'r+') as f:
                     print(f'{login};{password}', file=f)
+            self.sessoin.save_file_disc()
+            reload(ListOfDisciplines)
             self.destroy()
         else:
             # Сообщение об ошибке
@@ -186,8 +150,6 @@ class APP(CTk):
 
         LoginForm(self.session)
         if self.session.cookie != '':  # Основная отработка
-            #ProgressForm(self.session)
-
             self.degin_I()
             self.mainloop()
         else:
@@ -213,7 +175,7 @@ class APP(CTk):
         if len(tr) + len(pr) == 1:
             if len(tr) == 1:
                 self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Theory[tr[0]],
-                                                 dics2=ListOfDisciplines.Theory[tr[0]+1], width=1280, height=500)
+                                                 dics2=ListOfDisciplines.Theory[tr[0] + 1], width=1280, height=500)
             elif len(pr) == 1:
                 if ListOfDisciplines.Practice[pr[0]]['name'].find('/2') != -1:
                     self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Practice[pr[0]],
@@ -247,8 +209,6 @@ class APP(CTk):
         button.grid(row=3, column=1, pady=10, padx=10)
         button = CTkButton(self, text='Проверить явку', command=lambda: self.create_student_frame())
         button.grid(row=2, column=2, pady=10, padx=10)
-        button = CTkButton(self, text='Сохранить явку', command=lambda: self.studen_frame.turnout())
-        button.grid(row=3, column=2, pady=10, padx=10)
 
 
 

@@ -1,5 +1,6 @@
 from customtkinter import *
 from datetime import *
+import re
 
 '''Форма для проверки явки'''
 
@@ -9,7 +10,7 @@ class StudentFrame(CTkScrollableFrame):
 
         self.root = CTkToplevel()
         super().__init__(self.root, **kwargs)
-        self.grid(row=0, column=0, pady=10, padx=10, columnspan=3)
+        self.grid(row=0, column=0, pady=10, padx=10, columnspan=5)
         self.session = session
         self.disc = dics
         self.prac = prac
@@ -34,7 +35,14 @@ class StudentFrame(CTkScrollableFrame):
         self.button_score.grid(row=2, column=2, pady=10, padx=10)
         self.add_score_ui()
         self.root.focus()
+        #self.grab_set()
 
+
+    def down(self, e):
+        nums = re.findall(r'\d+', str(self.root.focus_get()))
+        n = 1 if nums == [] else int(nums[0])
+        if n < len(self.entry):
+            self.entry[n].focus_set()
 
     def save_score(self):
         n = len(self.rows)
@@ -46,7 +54,7 @@ class StudentFrame(CTkScrollableFrame):
             for i, entry in enumerate(self.entry[n:]):
                 self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
                                           self.rows2[0]['lessons'][-1]['id'],
-                                          self.score[0]['rows'][0]['id'], entry.get(), self.rows[i]['student_id'])
+                                          self.score[0]['rows'][0]['id'], entry.get(), self.rows2[i]['student_id'])
 
     def add_score_ui(self):
         self.score = []
@@ -59,6 +67,7 @@ class StudentFrame(CTkScrollableFrame):
             for com in range(len(self.combo)):
                 self.entry.append(CTkEntry(self, width=10))
                 self.entry[-1].grid(row=com, column=len(self.combo[0]) + 1, pady=5, padx=5)
+                self.entry[-1].bind('<Down>', lambda e: self.down(e))
             self.button_create.configure(state='disabled')
 
     def add_score(self):
