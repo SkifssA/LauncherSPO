@@ -292,3 +292,23 @@ class AvtoJ:
             'view_lessons': 'false',
         }
         self.session.post(self.url[8], headers=self.head(), data=data)
+
+    def uploading_topics(self):
+        data = {
+            'data': '{' + f'"lesson_id": {lesson}, "attendance": "", "work_id": "{wokr_id}", "score_type_id": "36", "score": "{score}", "student_id": {student_id}' + '}',
+            'practical': prac,
+            'unit_id': '22',
+            'period_id': '30',
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'slave_mode': '1',
+            'month': '',
+            'group_id': id_group,
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_sub_group_obj': subject_id,
+            'subject_id': nums[0],
+            'view_lessons': 'false',
+        }
+        self.session.post(self.url[8], headers=self.head(), data=data)
