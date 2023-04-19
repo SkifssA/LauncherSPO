@@ -37,13 +37,14 @@ class StudentFrame(CTkScrollableFrame):
         self.root.focus()
         #self.grab_set()
 
-
+    '''Возможность быстро перемещаться по полям оценок'''
     def down(self, e):
         nums = re.findall(r'\d+', str(self.root.focus_get()))
         n = 1 if nums == [] else int(nums[0])
         if n < len(self.entry):
             self.entry[n].focus_set()
 
+    '''Сохранение оценок в журнал'''
     def save_score(self):
         n = len(self.rows)
         for i, entry in enumerate(self.entry[:n]):
@@ -56,6 +57,7 @@ class StudentFrame(CTkScrollableFrame):
                                           self.rows2[0]['lessons'][-1]['id'],
                                           self.score[0]['rows'][0]['id'], entry.get(), self.rows2[i]['student_id'])
 
+    '''Создание полей для оценок в лаучере'''
     def add_score_ui(self):
         self.score = []
         self.score.append(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'],
@@ -70,6 +72,7 @@ class StudentFrame(CTkScrollableFrame):
                 self.entry[-1].bind('<Down>', lambda e: self.down(e))
             self.button_create.configure(state='disabled')
 
+    '''Создание полей для оценок в журнале'''
     def add_score(self):
         self.session.create_score_pole(self.disc['id_group'], self.disc['subject_id'],
                                        self.rows[0]['lessons'][-1]['id'])
@@ -77,6 +80,8 @@ class StudentFrame(CTkScrollableFrame):
             self.session.create_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
                                            self.rows2[0]['lessons'][-1]['id'])
         self.add_score_ui()
+
+    '''Добавление группы "в"'''
 
     def add_v_group(self, dics):
         self.rows2 = self.session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,

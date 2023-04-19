@@ -199,6 +199,7 @@ class AvtoJ:
             }
             self.session.post(self.url[url], headers=self.head(), data=data)
 
+    '''Выставление явки в журнал'''
     def setting_turnout(self, id_group, subject_id, student_id, lesson, x, date_from='01.01.2023', prac=''):
         nums = re.findall(r'\d+', subject_id)
         data = {
@@ -220,7 +221,7 @@ class AvtoJ:
         }
         self.session.post(self.url[5], headers=self.head(), data=data)
 
-
+    '''Создание поля для оценок'''
     def create_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
         nums = re.findall(r'\d+', subject_id)
         data = {
@@ -245,6 +246,7 @@ class AvtoJ:
         }
         self.session.post(self.url[6], headers=self.head(), data=data)
 
+    '''Получение id поля для оценок'''
     def show_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
         nums = re.findall(r'\d+', subject_id)
         data = {
@@ -269,6 +271,7 @@ class AvtoJ:
         }
         return self.session.post(self.url[7], headers=self.head(), data=data).json()
 
+    '''Выставление оценок'''
     def expose_score(self, id_group, subject_id, lesson, wokr_id, score, student_id, date_from='01.01.2023', prac=''):
         nums = re.findall(r'\d+', subject_id)
         data = {

@@ -16,6 +16,7 @@ class GroupFrame(CTkScrollableFrame):
         self.label = None
         self.check_var = [[], []]
 
+    '''Удаление всех групп с таблицы'''
     def all_del(self):
         for chec in self.check_var[1]:
             chec.destroy()
@@ -62,6 +63,7 @@ class TabView(CTkTabview):
         self.frame_tr = GroupFrame(self.tab('Теория'), width=self.width, height=self.height)
         self.recreate_frame('')
 
+    '''Создание перечисления с группами'''
     def recreate_frame(self, filter):
         self.frame_pr.create_group_checkbox(ListOfDisciplines.Practice, filter)
         self.frame_pr.pack()
