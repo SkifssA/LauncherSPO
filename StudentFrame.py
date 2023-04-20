@@ -6,10 +6,10 @@ import re
 
 
 class StudentFrame(CTkScrollableFrame):
-    def __init__(self, session, dics=None, dics2=None, prac='', **kwargs):
+    def __init__(self, session, dics=None, dics2=None, prac=''):
 
         self.root = CTkToplevel()
-        super().__init__(self.root, **kwargs)
+        super().__init__(self.root, width=700, height=500)
         self.grid(row=0, column=0, pady=10, padx=10, columnspan=5)
         self.session = session
         self.disc = dics
@@ -35,29 +35,36 @@ class StudentFrame(CTkScrollableFrame):
         self.button_score.grid(row=2, column=2, pady=10, padx=10)
         self.add_score_ui()
         self.root.focus()
-        #self.grab_set()
+        # self.grab_set()
 
-    '''Возможность быстро перемещаться по полям оценок'''
+    '''Возможность быстро перемещаться по полям оценок вниз'''
+
     def down(self, e):
+        print(e.keysym)
         nums = re.findall(r'\d+', str(self.root.focus_get()))
         n = 1 if nums == [] else int(nums[0])
-        if n < len(self.entry):
-            self.entry[n].focus_set()
+        if e.keysym == 'Down':
+            if n < len(self.entry):
+                self.entry[n].focus_set()
+        elif e.keysym == 'Up':
+            if n > 0:
+                self.entry[n-2].focus_set()
 
     '''Сохранение оценок в журнал'''
+
     def save_score(self):
         n = len(self.rows)
         for i, entry in enumerate(self.entry[:n]):
             self.session.expose_score(self.disc['id_group'], self.disc['subject_id'], self.rows[0]['lessons'][-1]['id'],
                                       self.score[0]['rows'][0]['id'], entry.get(), self.rows[i]['student_id'])
-            print(entry.get())
         if self.rows2 is not None:
             for i, entry in enumerate(self.entry[n:]):
                 self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
                                           self.rows2[0]['lessons'][-1]['id'],
-                                          self.score[0]['rows'][0]['id'], entry.get(), self.rows2[i]['student_id'])
+                                          self.score[1]['rows'][0]['id'], entry.get(), self.rows2[i]['student_id'])
 
     '''Создание полей для оценок в лаучере'''
+
     def add_score_ui(self):
         self.score = []
         self.score.append(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'],
@@ -67,18 +74,31 @@ class StudentFrame(CTkScrollableFrame):
                                                            self.rows2[0]['lessons'][-1]['id']))
         if self.score[0]['total'] != 0:
             for com in range(len(self.combo)):
+
                 self.entry.append(CTkEntry(self, width=10))
+                if com < len(self.rows):
+                    self.entry[-1].insert(0, self.rows[com]['lessons'][-1][f'work_{self.score[0]["rows"][0]["id"]}'][
+                        'type_id_36_score'])
+                else:
+                    self.entry[-1].insert(0, self.rows2[com - len(self.rows)]['lessons'][-1][
+                        f'work_{self.score[1]["rows"][0]["id"]}'][
+                        'type_id_36_score'])
                 self.entry[-1].grid(row=com, column=len(self.combo[0]) + 1, pady=5, padx=5)
-                self.entry[-1].bind('<Down>', lambda e: self.down(e))
+                self.entry[-1].bind('<KeyPress>', lambda e: self.down(e))
             self.button_create.configure(state='disabled')
 
     '''Создание полей для оценок в журнале'''
+
     def add_score(self):
         self.session.create_score_pole(self.disc['id_group'], self.disc['subject_id'],
                                        self.rows[0]['lessons'][-1]['id'])
+        self.rows = self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
+                                              date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
         if self.rows2 is not None:
             self.session.create_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
                                            self.rows2[0]['lessons'][-1]['id'])
+            self.rows2 = self.session.student_rows(self.disc2['id_group'], self.disc2['subject_id'], prac=self.prac,
+                                                   date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
         self.add_score_ui()
 
     '''Добавление группы "в"'''

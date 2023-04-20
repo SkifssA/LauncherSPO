@@ -152,6 +152,7 @@ class APP(CTk):
 
         LoginForm(self.session)
         if self.session.cookie != '':  # Основная отработка
+
             self.degin_I()
             self.mainloop()
         else:
@@ -177,15 +178,13 @@ class APP(CTk):
         if len(tr) + len(pr) == 1:
             if len(tr) == 1:
                 self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Theory[tr[0]],
-                                                 dics2=ListOfDisciplines.Theory[tr[0] + 1], width=1280, height=500)
+                                                 dics2=ListOfDisciplines.Theory[tr[0] + 1])
             elif len(pr) == 1:
                 if ListOfDisciplines.Practice[pr[0]]['name'].find('/2') != -1:
                     self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Practice[pr[0]],
-                                                     dics2=ListOfDisciplines.Practice[pr[0] + 1], prac='1',
-                                                     width=1280, height=500)
+                                                     dics2=ListOfDisciplines.Practice[pr[0] + 1], prac='1')
                 else:
-                    self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Practice[pr[0]],
-                                                     prac='1', width=1280, height=500)
+                    self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Practice[pr[0]], prac='1')
         else:
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
 
