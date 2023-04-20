@@ -21,6 +21,7 @@ class StudentFrame(CTkScrollableFrame):
         self.session = session
         self.disc = dics
         self.prac = prac
+        self.root.title(self.disc['name'])
         self.rows = session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,
                                          date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
         self.disc2 = dics2

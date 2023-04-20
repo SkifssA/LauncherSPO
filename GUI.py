@@ -52,7 +52,7 @@ class GroupFrame(CTkScrollableFrame):
 class TabView(CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.height = 500
+        self.height = 450
         self.width = 500
 
         # Создание табл
