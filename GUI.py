@@ -5,6 +5,7 @@ from ReJ import AvtoJ
 import ListOfDisciplines
 from importlib import reload
 from StudentFrame import StudentFrame
+from Calendar import Calendar
 
 
 '''Фрейм списка групп'''
@@ -141,7 +142,7 @@ class APP(CTk):
     def __init__(self):
         super().__init__()
         self.studen_frame = None
-        set_appearance_mode("System")
+        set_appearance_mode("Dark")
         set_default_color_theme('blue')
         self.session = AvtoJ()
         self.geometry('555x720')
@@ -177,14 +178,14 @@ class APP(CTk):
         pr = self.tab.frame_pr.get_check_group()
         if len(tr) + len(pr) == 1:
             if len(tr) == 1:
-                self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Theory[tr[0]],
+                self.studen_frame = Calendar(self.session, dics=ListOfDisciplines.Theory[tr[0]],
                                                  dics2=ListOfDisciplines.Theory[tr[0] + 1])
             elif len(pr) == 1:
                 if ListOfDisciplines.Practice[pr[0]]['name'].find('/2') != -1:
-                    self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Practice[pr[0]],
+                    self.studen_frame = Calendar(self.session, dics=ListOfDisciplines.Practice[pr[0]],
                                                      dics2=ListOfDisciplines.Practice[pr[0] + 1], prac='1')
                 else:
-                    self.studen_frame = StudentFrame(self.session, dics=ListOfDisciplines.Practice[pr[0]], prac='1')
+                    self.studen_frame = Calendar(self.session, dics=ListOfDisciplines.Practice[pr[0]], prac='1')
         else:
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
 

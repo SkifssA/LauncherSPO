@@ -2,18 +2,12 @@ from customtkinter import *
 from datetime import *
 import re
 
-'''
-    Добавить календарь с датами когда у группы есть пары
-    
-'''
-
-
 
 '''Форма для проверки явки'''
 
 
 class StudentFrame(CTkScrollableFrame):
-    def __init__(self, session, dics=None, dics2=None, prac=''):
+    def __init__(self, session, dics=None, dics2=None, prac='', date_from=None, date_whis=None):
 
         self.root = CTkToplevel()
         super().__init__(self.root, width=700, height=500)
@@ -21,9 +15,9 @@ class StudentFrame(CTkScrollableFrame):
         self.session = session
         self.disc = dics
         self.prac = prac
-        self.root.title(self.disc['name'])
+        self.root.title(self.disc['name']+' за '+date_whis)
         self.rows = session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,
-                                         date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
+                                         date_from=date_from, date_whis=date_whis)['rows']
         self.disc2 = dics2
         self.rows2 = None
         self.value_combobox = ['', 'Н', 'Б', 'У', 'О']
@@ -34,7 +28,7 @@ class StudentFrame(CTkScrollableFrame):
         for j, i in enumerate(self.rows):
             self.student_lesson(i, j)
         if self.disc2 is not None:
-            self.add_v_group(self.disc2)
+            self.add_v_group(self.disc2, date_from, date_whis)
         self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: self.all_save())
         self.button_save.grid(row=2, column=0, pady=10, padx=10)
         self.button_create = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
@@ -113,9 +107,9 @@ class StudentFrame(CTkScrollableFrame):
 
     '''Добавление группы "в"'''
 
-    def add_v_group(self, dics):
+    def add_v_group(self, dics, date_from, date_whis):
         self.rows2 = self.session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,
-                                               date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
+                                               date_from=date_from, date_whis=date_whis)['rows']
         for j, i in enumerate(self.rows2):
             self.student_lesson(i, j + len(self.rows))
 

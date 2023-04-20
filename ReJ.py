@@ -106,7 +106,7 @@ class AvtoJ:
 
     '''Получение студентов группы'''
 
-    def student_rows(self, id_group, subject_id, date_from='01.01.2023', prac=''):
+    def student_rows(self, id_group, subject_id, date_from='01.01.2023', date_whis=datetime.today().strftime('%d.%m.%Y'), prac=''):
         nums = re.findall(r'\d+', subject_id)
         data = {
             'slave_mode': '1',
@@ -115,7 +115,7 @@ class AvtoJ:
             'unit_id': '22',
             'period_id': '30',
             'date_from': date_from,
-            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'date_to': date_whis,
             'month': '',
             'filter': '',
             'group_id': id_group,
