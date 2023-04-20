@@ -15,7 +15,7 @@ class StudentFrame(CTkScrollableFrame):
         self.session = session
         self.disc = dics
         self.prac = prac
-        self.root.title(self.disc['name']+' за '+date_whis)
+        self.root.title(self.disc['name']+' на '+date_whis)
         self.rows = session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,
                                          date_from=date_from, date_whis=date_whis)['rows']
         self.disc2 = dics2
@@ -35,7 +35,7 @@ class StudentFrame(CTkScrollableFrame):
         self.button_create.grid(row=2, column=1, pady=10, padx=10)
         self.add_score_ui()
         self.root.focus()
-        # self.grab_set()
+        self.root.grab_set()
 
     '''Сохранение всей формы'''
     def all_save(self):

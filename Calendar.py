@@ -17,22 +17,24 @@ class Calendar(CTkToplevel):
         self.mount_mass = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
         self.mount = StringVar()
         self.date = StringVar()
-
-        CTkButton(self, text='<', width=50, command=lambda: self.down(True)).grid(row=0, column=0, pady=10, padx=10)
-        CTkLabel(self, textvariable=self.mount).grid(row=0, column=1, pady=10, padx=10)
-        CTkButton(self, text='>', width=50, command=lambda: self.down(False)).grid(row=0, column=2, pady=10, padx=10)
-        CTkButton(self, text='Открыть журнал',  command=self.open_frame).grid(row=2, column=1, pady=10,
-                                                                                       padx=10, columnspan=2)
-        CTkLabel(self, textvariable=self.date).grid(row=2, column=0, pady=10, padx=10)
-        self.canvas = Canvas(self, width=7 * self.size, height=6 * self.size, bg='#242424', highlightthickness=0)
-        self.canvas.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
         date_now = datetime.now()
+
+        CTkLabel(self, textvariable=self.date).grid(row=2, column=0, pady=10, padx=10)
+        CTkLabel(self, textvariable=self.mount).grid(row=0, column=1, pady=10, padx=10)
+        CTkButton(self, text='<', width=50, command=lambda: self.down(True)).grid(row=0, column=0, pady=10, padx=10)
+        CTkButton(self, text='>', width=50, command=lambda: self.down(False)).grid(row=0, column=2, pady=10, padx=10)
+        CTkButton(self, text='Открыть журнал', command=self.open_frame).grid(row=2, column=2, pady=10, padx=10, columnspan=3)
+        CTkButton(self, text='Сегодня', command=lambda: self.date.set(datetime.strftime(date_now, "%d.%m.%Y")), width=90).\
+            grid(row=0, column=3, pady=10, padx=10)
+
+        self.canvas = Canvas(self, width=7 * self.size, height=6 * self.size, bg='#242424', highlightthickness=0)
+        self.canvas.grid(row=1, column=0, pady=10, padx=10, columnspan=4)
+
         self.date_mass = [int(datetime.strftime(date_now, '%m')), datetime.strftime(date_now, '%y')]
         self.mount.set(self.mount_mass[self.date_mass[0]-1])
         self.date.set(f'{datetime.strftime(date_now, "%d")}.{self.date_mass[0]:02}.20{self.date_mass[1]}')
         self.canvas_mass = [[None for _ in range(6)] for _ in range(7)]
         self.create_days()
-
 
     def open_frame(self):
         if self.prac == '':
@@ -42,6 +44,7 @@ class Calendar(CTkToplevel):
                 StudentFrame(self.session, dics=self.disc, dics2=self.disc2, prac=self.prac, date_from=self.date.get(), date_whis=self.date.get())
             else:
                 StudentFrame(self.session, dics=self.disc, prac=self.prac, date_from=self.date.get(), date_whis=self.date.get())
+        self.destroy()
 
     def down(self, d):
         self.date_mass[0] += -1 if d else 1
