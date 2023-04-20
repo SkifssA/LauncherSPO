@@ -46,7 +46,7 @@ class GroupFrame(CTkScrollableFrame):
         return tuple(i for i, x in enumerate(self.check_var[0]) if x.get() == 'on')
 
 
-'''Виджет выбора отоброжения теории или практики'''
+'''Виджет выбора отображения теории или практики'''
 
 
 class TabView(CTkTabview):
