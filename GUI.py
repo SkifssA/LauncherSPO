@@ -4,7 +4,6 @@ from customtkinter import *
 from ReJ import AvtoJ
 import ListOfDisciplines
 from importlib import reload
-from StudentFrame import StudentFrame
 from Calendar import Calendar
 
 
@@ -145,16 +144,15 @@ class APP(CTk):
         set_appearance_mode("Dark")
         set_default_color_theme('blue')
         self.session = AvtoJ()
-        self.geometry('555x720')
+
         x = (self.winfo_screenwidth() - 555) / 2
         y = (self.winfo_screenheight() - 720) / 2
         self.geometry("+%d+%d" % (x, y))
         self.resizable(False, False)
-
+        self.frame = None
         LoginForm(self.session)
         if self.session.cookie != '':  # Основная отработка
-
-            self.degin_I()
+            self.main_frame()
             self.mainloop()
         else:
             self.destroy()
@@ -178,14 +176,16 @@ class APP(CTk):
         pr = self.tab.frame_pr.get_check_group()
         if len(tr) + len(pr) == 1:
             if len(tr) == 1:
-                self.studen_frame = Calendar(self.session, dics=ListOfDisciplines.Theory[tr[0]],
+                self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Theory[tr[0]],
                                                  dics2=ListOfDisciplines.Theory[tr[0] + 1])
             elif len(pr) == 1:
                 if ListOfDisciplines.Practice[pr[0]]['name'].find('/2') != -1:
-                    self.studen_frame = Calendar(self.session, dics=ListOfDisciplines.Practice[pr[0]],
+                    self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]],
                                                      dics2=ListOfDisciplines.Practice[pr[0] + 1], prac='1')
                 else:
-                    self.studen_frame = Calendar(self.session, dics=ListOfDisciplines.Practice[pr[0]], prac='1')
+                    self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]], prac='1')
+            self.frame.grid_forget()
+            self.studen_frame.grid()
         else:
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
 
@@ -193,24 +193,26 @@ class APP(CTk):
 
     '''Основная функция отрисовки виджетов'''
 
-    def degin_I(self):
-        self.tab = TabView(self)
+    def main_frame(self):
+        self.frame = CTkFrame(self)
+        self.tab = TabView(self.frame)
         self.studen_frame = None
-        self.entry = CTkEntry(self, placeholder_text="Поиск", width=300)
-        button = CTkButton(self, text='Найти', command=lambda: self.tab.recreate_frame(self.entry.get()))
+        self.entry = CTkEntry(self.frame, placeholder_text="Поиск", width=300)
+        button = CTkButton(self.frame, text='Найти', command=lambda: self.tab.recreate_frame(self.entry.get()))
         button.grid(row=0, column=2, pady=10, padx=10)
         self.entry.grid(row=0, column=0, pady=10, padx=10, columnspan=2)
         self.tab.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
-        button = CTkButton(self, text='Выбрать всё', command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'on'))
+        button = CTkButton(self.frame, text='Выбрать всё', command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'on'))
         button.grid(row=2, column=0, pady=10, padx=10)
-        button = CTkButton(self, text='Снять всё', command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'off'))
+        button = CTkButton(self.frame, text='Снять всё', command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'off'))
         button.grid(row=3, column=0, pady=10, padx=10)
-        button = CTkButton(self, text='Открыть занятия', command=lambda: self.button_close_open_lesson(True))
+        button = CTkButton(self.frame, text='Открыть занятия', command=lambda: self.button_close_open_lesson(True))
         button.grid(row=2, column=1, pady=10, padx=10)
-        button = CTkButton(self, text='Закрыть занятия', command=lambda: self.button_close_open_lesson(False))
+        button = CTkButton(self.frame, text='Закрыть занятия', command=lambda: self.button_close_open_lesson(False))
         button.grid(row=3, column=1, pady=10, padx=10)
-        button = CTkButton(self, text='Проверить явку', command=lambda: self.create_student_frame())
+        button = CTkButton(self.frame, text='Проверить явку', command=lambda: self.create_student_frame())
         button.grid(row=2, column=2, pady=10, padx=10)
+        self.frame.grid()
 
 
 

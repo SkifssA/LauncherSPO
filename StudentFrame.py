@@ -7,15 +7,15 @@ import re
 
 
 class StudentFrame(CTkScrollableFrame):
-    def __init__(self, session, dics=None, dics2=None, prac='', date_from=None, date_whis=None):
+    def __init__(self, master, session, dics=None, dics2=None, prac='', date_from=None, date_whis=None):
 
-        self.root = CTkToplevel()
+        self.root = CTkFrame(master)
+        self.master1 = master
         super().__init__(self.root, width=700, height=500)
         self.grid(row=0, column=0, pady=10, padx=10, columnspan=5)
         self.session = session
         self.disc = dics
         self.prac = prac
-        self.root.title(self.disc['name']+' на '+date_whis)
         self.rows = session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,
                                          date_from=date_from, date_whis=date_whis)['rows']
         self.disc2 = dics2
@@ -33,9 +33,21 @@ class StudentFrame(CTkScrollableFrame):
         self.button_save.grid(row=2, column=0, pady=10, padx=10)
         self.button_create = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
         self.button_create.grid(row=2, column=1, pady=10, padx=10)
+        self.button_begin = CTkButton(self.root, text='Вернуться в начало', command=self.begin)
+        self.button_begin.grid(row=2, column=2, pady=10, padx=10)
+        self.button_back = CTkButton(self.root, text='Назад', command=self.back)
+        self.button_back.grid(row=2, column=3, pady=10, padx=10)
         self.add_score_ui()
-        self.root.focus()
-        self.root.grab_set()
+
+
+    def begin(self):
+        self.master1.frame.grid()
+        self.master1.studen_frame.destroy()
+        self.root.destroy()
+
+    def back(self):
+        self.master1.studen_frame.grid()
+        self.root.destroy()
 
     '''Сохранение всей формы'''
     def all_save(self):
