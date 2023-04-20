@@ -2,6 +2,13 @@ from customtkinter import *
 from datetime import *
 import re
 
+'''
+    Добавить календарь с датами когда у группы есть пары
+    
+'''
+
+
+
 '''Форма для проверки явки'''
 
 
@@ -27,20 +34,22 @@ class StudentFrame(CTkScrollableFrame):
             self.student_lesson(i, j)
         if self.disc2 is not None:
             self.add_v_group(self.disc2)
-        self.button_save = CTkButton(self.root, text='Сохранить явку', command=lambda: self.turnout())
+        self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: self.all_save())
         self.button_save.grid(row=2, column=0, pady=10, padx=10)
         self.button_create = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
         self.button_create.grid(row=2, column=1, pady=10, padx=10)
-        self.button_score = CTkButton(self.root, text='Сохранить оценки', command=lambda: self.save_score())
-        self.button_score.grid(row=2, column=2, pady=10, padx=10)
         self.add_score_ui()
         self.root.focus()
         # self.grab_set()
 
+    '''Сохранение всей формы'''
+    def all_save(self):
+        self.save_score()
+        self.turnout()
+
     '''Возможность быстро перемещаться по полям оценок вниз'''
 
-    def down(self, e):
-        print(e.keysym)
+    def move(self, e):
         nums = re.findall(r'\d+', str(self.root.focus_get()))
         n = 1 if nums == [] else int(nums[0])
         if e.keysym == 'Down':
@@ -84,7 +93,7 @@ class StudentFrame(CTkScrollableFrame):
                         f'work_{self.score[1]["rows"][0]["id"]}'][
                         'type_id_36_score'])
                 self.entry[-1].grid(row=com, column=len(self.combo[0]) + 1, pady=5, padx=5)
-                self.entry[-1].bind('<KeyPress>', lambda e: self.down(e))
+                self.entry[-1].bind('<KeyPress>', lambda e: self.move(e))
             self.button_create.configure(state='disabled')
 
     '''Создание полей для оценок в журнале'''
