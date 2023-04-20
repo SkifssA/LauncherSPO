@@ -23,13 +23,12 @@ class Calendar(CTk):
         self.size = 20
         self.create_days()
 
-
     def create_days(self):
         n = 0
         for i in range(1, 32):
             try:
-                date = datetime.strptime(f'{i}/{self.date_mass[0]}/{self.date_mass[1]}', '%d/%m/%y')
-                w = 6 if (d := int(datetime.strftime(date, '%w'))) == 0 else d-1
+                w = 6 if (d := int(datetime.strftime(datetime.strptime(f'{i}/{self.date_mass[0]}/{self.date_mass[1]}',
+                                                                       '%d/%m/%y'), '%w'))) == 0 else d-1
                 self.canvas.create_rectangle(w * self.size, n * self.size,
                                              (1+w) * self.size, (n+1) * self.size,
                                              fill='#cccccc' if w < 5 else '#999999', tags=f'{i}')
