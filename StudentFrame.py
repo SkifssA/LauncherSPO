@@ -9,6 +9,8 @@ import re
 class StudentFrame(CTkScrollableFrame):
     def __init__(self, master, session, dics=None, dics2=None, prac='', date_from=None, date_whis=None):
 
+        self.date_from = date_from
+        self.date_whis = date_whis
         self.root = CTkFrame(master)
         self.master1 = master
         super().__init__(self.root, width=700, height=500)
@@ -58,7 +60,8 @@ class StudentFrame(CTkScrollableFrame):
 
     def move(self, e):
         nums = re.findall(r'\d+', str(self.root.focus_get()))
-        n = 1 if nums == [] else int(nums[0])
+        n = 1 if len(nums) == 1 else int(nums[1])
+        print(n, self.root.focus_get())
         if e.keysym == 'Down':
             if n < len(self.entry):
                 self.entry[n].focus_set()
@@ -109,12 +112,12 @@ class StudentFrame(CTkScrollableFrame):
         self.session.create_score_pole(self.disc['id_group'], self.disc['subject_id'],
                                        self.rows[0]['lessons'][-1]['id'])
         self.rows = self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
-                                              date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
+                                              date_from=self.date_from, date_whis=self.date_whis)['rows']
         if self.rows2 is not None:
             self.session.create_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
                                            self.rows2[0]['lessons'][-1]['id'])
             self.rows2 = self.session.student_rows(self.disc2['id_group'], self.disc2['subject_id'], prac=self.prac,
-                                                   date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
+                                                   date_from=self.date_from, date_whis=self.date_whis)['rows']
         self.add_score_ui()
 
     '''Добавление группы "в"'''

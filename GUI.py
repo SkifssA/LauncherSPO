@@ -144,7 +144,7 @@ class APP(CTk):
         set_appearance_mode("Dark")
         set_default_color_theme('blue')
         self.session = AvtoJ()
-
+        self.title('Журнал')
         x = (self.winfo_screenwidth() - 555) / 2
         y = (self.winfo_screenheight() - 720) / 2
         self.geometry("+%d+%d" % (x, y))
