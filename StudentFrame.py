@@ -1,5 +1,4 @@
 from customtkinter import *
-from datetime import *
 import re
 
 
@@ -61,7 +60,6 @@ class StudentFrame(CTkScrollableFrame):
     def move(self, e):
         nums = re.findall(r'\d+', str(self.root.focus_get()))
         n = 1 if len(nums) == 1 else int(nums[1])
-        print(n, self.root.focus_get())
         if e.keysym == 'Down':
             if n < len(self.entry):
                 self.entry[n].focus_set()

@@ -6,7 +6,6 @@ import ListOfDisciplines
 from importlib import reload
 from Calendar import Calendar
 
-
 '''Фрейм списка групп'''
 
 
@@ -17,6 +16,7 @@ class GroupFrame(CTkScrollableFrame):
         self.check_var = [[], []]
 
     '''Удаление всех групп с таблицы'''
+
     def all_del(self):
         for chec in self.check_var[1]:
             chec.destroy()
@@ -64,6 +64,7 @@ class TabView(CTkTabview):
         self.recreate_frame('')
 
     '''Создание перечисления с группами'''
+
     def recreate_frame(self, filter):
         self.frame_pr.create_group_checkbox(ListOfDisciplines.Practice, filter)
         self.frame_pr.pack()
@@ -170,26 +171,30 @@ class APP(CTk):
 
     '''Функция создания формы для явки'''
 
-
     def create_student_frame(self):
         tr = self.tab.frame_tr.get_check_group()
         pr = self.tab.frame_pr.get_check_group()
         if len(tr) + len(pr) == 1:
             if len(tr) == 1:
                 self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Theory[tr[0]],
-                                                 dics2=ListOfDisciplines.Theory[tr[0] + 1])
+                                             dics2=ListOfDisciplines.Theory[tr[0] + 1])
             elif len(pr) == 1:
                 if ListOfDisciplines.Practice[pr[0]]['name'].find('/2') != -1:
-                    self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]],
+                    name = ListOfDisciplines.Practice[pr[0]]['name']
+                    if name[:name.find('_')] + 'в' == ListOfDisciplines.Practice[pr[0] + 1]['name'][
+                                                      :ListOfDisciplines.Practice[pr[0] + 1]['name'].find('_')]:
+                        self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]],
                                                      dics2=ListOfDisciplines.Practice[pr[0] + 1], prac='1')
+                    elif name[:name.find('_')] + 'в' == ListOfDisciplines.Practice[pr[0] + 2]['name'][
+                                                        :ListOfDisciplines.Practice[pr[0] + 2]['name'].find('_')]:
+                        self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]],
+                                                     dics2=ListOfDisciplines.Practice[pr[0] + 2], prac='1')
                 else:
                     self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]], prac='1')
             self.frame.grid_forget()
             self.studen_frame.grid()
         else:
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
-
-
 
     '''Основная функция отрисовки виджетов'''
 
@@ -202,9 +207,11 @@ class APP(CTk):
         button.grid(row=0, column=2, pady=10, padx=10)
         self.entry.grid(row=0, column=0, pady=10, padx=10, columnspan=2)
         self.tab.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
-        button = CTkButton(self.frame, text='Выбрать всё', command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'on'))
+        button = CTkButton(self.frame, text='Выбрать всё',
+                           command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'on'))
         button.grid(row=2, column=0, pady=10, padx=10)
-        button = CTkButton(self.frame, text='Снять всё', command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'off'))
+        button = CTkButton(self.frame, text='Снять всё',
+                           command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'off'))
         button.grid(row=3, column=0, pady=10, padx=10)
         button = CTkButton(self.frame, text='Открыть занятия', command=lambda: self.button_close_open_lesson(True))
         button.grid(row=2, column=1, pady=10, padx=10)
@@ -213,7 +220,6 @@ class APP(CTk):
         button = CTkButton(self.frame, text='Проверить явку', command=lambda: self.create_student_frame())
         button.grid(row=2, column=2, pady=10, padx=10)
         self.frame.grid()
-
 
 
 if __name__ == '__main__':
