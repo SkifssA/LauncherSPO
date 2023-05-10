@@ -108,11 +108,21 @@ class LoginForm(CTkToplevel):
         entry_login.pack(padx=20, pady=10)
         entry_pass = CTkEntry(master=self, placeholder_text="password", show='*')
         entry_pass.pack(padx=20, pady=15)
-        with open('cash', 'r+') as f:
-            l_p = f.read()
-            if l_p != '':
-                entry_login.insert(0, l_p[:l_p.index(';')])
-                entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
+        try:
+          with open('cash', 'r+') as f:
+              l_p = f.read()
+              if l_p != '':
+                  entry_login.insert(0, l_p[:l_p.index(';')])
+                  entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
+        except IOError:
+          print('файл заново создан')
+          open('cash', 'w')
+          with open('cash', 'r+') as f:
+              l_p = f.read()
+              if l_p != '':
+                  entry_login.insert(0, l_p[:l_p.index(';')])
+                  entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
+        
         checkbox = CTkCheckBox(master=self, text="Запомнить меня", variable=self.check_var,
                                onvalue="on", offvalue="off")
         checkbox.pack(padx=20, pady=10)
