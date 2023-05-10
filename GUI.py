@@ -112,7 +112,7 @@ class LoginForm(CTkToplevel):
             l_p = f.read()
             if l_p != '':
                 entry_login.insert(0, l_p[:l_p.index(';')])
-                entry_pass.insert(0, l_p[l_p.index(';') + 1:])
+                entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
         checkbox = CTkCheckBox(master=self, text="Запомнить меня", variable=self.check_var,
                                onvalue="on", offvalue="off")
         checkbox.pack(padx=20, pady=10)
@@ -124,7 +124,8 @@ class LoginForm(CTkToplevel):
 
     def work_login_form(self, login, password):
         if self.sessoin.login(login, password):  # Если авторизация прошла успешно
-            if self.check_var == 'on':
+            if self.check_var.get() == 'on':
+                print('='*20)
                 with open('cash', 'r+') as f:
                     print(f'{login};{password}', file=f)
             self.sessoin.save_file_disc()
