@@ -135,7 +135,6 @@ class LoginForm(CTkToplevel):
     def work_login_form(self, login, password):
         if self.sessoin.login(login, password):  # Если авторизация прошла успешно
             if self.check_var.get() == 'on':
-                print('='*20)
                 with open('cash', 'r+') as f:
                     print(f'{login};{password}', file=f)
             self.sessoin.save_file_disc()
