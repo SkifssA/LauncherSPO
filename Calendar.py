@@ -26,8 +26,8 @@ class Calendar(CTkFrame):
         CTkLabel(self, textvariable=self.mount).grid(row=0, column=1, pady=10, padx=10)
         CTkButton(self, text='<', width=50, command=lambda: self.down(True)).grid(row=0, column=0, pady=10, padx=10)
         CTkButton(self, text='>', width=50, command=lambda: self.down(False)).grid(row=0, column=2, pady=10, padx=10)
-        CTkButton(self, text='Открыть журнал', command=self.open_frame).grid(row=2, column=2, pady=10, padx=10,
-                                                                             columnspan=3)
+        self.open_button = CTkButton(self, text='Открыть журнал', command=self.open_frame)
+        self.open_button.grid(row=2, column=2, pady=10, padx=10, columnspan=3)
         CTkButton(self, text='Назад', command=self.back).grid(row=3, column=0, pady=10, padx=10,
                                                                              columnspan=4)
         CTkButton(self, text='Сегодня', command=lambda: self.date.set(datetime.strftime(date_now, "%d.%m.%Y")),
@@ -69,6 +69,12 @@ class Calendar(CTkFrame):
         x, y = e.x // self.size, e.y // self.size
         if self.canvas_mass[x][y] is not None:
             self.date.set(f'{int(self.canvas_mass[x][y][1:]):02}.{self.date_mass[0]:02}.20{self.date_mass[1]}')
+        print(self.canvas.itemcget(self.canvas_mass[x][y], 'fill') == 'green')
+        if self.canvas.itemcget(self.canvas_mass[x][y], 'fill') == 'green':
+            self.open_button.configure(state='normal')
+        else:
+            self.open_button.configure(state='disabled')
+
 
     def create_days(self):
         self.canvas.delete('all')

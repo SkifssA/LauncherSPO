@@ -141,13 +141,12 @@ class StudentFrame(CTkScrollableFrame):
     '''Метод проставления значений студенту до конца занятий'''
 
     def p(self, j, x):
-        if x != 'О':
             set_box = False
             for box in self.combo[j]:
                 if box.get() == x:
                     set_box = True
                 elif set_box:
-                    box.set(x)
+                    box.set('' if x == 'О' else x)
 
     '''Выставление явки в журнал'''
 
