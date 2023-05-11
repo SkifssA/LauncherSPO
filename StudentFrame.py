@@ -161,7 +161,7 @@ class StudentFrame(CTkScrollableFrame):
                                                  self.rows[id_student]['student_id'],
                                                  self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
                                                  prac=self.prac)
-                    self.save[id_student] = False
+            self.save[id_student] = False
         if self.rows2 is not None:
             for id_student, student in enumerate(self.combo[n:]):
                 for id_lesson, lesson in enumerate(student):
@@ -170,4 +170,4 @@ class StudentFrame(CTkScrollableFrame):
                                                      self.rows2[id_student]['student_id'],
                                                      self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
                                                      prac=self.prac)
-                        self.save[id_student] = False
+                self.save[id_student] = False
