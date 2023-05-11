@@ -1,7 +1,6 @@
 from customtkinter import *
 import re
 
-
 '''Форма для проверки явки'''
 
 
@@ -26,6 +25,7 @@ class StudentFrame(CTkScrollableFrame):
         self.combo = []
         self.label = []
         self.entry = []
+        self.save = []
         for j, i in enumerate(self.rows):
             self.student_lesson(i, j)
         if self.disc2 is not None:
@@ -40,7 +40,6 @@ class StudentFrame(CTkScrollableFrame):
         self.button_back.grid(row=2, column=3, pady=10, padx=10)
         self.add_score_ui()
 
-
     def begin(self):
         self.master1.frame.grid()
         self.master1.studen_frame.destroy()
@@ -51,6 +50,7 @@ class StudentFrame(CTkScrollableFrame):
         self.root.destroy()
 
     '''Сохранение всей формы'''
+
     def all_save(self):
         self.save_score()
         self.turnout()
@@ -65,7 +65,7 @@ class StudentFrame(CTkScrollableFrame):
                 self.entry[n].focus_set()
         elif e.keysym == 'Up':
             if n > 0:
-                self.entry[n-2].focus_set()
+                self.entry[n - 2].focus_set()
 
     '''Сохранение оценок в журнал'''
 
@@ -137,16 +137,18 @@ class StudentFrame(CTkScrollableFrame):
                 CTkOptionMenu(self, values=self.value_combobox, width=50, command=lambda x: self.p(j, x)))
             self.combo[-1][-1].grid(row=j, column=i + 1, padx=5, pady=5)
             self.combo[-1][-1].set(n['attendance']['value'])
+            self.save.append(False)
 
     '''Метод проставления значений студенту до конца занятий'''
 
     def p(self, j, x):
-            set_box = False
-            for box in self.combo[j]:
-                if box.get() == x:
-                    set_box = True
-                elif set_box:
-                    box.set('' if x == 'О' else x)
+        self.save[j] = True
+        set_box = False
+        for box in self.combo[j]:
+            if box.get() == x:
+                set_box = True
+            elif set_box:
+                box.set('' if x == 'О' else x)
 
     '''Выставление явки в журнал'''
 
@@ -154,16 +156,18 @@ class StudentFrame(CTkScrollableFrame):
         n = len(self.rows)
         for id_student, student in enumerate(self.combo[:n]):
             for id_lesson, lesson in enumerate(student):
-                # if lesson.get() != '':
-                self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
-                                             self.rows[id_student]['student_id'],
-                                             self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
-                                             prac=self.prac)
+                if self.save[id_student]:
+                    self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
+                                                 self.rows[id_student]['student_id'],
+                                                 self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
+                                                 prac=self.prac)
+                    self.save[id_student] = False
         if self.rows2 is not None:
             for id_student, student in enumerate(self.combo[n:]):
                 for id_lesson, lesson in enumerate(student):
-                    # if lesson.get() != '':
-                    self.session.setting_turnout(self.disc2['id_group'], self.disc2['subject_id'],
-                                                 self.rows2[id_student]['student_id'],
-                                                 self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
-                                                 prac=self.prac)
+                    if self.save[id_student + n]:
+                        self.session.setting_turnout(self.disc2['id_group'], self.disc2['subject_id'],
+                                                     self.rows2[id_student]['student_id'],
+                                                     self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
+                                                     prac=self.prac)
+                        self.save[id_student] = False
