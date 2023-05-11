@@ -159,14 +159,11 @@ class AvtoJ:
     '''Запись в файл'''
 
     def save_file_disc(self):
-        if not ListOfDisciplines.Theory and not ListOfDisciplines.Practice:
             with open('ListOfDisciplines.py', 'wb') as f:
                 list_disc = self.create_disc_list()
                 f.write(list_disc[0].encode('utf-8'))
                 f.write(list_disc[1].encode('utf-8'))
             reload(ListOfDisciplines)
-        else:
-            self.load = '-1'
 
     '''Вывод всех занятий в журнале'''
 

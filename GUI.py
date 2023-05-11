@@ -137,7 +137,8 @@ class LoginForm(CTkToplevel):
             if self.check_var.get() == 'on':
                 with open('cash', 'r+') as f:
                     print(f'{login};{password}', file=f)
-            self.sessoin.save_file_disc()
+            if not ListOfDisciplines.Theory and not ListOfDisciplines.Practice:
+                self.sessoin.save_file_disc()
             reload(ListOfDisciplines)
             self.destroy()
         else:
