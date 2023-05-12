@@ -32,9 +32,10 @@ class AvtoJ:
         self.load = ''
         self.cookie = ''
 
-    '''Создание заголовка'''
+
 
     def head(self):
+        '''Создание заголовка'''
         head_ = {  # Заголовок запроса
             'Host': 'ssuz.vip.edu35.ru',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0',
@@ -46,15 +47,17 @@ class AvtoJ:
         }
         return head_
 
-    '''Установка куки(Для тестов, а то банит XD)'''
+
 
     def set_cookie(self, cookie):
+        '''Установка куки(Для тестов, а то банит XD)'''
         self.session.get('https://ssuz.vip.edu35.ru', cookies={'Cookie': cookie})
         self.cookie = cookie
 
-    '''Авторизация'''
+
 
     def login(self, login, password):
+        '''Авторизация'''
         data = self.session.post('https://ssuz.vip.edu35.ru/auth/login', headers=self.head(),
                                  data={'login_login': login,
                                        'login_password': password})
@@ -65,9 +68,10 @@ class AvtoJ:
         except KeyError:
             return False
 
-    '''Получение групп'''
+
 
     def group_rows(self, date_from='01.01.2023'):
+        '''Получение групп'''
         data = {
             'slave_mode': '1',
             'empty_item': '1',
@@ -82,9 +86,10 @@ class AvtoJ:
         response = self.session.post(self.url[0], headers=self.head(), data=data).json()
         return response
 
-    '''Получение предметов группы'''
+
 
     def disc_rows(self, id_group, date_from='01.01.2023'):
+        '''Получение предметов группы'''
         data = {
             'slave_mode': '1',
             'empty_item': '1',
@@ -104,9 +109,10 @@ class AvtoJ:
         response = self.session.post(self.url[1], headers=self.head(), data=data).json()
         return response
 
-    '''Получение студентов группы'''
+
 
     def student_rows(self, id_group, subject_id, date_from='01.01.2023', date_whis=datetime.today().strftime('%d.%m.%Y'), prac=''):
+        '''Получение студентов группы'''
         nums = re.findall(r'\d+', subject_id)
         data = {
             'slave_mode': '1',
@@ -128,15 +134,17 @@ class AvtoJ:
         response = self.session.post(self.url[2], headers=self.head(), data=data).json()
         return response
 
-    '''Создание списка практических и теоретических журналов'''
+
 
     def creat_str(self, name, id_group, subject_id, student_id):
+        '''Создание списка практических и теоретических журналов'''
         s = f'"name": "{name}", "id_group": "{id_group}", "subject_id": ' + f"'{subject_id}'" + f', "student_id": "{student_id}"'
         return '\t{' + s + '},\n'
 
-    '''Создание списков для работы'''
+
 
     def create_disc_list(self):
+        '''Создание списков для работы'''
         prac = 'Practice = [\n'
         theo = 'Theory = [\n'
         for group in self.group_rows()['rows']:
@@ -156,23 +164,26 @@ class AvtoJ:
                                            student['rows'][0]['student_id'])
         return [prac + ']\n', theo + ']']
 
-    '''Запись в файл'''
+
 
     def save_file_disc(self):
-            with open('ListOfDisciplines.py', 'wb') as f:
-                list_disc = self.create_disc_list()
-                f.write(list_disc[0].encode('utf-8'))
-                f.write(list_disc[1].encode('utf-8'))
-            reload(ListOfDisciplines)
+        '''Запись в файл'''
+        with open('ListOfDisciplines.py', 'wb') as f:
+            list_disc = self.create_disc_list()
+            f.write(list_disc[0].encode('utf-8'))
+            f.write(list_disc[1].encode('utf-8'))
+        reload(ListOfDisciplines)
 
-    '''Вывод всех занятий в журнале'''
+
 
     def id_lesson_row(self, id_group, subject_id, prac=''):
+        '''Вывод всех занятий в журнале'''
         return tuple(x['id'] for x in self.student_rows(id_group, subject_id, prac=prac)['rows'][0]['lessons'])
 
-    '''Закрытие/открытие занятий'''
+
 
     def close_open_lesson(self, id_group, subject_id, student_id, date_from='01.01.2023', prac='', open=False):
+        '''Закрытие/открытие занятий'''
         url = 4 if open else 3
         nums = re.findall(r'\d+', subject_id)
         for lesson in self.id_lesson_row(id_group, subject_id, prac=prac):
@@ -196,8 +207,9 @@ class AvtoJ:
             }
             self.session.post(self.url[url], headers=self.head(), data=data)
 
-    '''Выставление явки в журнал'''
+
     def setting_turnout(self, id_group, subject_id, student_id, lesson, x, date_from='01.01.2023', prac=''):
+        '''Выставление явки в журнал'''
         nums = re.findall(r'\d+', subject_id)
         data = {
             'data': '{'+f'"lesson_id":{lesson},"attendance":"{x}","student_id":{student_id}'+'}',
@@ -218,8 +230,9 @@ class AvtoJ:
         }
         self.session.post(self.url[5], headers=self.head(), data=data)
 
-    '''Создание поля для оценок'''
+
     def create_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
+        '''Создание поля для оценок'''
         nums = re.findall(r'\d+', subject_id)
         data = {
             'lesson_id': lesson,
@@ -243,8 +256,9 @@ class AvtoJ:
         }
         self.session.post(self.url[6], headers=self.head(), data=data)
 
-    '''Получение id поля для оценок'''
+
     def show_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
+        '''Получение id поля для оценок'''
         nums = re.findall(r'\d+', subject_id)
         data = {
             'lesson_id': lesson,
@@ -268,8 +282,9 @@ class AvtoJ:
         }
         return self.session.post(self.url[7], headers=self.head(), data=data).json()
 
-    '''Выставление оценок'''
+
     def expose_score(self, id_group, subject_id, lesson, wokr_id, score, student_id, date_from='01.01.2023', prac=''):
+        '''Выставление оценок'''
         nums = re.findall(r'\d+', subject_id)
         data = {
             'data': '{'+f'"lesson_id": {lesson}, "attendance": "", "work_id": "{wokr_id}", "score_type_id": "36", "score": "{score}", "student_id": {student_id}'+'}',

@@ -5,6 +5,7 @@ from StudentFrame import StudentFrame
 
 
 class Calendar(CTkFrame):
+    """Форма календаря"""
     def __init__(self, master, session, dics, dics2=None, prac='', **kwargs):
         super().__init__(master, **kwargs)
         self.master1 = master
@@ -43,10 +44,12 @@ class Calendar(CTkFrame):
 
 
     def back(self):
+        """Возврат на начальную форму"""
         self.master1.frame.grid()
         self.destroy()
 
     def open_frame(self):
+        """Открытие формы для выставления присутствия и оценок"""
         if self.prac == '':
             frane_s = StudentFrame(self.master1, self.session, dics=self.disc, dics2=self.disc2, date_from=self.date.get(),
                          date_whis=self.date.get())
@@ -61,11 +64,13 @@ class Calendar(CTkFrame):
         self.grid_forget()
 
     def down(self, d):
+        """Перемещение по месяцам"""
         self.date_mass[0] += -1 if d else 1
         self.mount.set(self.mount_mass[self.date_mass[0] - 1])
         self.create_days()
 
     def date_get(self, e):
+        """Показ даты и запрет на открытия формы для не учебного дня"""
         x, y = e.x // self.size, e.y // self.size
         if self.canvas_mass[x][y] is not None:
             self.date.set(f'{int(self.canvas_mass[x][y][1:]):02}.{self.date_mass[0]:02}.20{self.date_mass[1]}')
@@ -76,6 +81,7 @@ class Calendar(CTkFrame):
 
 
     def create_days(self):
+        """Создание всех дней"""
         self.canvas.delete('all')
         n = 0
         for i in range(1, 32):
