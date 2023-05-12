@@ -3,6 +3,7 @@ import tkinter
 from customtkinter import *
 from ReJ import AvtoJ
 import ListOfDisciplines
+import os
 from importlib import reload
 from Calendar import Calendar
 
@@ -127,6 +128,10 @@ class LoginForm(CTkToplevel):
                 with open('cash', 'r+') as f:
                     print(f'{login};{password}', file=f)
             if not ListOfDisciplines.Theory and not ListOfDisciplines.Practice:
+                try:
+                    os.mkdir("Themes")
+                except FileExistsError:
+                    pass
                 self.sessoin.save_file_disc()
             reload(ListOfDisciplines)
             self.destroy()
