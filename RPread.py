@@ -13,10 +13,13 @@ from tkinter.messagebox import showerror
 
 class Create_RP(CTkFrame):
     """Класс формы для добавления тем"""
-    def __init__(self, master, *disc):
+
+    def __init__(self, master, disc, prac=''):
         super().__init__(master)
 
+        self.master = master
         self.id_group = set(x['id_group'] for x in disc)
+        self.prac = prac
 
         self.tabl = ttk.Treeview(self)
         self.tabl.grid()
@@ -24,6 +27,7 @@ class Create_RP(CTkFrame):
         self.tabl.column("#0", width=0, stretch=NO)
         self.tabl.column("t", anchor=CENTER, width=500)
         self.tabl.column("c", anchor=CENTER, width=100)
+
         self.tabl.bind("<<TreeviewSelect>>", self.item_selected)
         self.tabl.bind("<Button-3>", self.delete_select)
 
@@ -74,6 +78,12 @@ class Create_RP(CTkFrame):
 
 if __name__ == '__main__':
     root = CTk()
-    s = Create_RP(root)
+    we = [{"name": "ИСП-221а_Основы проектирования баз данных (ИСП-221а/2)", "id_group": "4649",
+           "subject_id": '{"subject_id": 5548, "sub_group_id": 14717}', "student_id": "70029"},
+          {"name": "ИСП-221а_Основы проектирования баз данных (ИСП-221а/1)", "id_group": "4649",
+           "subject_id": '{"subject_id": 5548, "sub_group_id": 14716}', "student_id": "70002"},
+          {"name": "ИСП-221ав_Основы проектирования баз данных", "id_group": "4659",
+           "subject_id": '{"subject_id": 5548}', "student_id": "70027"}]
+    s = Create_RP(root, we)
     s.grid()
     root.mainloop()
