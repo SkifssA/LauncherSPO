@@ -207,6 +207,14 @@ class APP(CTk):
         else:
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
 
+    def upload_tabl(self):
+        self.session.save_file_disc()
+        reload(ListOfDisciplines)
+        self.tab.destroy()
+        self.tab = TabView(self.frame)
+        self.tab.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
+
+
     '''Основная функция отрисовки виджетов'''
 
     def main_frame(self):
@@ -230,7 +238,10 @@ class APP(CTk):
         button.grid(row=3, column=1, pady=10, padx=10)
         button = CTkButton(self.frame, text='Проверить явку', command=lambda: self.create_student_frame())
         button.grid(row=2, column=2, pady=10, padx=10)
+        button = CTkButton(self.frame, text='Обновить таблицу', command=lambda: self.upload_tabl())
+        button.grid(row=3, column=2, pady=10, padx=10)
         self.frame.grid()
+
 
 
 if __name__ == '__main__':
