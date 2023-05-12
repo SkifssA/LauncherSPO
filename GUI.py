@@ -6,27 +6,24 @@ import ListOfDisciplines
 from importlib import reload
 from Calendar import Calendar
 
-'''Фрейм списка групп'''
-
 
 class GroupFrame(CTkScrollableFrame):
+    '''Фрейм списка групп'''
+
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.label = None
         self.check_var = [[], []]
 
-    '''Удаление всех групп с таблицы'''
-
     def all_del(self):
+        '''Удаление всех групп с таблицы'''
         for chec in self.check_var[1]:
             chec.destroy()
 
-    '''Создание "галачек" с группами'''
-
     def create_group_checkbox(self, group_list, filter):
+        '''Создание "галачек" с группами'''
         self.all_del()
         self.check_var = [[], []]
-        # add widgets onto the frame...
         for group in group_list:
             if group['name'].find(filter) != -1:
                 self.check_var[0].append(tkinter.StringVar())
@@ -34,22 +31,19 @@ class GroupFrame(CTkScrollableFrame):
                                                      variable=self.check_var[0][-1], onvalue="on", offvalue="off"))
                 self.check_var[1][-1].pack(padx=20, pady=10, anchor='w')
 
-    '''Метот для выделения всех групп'''
-
     def all_check(self, on_off):
+        '''Метот для выделения всех групп'''
         for check in self.check_var[0]:
             check.set(on_off)
 
-    '''Возвращение вcех выделенных групп'''
-
     def get_check_group(self):
+        '''Возвращение вcех выделенных групп'''
         return tuple(i for i, x in enumerate(self.check_var[0]) if x.get() == 'on')
 
 
-'''Виджет выбора отображения теории или практики'''
-
-
 class TabView(CTkTabview):
+    '''Виджет выбора отображения теории или практики'''
+
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.height = 450
@@ -63,28 +57,25 @@ class TabView(CTkTabview):
         self.frame_tr = GroupFrame(self.tab('Теория'), width=self.width, height=self.height)
         self.recreate_frame('')
 
-    '''Создание перечисления с группами'''
-
     def recreate_frame(self, filter):
+        '''Создание перечисления с группами'''
         self.frame_pr.create_group_checkbox(ListOfDisciplines.Practice, filter)
         self.frame_pr.pack()
 
         self.frame_tr.create_group_checkbox(ListOfDisciplines.Theory, filter)
         self.frame_tr.pack()
 
-    '''Выделение всех групп'''
-
     def all_check_in_tabl(self, name_tabl, on_off):
+        '''Выделение всех групп'''
         if name_tabl == 'Практика':
             self.frame_pr.all_check(on_off)
         else:
             self.frame_tr.all_check(on_off)
 
 
-'''Форма авторизации'''
-
-
 class LoginForm(CTkToplevel):
+    '''Форма авторизации'''
+
     def __init__(self, session):
         super().__init__()
         self.sessoin = session
@@ -101,28 +92,27 @@ class LoginForm(CTkToplevel):
         self.grab_set()
         self.wait_window()
 
-    '''Создание формы авторизации'''
-
     def creat_login_form(self):
+        '''Создание формы авторизации'''
         entry_login = CTkEntry(master=self, placeholder_text="login")
         entry_login.pack(padx=20, pady=10)
         entry_pass = CTkEntry(master=self, placeholder_text="password", show='*')
         entry_pass.pack(padx=20, pady=15)
         try:
-          with open('cash', 'r+') as f:
-              l_p = f.read()
-              if l_p != '':
-                  entry_login.insert(0, l_p[:l_p.index(';')])
-                  entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
+            with open('cash', 'r+') as f:
+                l_p = f.read()
+                if l_p != '':
+                    entry_login.insert(0, l_p[:l_p.index(';')])
+                    entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
         except IOError:
-          print('файл заново создан')
-          open('cash', 'w')
-          with open('cash', 'r+') as f:
-              l_p = f.read()
-              if l_p != '':
-                  entry_login.insert(0, l_p[:l_p.index(';')])
-                  entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
-        
+            print('файл заново создан')
+            open('cash', 'w')
+            with open('cash', 'r+') as f:
+                l_p = f.read()
+                if l_p != '':
+                    entry_login.insert(0, l_p[:l_p.index(';')])
+                    entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
+
         checkbox = CTkCheckBox(master=self, text="Запомнить меня", variable=self.check_var,
                                onvalue="on", offvalue="off")
         checkbox.pack(padx=20, pady=10)
@@ -130,9 +120,8 @@ class LoginForm(CTkToplevel):
                            command=lambda: self.work_login_form(entry_login.get(), entry_pass.get()))
         button.pack(padx=20, pady=10)
 
-    '''Функция кнопки(Авторизация)'''
-
     def work_login_form(self, login, password):
+        '''Функция кнопки(Авторизация)'''
         if self.sessoin.login(login, password):  # Если авторизация прошла успешно
             if self.check_var.get() == 'on':
                 with open('cash', 'r+') as f:
@@ -146,10 +135,9 @@ class LoginForm(CTkToplevel):
             showerror(title="Ошибка авторизации", message="Неправильный логин или пароль")
 
 
-'''Основное приложение'''
-
-
 class APP(CTk):
+    """Основное приложение"""
+
     def __init__(self):
         super().__init__()
         self.studen_frame = None
@@ -169,9 +157,8 @@ class APP(CTk):
         else:
             self.destroy()
 
-    '''Функция для открытия/закрытия занятий'''
-
     def button_close_open_lesson(self, open):
+        """Функция для открытия/закрытия занятий"""
         for group_idl in self.tab.frame_tr.get_check_group():
             group = ListOfDisciplines.Theory[group_idl]
             self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
@@ -180,9 +167,8 @@ class APP(CTk):
             self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'],
                                            prac='1', open=open)
 
-    '''Функция создания формы для явки'''
-
     def create_student_frame(self):
+        """Функция создания формы для явки"""
         tr = self.tab.frame_tr.get_check_group()
         pr = self.tab.frame_pr.get_check_group()
         if len(tr) + len(pr) == 1:
@@ -208,16 +194,15 @@ class APP(CTk):
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
 
     def upload_tabl(self):
+        """Обновление журнала"""
         self.session.save_file_disc()
         reload(ListOfDisciplines)
         self.tab.destroy()
         self.tab = TabView(self.frame)
         self.tab.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
 
-
-    '''Основная функция отрисовки виджетов'''
-
     def main_frame(self):
+        """Основная функция отрисовки виджетов"""
         self.frame = CTkFrame(self)
         self.tab = TabView(self.frame)
         self.studen_frame = None
@@ -241,7 +226,6 @@ class APP(CTk):
         button = CTkButton(self.frame, text='Обновить таблицу', command=lambda: self.upload_tabl())
         button.grid(row=3, column=2, pady=10, padx=10)
         self.frame.grid()
-
 
 
 if __name__ == '__main__':
