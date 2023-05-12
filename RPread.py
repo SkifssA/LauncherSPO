@@ -12,7 +12,7 @@ from tkinter.messagebox import showerror
 
 
 class Create_RP(CTkFrame):
-    """Класс формы для добавление тем"""
+    """Класс формы для добавления тем"""
     def __init__(self, master, *disc):
         super().__init__(master)
 
