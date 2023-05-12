@@ -69,7 +69,6 @@ class Calendar(CTkFrame):
         x, y = e.x // self.size, e.y // self.size
         if self.canvas_mass[x][y] is not None:
             self.date.set(f'{int(self.canvas_mass[x][y][1:]):02}.{self.date_mass[0]:02}.20{self.date_mass[1]}')
-        print(self.canvas.itemcget(self.canvas_mass[x][y], 'fill') == 'green')
         if self.canvas.itemcget(self.canvas_mass[x][y], 'fill') == 'green':
             self.open_button.configure(state='normal')
         else:
