@@ -5,6 +5,9 @@ import ListOfDisciplines
 from importlib import reload
 import os
 
+"""
+Придумать разгроничение по семестрам!!!!!
+"""
 
 class AvtoJ:
     def __init__(self):
@@ -306,8 +309,7 @@ class AvtoJ:
                                    prac=prac))
         for less, theme in zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),
                                self.open_file_themes(disc)[k:]):
-            print(theme)
-            #self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
+            self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
             pass
 
 
