@@ -125,6 +125,6 @@ if __name__ == '__main__':
     we = [{"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/1)", "id_group": "4138", "subject_id": '{"subject_id": 2484, "sub_group_id": 13529}', "student_id": "61796"},
 	{"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/2)", "id_group": "4138", "subject_id": '{"subject_id": 2484, "sub_group_id": 13530}', "student_id": "61810"},
 	{"name": "ОИБ-320в_Основы алгоритмизации и программирования", "id_group": "4139", "subject_id": '{"subject_id": 2484}', "student_id": "61929"}]
-    s = Create_RP(root, we, 't')
+    s = Create_RP(root, we, 'p')
     s.grid()
     root.mainloop()

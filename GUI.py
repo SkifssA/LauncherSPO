@@ -6,6 +6,7 @@ import ListOfDisciplines
 import os
 from importlib import reload
 from Calendar import Calendar
+from RPread import Create_RP
 
 
 class GroupFrame(CTkScrollableFrame):
@@ -72,6 +73,7 @@ class TabView(CTkTabview):
             self.frame_pr.all_check(on_off)
         else:
             self.frame_tr.all_check(on_off)
+
 
 
 class LoginForm(CTkToplevel):
@@ -198,6 +200,36 @@ class APP(CTk):
         else:
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
 
+    def open_win_rp(self):
+        """Открытие окна с рп"""
+        tr = self.tab.frame_tr.get_check_group()
+        pr = self.tab.frame_pr.get_check_group()
+        disc = []
+        if len(tr) == 0:
+            for id in pr:
+                disc.append(ListOfDisciplines.Practice[id])
+            prac = 'p'
+            self.rp = Create_RP(self, disc=disc, prac=prac)
+            self.frame.grid_forget()
+            self.rp.grid()
+        elif len(pr) == 0:
+            for id in tr:
+                disc.append(ListOfDisciplines.Theory[id])
+            prac = 't'
+            self.rp = Create_RP(self, disc=disc, prac=prac)
+            self.frame.grid_forget()
+            self.rp.grid()
+        else:
+            showerror(title="Ошибка", message="Надо выбрать только теорию или только практику")
+
+
+    def save_themes(self):
+        for id in self.tab.frame_tr.get_check_group():
+            self.session.save_themes(ListOfDisciplines.Theory[id], prac='')
+        for id in self.tab.frame_pr.get_check_group():
+            self.session.save_themes(ListOfDisciplines.Practice[id], prac='1')
+
+
     def upload_tabl(self):
         """Обновление журнала"""
         self.session.save_file_disc()
@@ -230,6 +262,10 @@ class APP(CTk):
         button.grid(row=2, column=2, pady=10, padx=10)
         button = CTkButton(self.frame, text='Обновить таблицу', command=lambda: self.upload_tabl())
         button.grid(row=3, column=2, pady=10, padx=10)
+        button = CTkButton(self.frame, text='Открыть окно для рп', command=lambda: self.open_win_rp())
+        button.grid(row=4, column=2, pady=10, padx=10)
+        button = CTkButton(self.frame, text='Заполнить темы', command=lambda: self.save_themes())
+        button.grid(row=4, column=1, pady=10, padx=10)
         self.frame.grid()
 
 

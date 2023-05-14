@@ -290,9 +290,7 @@ class AvtoJ:
 
     """
     Задачи:
-    1. Ввод тем в журнал +
-    2. Понимание сколько было часов в 1 семестре(Считывание часов у группы с 1.09 - 31.12)
-    3. Понимание из какого файла брать темы(id_group)
+    2. Понимание сколько было часов в 1 семестре(Считывание часов у группы с 1.09 - 31.12) +-
     """
 
     def open_file_themes(self, disc):
@@ -311,7 +309,6 @@ class AvtoJ:
         for less, theme in zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),
                                self.open_file_themes(disc)[k:]):
             self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
-            pass
 
 
     def uploading_topics(self, id_group, subject_id, lesson, theme, date_from='01.01.2023', prac=''):
