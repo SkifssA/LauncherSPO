@@ -1,8 +1,3 @@
-'''
-
-'''
-
-'''test bild'''
 from customtkinter import *
 from tkinter import *
 from tkinter import ttk
@@ -10,7 +5,7 @@ from tkinter.messagebox import showerror
 import tkinter.filedialog as fd
 
 
-class Create_RP(CTkFrame):
+class CreateRP(CTkFrame):
     """Класс формы для добавления тем"""
 
     def __init__(self, master, disc, prac):
@@ -18,7 +13,7 @@ class Create_RP(CTkFrame):
 
         self.master = master
         self.id_group = sorted(set(x['id_group'] for x in disc))
-        self.name_p = disc[-1]['name'][disc[-1]['name'].find('_')+1:]
+        self.name_p = disc[-1]['name'][disc[-1]['name'].find('_') + 1:]
         self.prac = prac
 
         self.tabl = ttk.Treeview(self)
@@ -48,7 +43,6 @@ class Create_RP(CTkFrame):
         CTkButton(self, text='Открыть файл', command=self.choose_file).grid()
         CTkButton(self, text='Назад', command=self.back).grid()
 
-
     def back(self):
         """Возврат на начальную форму"""
         self.master.frame.grid()
@@ -76,7 +70,8 @@ class Create_RP(CTkFrame):
         """Изменение выделенного элемента"""
         if self.entry[0].get() != '' and self.entry[1].get() != '' and self.entry[1].get().isdigit():
             if len(self.tabl.selection()) == 1:
-                self.tabl.item(self.tabl.selection(), values =(self.entry[0].get().replace('\n', ' '), self.entry[1].get()))
+                self.tabl.item(self.tabl.selection(),
+                               values=(self.entry[0].get().replace('\n', ' '), self.entry[1].get()))
                 self.entry[0].delete(0, END)
                 self.entry[1].delete(0, END)
             else:
@@ -107,7 +102,7 @@ class Create_RP(CTkFrame):
     def choose_file(self):
         """Открытия окна с выбором файла"""
         filetypes = (("Текстовый файл", "*.txt"),)
-        filename = fd.askopenfilename(title="Открыть файл", initialdir=os.getcwd()+'/Themes',
+        filename = fd.askopenfilename(title="Открыть файл", initialdir=os.getcwd() + '/Themes',
                                       filetypes=filetypes)
         if filename:
             for iid in self.tabl.get_children():
@@ -116,15 +111,5 @@ class Create_RP(CTkFrame):
             with open(filename) as f:
                 for line in f:
                     self.tabl.insert(parent='', index='end', iid=self.count, text='',
-                                     values=(line[:line.rfind(' ')], line[line.rfind(' ')+1:-1]))
+                                     values=(line[:line.rfind(' ')], line[line.rfind(' ') + 1:-1]))
                     self.count += 1
-
-
-if __name__ == '__main__':
-    root = CTk()
-    we = [{"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/1)", "id_group": "4138", "subject_id": '{"subject_id": 2484, "sub_group_id": 13529}', "student_id": "61796"},
-	{"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/2)", "id_group": "4138", "subject_id": '{"subject_id": 2484, "sub_group_id": 13530}', "student_id": "61810"},
-	{"name": "ОИБ-320в_Основы алгоритмизации и программирования", "id_group": "4139", "subject_id": '{"subject_id": 2484}', "student_id": "61929"}]
-    s = Create_RP(root, we, 'p')
-    s.grid()
-    root.mainloop()

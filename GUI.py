@@ -6,7 +6,7 @@ import ListOfDisciplines
 import os
 from importlib import reload
 from Calendar import Calendar
-from RPread import Create_RP
+from RPread import CreateRP
 
 
 class GroupFrame(CTkScrollableFrame):
@@ -209,14 +209,14 @@ class APP(CTk):
             for id in pr:
                 disc.append(ListOfDisciplines.Practice[id])
             prac = 'p'
-            self.rp = Create_RP(self, disc=disc, prac=prac)
+            self.rp = CreateRP(self, disc=disc, prac=prac)
             self.frame.grid_forget()
             self.rp.grid()
         elif len(pr) == 0:
             for id in tr:
                 disc.append(ListOfDisciplines.Theory[id])
             prac = 't'
-            self.rp = Create_RP(self, disc=disc, prac=prac)
+            self.rp = CreateRP(self, disc=disc, prac=prac)
             self.frame.grid_forget()
             self.rp.grid()
         else:

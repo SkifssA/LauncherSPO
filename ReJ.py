@@ -10,6 +10,7 @@ import os
 Соеденить выставление тем с основным приложением
 """
 
+
 class AvtoJ:
     def __init__(self):
         self.session = requests.session()
@@ -295,13 +296,12 @@ class AvtoJ:
 
     def open_file_themes(self, disc):
         themes = []
-        for file in os.listdir(os.getcwd()+'/Themes'):
-            if disc['id_group'] in file and disc['name'][disc['name'].find('_')+1:disc['name'].find(' ')] in file:
+        for file in os.listdir(os.getcwd() + '/Themes'):
+            if disc['id_group'] in file and disc['name'][disc['name'].find('_') + 1:disc['name'].find(' ')] in file:
                 with open('Themes/' + file, 'r') as f:
                     for line in f:
-                        themes += [line[:line.rfind(' ')]] * int(line[line.rfind(' ')+1:-1])
+                        themes += [line[:line.rfind(' ')]] * int(line[line.rfind(' ') + 1:-1])
         return themes
-
 
     def save_themes(self, disc, prac=''):
         k = len(self.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022', date_whis='31.12.2022',
@@ -309,7 +309,6 @@ class AvtoJ:
         for less, theme in zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),
                                self.open_file_themes(disc)[k:]):
             self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
-
 
     def uploading_topics(self, id_group, subject_id, lesson, theme, date_from='01.01.2023', prac=''):
         """Ввод темы в журнал"""
@@ -333,11 +332,3 @@ class AvtoJ:
             'view_lessons': 'false',
         }
         self.session.post(self.url[9], headers=self.head(), data=data)
-
-
-
-if __name__ == '__main__':
-    s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=ks6syjvczfftyqind8v59oej8sd33v7u')
-    s.save_themes({"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/1)", "id_group": "4138",
-                        "subject_id": '{"subject_id": 2484, "sub_group_id": 13529}', "student_id": "61796"}, prac='1')
