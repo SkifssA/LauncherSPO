@@ -1,9 +1,9 @@
-from tkinter.messagebox import showerror
 import tkinter
+from tkinter.messagebox import showerror
 from customtkinter import *
-from ReJ import AvtoJ
-import ListOfDisciplines
 import os
+import ListOfDisciplines
+from ReJ import AvtoJ
 from importlib import reload
 from Calendar import Calendar
 from RPread import CreateRP
@@ -73,7 +73,6 @@ class TabView(CTkTabview):
             self.frame_pr.all_check(on_off)
         else:
             self.frame_tr.all_check(on_off)
-
 
 
 class LoginForm(CTkToplevel):
@@ -157,6 +156,7 @@ class APP(CTk):
         self.geometry("+%d+%d" % (x, y))
         self.resizable(False, False)
         self.frame = None
+
         LoginForm(self.session)
         if self.session.cookie != '':  # Основная отработка
             self.main_frame()
@@ -222,13 +222,11 @@ class APP(CTk):
         else:
             showerror(title="Ошибка", message="Надо выбрать только теорию или только практику")
 
-
     def save_themes(self):
         for id in self.tab.frame_tr.get_check_group():
             self.session.save_themes(ListOfDisciplines.Theory[id], prac='')
         for id in self.tab.frame_pr.get_check_group():
             self.session.save_themes(ListOfDisciplines.Practice[id], prac='1')
-
 
     def upload_tabl(self):
         """Обновление журнала"""

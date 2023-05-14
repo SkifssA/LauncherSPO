@@ -52,6 +52,17 @@ class AvtoJ:
         }
         return head_
 
+    def date_patch(self, date_f):
+        """Выставление правильного времени"""
+        date_from = date_f
+        if date_f == '':
+            mon = int(datetime.today().strftime('%m'))
+            if 13 > mon > 8:
+                date_from = '01.09.' + datetime.today().strftime('%Y')
+            else:
+                date_from = '01.01.' + datetime.today().strftime('%Y')
+        return date_from
+
     def set_cookie(self, cookie):
         '''Установка куки(Для тестов, а то банит XD)'''
         self.session.get('https://ssuz.vip.edu35.ru', cookies={'Cookie': cookie})
@@ -69,8 +80,14 @@ class AvtoJ:
         except KeyError:
             return False
 
-    def group_rows(self, date_from='01.01.2023'):
+    def group_rows(self, date_from=''):
         '''Получение групп'''
+        if date_from == '':
+            mon = int(datetime.date().strftime('%m'))
+            if 13 > mon > 8:
+                date_from = '01.09.' + datetime.date().strftime('%Y')
+            else:
+                date_from = '01.01.' + datetime.date().strftime('%Y')
         data = {
             'slave_mode': '1',
             'empty_item': '1',
@@ -85,8 +102,14 @@ class AvtoJ:
         response = self.session.post(self.url[0], headers=self.head(), data=data).json()
         return response
 
-    def disc_rows(self, id_group, date_from='01.01.2023'):
+    def disc_rows(self, id_group, date_from=''):
         '''Получение предметов группы'''
+        if date_from == '':
+            mon = int(datetime.date().strftime('%m'))
+            if 13 > mon > 8:
+                date_from = '01.09.' + datetime.date().strftime('%Y')
+            else:
+                date_from = '01.01.' + datetime.date().strftime('%Y')
         data = {
             'slave_mode': '1',
             'empty_item': '1',
@@ -106,9 +129,11 @@ class AvtoJ:
         response = self.session.post(self.url[1], headers=self.head(), data=data).json()
         return response
 
-    def student_rows(self, id_group, subject_id, date_from='01.01.2023',
+    def student_rows(self, id_group, subject_id, date_from='',
                      date_whis=datetime.today().strftime('%d.%m.%Y'), prac=''):
         '''Получение студентов группы'''
+        date_from = self.date_patch(date_from)
+
         nums = re.findall(r'\d+', subject_id)
         data = {
             'slave_mode': '1',
@@ -164,14 +189,16 @@ class AvtoJ:
             f.write(list_disc[1].encode('utf-8'))
         reload(ListOfDisciplines)
 
-    def id_lesson_row(self, id_group, subject_id, date_from='01.01.2023',
+    def id_lesson_row(self, id_group, subject_id, date_from='',
                       date_whis=datetime.today().strftime('%d.%m.%Y'), prac=''):
         '''Вывод всех занятий в журнале'''
+        date_from = self.date_patch(date_from)
         return tuple(x['id'] for x in self.student_rows(id_group, subject_id,
                                                         date_from, date_whis, prac=prac)['rows'][0]['lessons'])
 
-    def close_open_lesson(self, id_group, subject_id, student_id, date_from='01.01.2023', prac='', open=False):
+    def close_open_lesson(self, id_group, subject_id, student_id, date_from='', prac='', open=False):
         '''Закрытие/открытие занятий'''
+        date_from = self.date_patch(date_from)
         url = 4 if open else 3
         nums = re.findall(r'\d+', subject_id)
         for lesson in self.id_lesson_row(id_group, subject_id, prac=prac):
@@ -195,8 +222,9 @@ class AvtoJ:
             }
             self.session.post(self.url[url], headers=self.head(), data=data)
 
-    def setting_turnout(self, id_group, subject_id, student_id, lesson, x, date_from='01.01.2023', prac=''):
+    def setting_turnout(self, id_group, subject_id, student_id, lesson, x, date_from='', prac=''):
         '''Выставление явки в журнал'''
+        date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         data = {
             'data': '{' + f'"lesson_id":{lesson},"attendance":"{x}","student_id":{student_id}' + '}',
@@ -217,8 +245,9 @@ class AvtoJ:
         }
         self.session.post(self.url[5], headers=self.head(), data=data)
 
-    def create_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
+    def create_score_pole(self, id_group, subject_id, lesson, date_from='', prac=''):
         '''Создание поля для оценок'''
+        date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         data = {
             'lesson_id': lesson,
@@ -242,8 +271,9 @@ class AvtoJ:
         }
         self.session.post(self.url[6], headers=self.head(), data=data)
 
-    def show_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
+    def show_score_pole(self, id_group, subject_id, lesson, date_from='', prac=''):
         '''Получение id поля для оценок'''
+        date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         data = {
             'lesson_id': lesson,
@@ -267,8 +297,9 @@ class AvtoJ:
         }
         return self.session.post(self.url[7], headers=self.head(), data=data).json()
 
-    def expose_score(self, id_group, subject_id, lesson, wokr_id, score, student_id, date_from='01.01.2023', prac=''):
+    def expose_score(self, id_group, subject_id, lesson, wokr_id, score, student_id, date_from='', prac=''):
         '''Выставление оценок'''
+        date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         data = {
             'data': '{' + f'"lesson_id": {lesson}, "attendance": "", "work_id": "{wokr_id}", "score_type_id": "36", "score": "{score}", "student_id": {student_id}' + '}',
@@ -310,8 +341,9 @@ class AvtoJ:
                                self.open_file_themes(disc)[k:]):
             self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
 
-    def uploading_topics(self, id_group, subject_id, lesson, theme, date_from='01.01.2023', prac=''):
+    def uploading_topics(self, id_group, subject_id, lesson, theme, date_from='', prac=''):
         """Ввод темы в журнал"""
+        date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         data = {
             'lesson_subject': theme,
