@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 import ListOfDisciplines
 from importlib import reload
-
+import os
 
 
 class AvtoJ:
@@ -28,11 +28,11 @@ class AvtoJ:
             'https://ssuz.vip.edu35.ru/actions/lesson_work/objectrowsaction',
             # Выставление оценок
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/save_lesson_score',
+            # Запись темы урока
+            'https://ssuz.vip.edu35.ru/actions/register/lesson_register/lesson_register_save'
         ]
         self.load = ''
         self.cookie = ''
-
-
 
     def head(self):
         '''Создание заголовка'''
@@ -47,14 +47,10 @@ class AvtoJ:
         }
         return head_
 
-
-
     def set_cookie(self, cookie):
         '''Установка куки(Для тестов, а то банит XD)'''
         self.session.get('https://ssuz.vip.edu35.ru', cookies={'Cookie': cookie})
         self.cookie = cookie
-
-
 
     def login(self, login, password):
         '''Авторизация'''
@@ -67,8 +63,6 @@ class AvtoJ:
             return True
         except KeyError:
             return False
-
-
 
     def group_rows(self, date_from='01.01.2023'):
         '''Получение групп'''
@@ -85,8 +79,6 @@ class AvtoJ:
         }
         response = self.session.post(self.url[0], headers=self.head(), data=data).json()
         return response
-
-
 
     def disc_rows(self, id_group, date_from='01.01.2023'):
         '''Получение предметов группы'''
@@ -109,9 +101,8 @@ class AvtoJ:
         response = self.session.post(self.url[1], headers=self.head(), data=data).json()
         return response
 
-
-
-    def student_rows(self, id_group, subject_id, date_from='01.01.2023', date_whis=datetime.today().strftime('%d.%m.%Y'), prac=''):
+    def student_rows(self, id_group, subject_id, date_from='01.01.2023',
+                     date_whis=datetime.today().strftime('%d.%m.%Y'), prac=''):
         '''Получение студентов группы'''
         nums = re.findall(r'\d+', subject_id)
         data = {
@@ -134,14 +125,10 @@ class AvtoJ:
         response = self.session.post(self.url[2], headers=self.head(), data=data).json()
         return response
 
-
-
     def creat_str(self, name, id_group, subject_id, student_id):
         '''Создание списка практических и теоретических журналов'''
         s = f'"name": "{name}", "id_group": "{id_group}", "subject_id": ' + f"'{subject_id}'" + f', "student_id": "{student_id}"'
         return '\t{' + s + '},\n'
-
-
 
     def create_disc_list(self):
         '''Создание списков для работы'''
@@ -164,8 +151,6 @@ class AvtoJ:
                                            student['rows'][0]['student_id'])
         return [prac + ']\n', theo + ']']
 
-
-
     def save_file_disc(self):
         '''Запись в файл'''
         with open('ListOfDisciplines.py', 'wb') as f:
@@ -174,13 +159,11 @@ class AvtoJ:
             f.write(list_disc[1].encode('utf-8'))
         reload(ListOfDisciplines)
 
-
-
-    def id_lesson_row(self, id_group, subject_id, prac=''):
+    def id_lesson_row(self, id_group, subject_id, date_from='01.01.2023',
+                      date_whis=datetime.today().strftime('%d.%m.%Y'), prac=''):
         '''Вывод всех занятий в журнале'''
-        return tuple(x['id'] for x in self.student_rows(id_group, subject_id, prac=prac)['rows'][0]['lessons'])
-
-
+        return tuple(x['id'] for x in self.student_rows(id_group, subject_id,
+                                                        date_from, date_whis, prac=prac)['rows'][0]['lessons'])
 
     def close_open_lesson(self, id_group, subject_id, student_id, date_from='01.01.2023', prac='', open=False):
         '''Закрытие/открытие занятий'''
@@ -207,12 +190,11 @@ class AvtoJ:
             }
             self.session.post(self.url[url], headers=self.head(), data=data)
 
-
     def setting_turnout(self, id_group, subject_id, student_id, lesson, x, date_from='01.01.2023', prac=''):
         '''Выставление явки в журнал'''
         nums = re.findall(r'\d+', subject_id)
         data = {
-            'data': '{'+f'"lesson_id":{lesson},"attendance":"{x}","student_id":{student_id}'+'}',
+            'data': '{' + f'"lesson_id":{lesson},"attendance":"{x}","student_id":{student_id}' + '}',
             'practical': prac,
             'unit_id': '22',
             'period_id': '30',
@@ -229,7 +211,6 @@ class AvtoJ:
             'view_lessons': 'false',
         }
         self.session.post(self.url[5], headers=self.head(), data=data)
-
 
     def create_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
         '''Создание поля для оценок'''
@@ -256,7 +237,6 @@ class AvtoJ:
         }
         self.session.post(self.url[6], headers=self.head(), data=data)
 
-
     def show_score_pole(self, id_group, subject_id, lesson, date_from='01.01.2023', prac=''):
         '''Получение id поля для оценок'''
         nums = re.findall(r'\d+', subject_id)
@@ -282,30 +262,9 @@ class AvtoJ:
         }
         return self.session.post(self.url[7], headers=self.head(), data=data).json()
 
-
     def expose_score(self, id_group, subject_id, lesson, wokr_id, score, student_id, date_from='01.01.2023', prac=''):
         '''Выставление оценок'''
         nums = re.findall(r'\d+', subject_id)
-        data = {
-            'data': '{'+f'"lesson_id": {lesson}, "attendance": "", "work_id": "{wokr_id}", "score_type_id": "36", "score": "{score}", "student_id": {student_id}'+'}',
-            'practical': prac,
-            'unit_id': '22',
-            'period_id': '30',
-            'date_from': date_from,
-            'date_to': datetime.today().strftime('%d.%m.%Y'),
-            'slave_mode': '1',
-            'month': '',
-            'group_id': id_group,
-            'subject': '0',
-            'subject_gen_pr_id': '0',
-            'exam_subject_id': '0',
-            'subject_sub_group_obj': subject_id,
-            'subject_id': nums[0],
-            'view_lessons': 'false',
-        }
-        self.session.post(self.url[8], headers=self.head(), data=data)
-
-    def uploading_topics(self):
         data = {
             'data': '{' + f'"lesson_id": {lesson}, "attendance": "", "work_id": "{wokr_id}", "score_type_id": "36", "score": "{score}", "student_id": {student_id}' + '}',
             'practical': prac,
@@ -324,3 +283,61 @@ class AvtoJ:
             'view_lessons': 'false',
         }
         self.session.post(self.url[8], headers=self.head(), data=data)
+
+    """
+    Задачи:
+    1. Ввод тем в журнал +
+    2. Понимание сколько было часов в 1 семестре(Считывание часов у группы с 1.09 - 31.12)
+    3. Понимание из какого файла брать темы(id_group)
+    """
+
+    def open_file_themes(self, disc):
+        themes = []
+        for file in os.listdir(os.getcwd()+'/Themes'):
+            if disc['id_group'] in file and disc['name'][disc['name'].find('_')+1:disc['name'].find(' ')] in file:
+                with open('Themes/' + file, 'r') as f:
+                    for line in f:
+                        themes += [line[:line.rfind(' ')]] * int(line[line.rfind(' ')+1:-1])
+        return themes
+
+
+    def save_themes(self, disc, prac=''):
+        k = len(self.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022', date_whis='31.12.2022',
+                                   prac=prac))
+        for less, theme in zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),
+                               self.open_file_themes(disc)[k:]):
+            print(theme)
+            #self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
+            pass
+
+
+    def uploading_topics(self, id_group, subject_id, lesson, theme, date_from='01.01.2023', prac=''):
+        """Ввод темы в журнал"""
+        nums = re.findall(r'\d+', subject_id)
+        data = {
+            'lesson_subject': theme,
+            'lesson_id': lesson,
+            'practical': prac,
+            'unit_id': '22',
+            'period_id': '30',
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'slave_mode': '1',
+            'month': '',
+            'group_id': id_group,
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_sub_group_obj': subject_id,
+            'subject_id': nums[0],
+            'view_lessons': 'false',
+        }
+        self.session.post(self.url[9], headers=self.head(), data=data)
+
+
+
+if __name__ == '__main__':
+    s = AvtoJ()
+    s.set_cookie('ssuz_sessionid=ks6syjvczfftyqind8v59oej8sd33v7u')
+    s.save_themes({"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/1)", "id_group": "4138",
+                        "subject_id": '{"subject_id": 2484, "sub_group_id": 13529}', "student_id": "61796"}, prac='1')

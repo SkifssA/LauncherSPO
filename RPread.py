@@ -1,6 +1,4 @@
 '''
-Выбор групп у которых рп одинаковые
-Сохранение всего(?)
 
 '''
 
@@ -9,16 +7,18 @@ from customtkinter import *
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import showerror
+import tkinter.filedialog as fd
 
 
 class Create_RP(CTkFrame):
     """Класс формы для добавления тем"""
 
-    def __init__(self, master, disc, prac=''):
+    def __init__(self, master, disc, prac):
         super().__init__(master)
 
         self.master = master
-        self.id_group = set(x['id_group'] for x in disc)
+        self.id_group = sorted(set(x['id_group'] for x in disc))
+        self.name_p = disc[-1]['name'][disc[-1]['name'].find('_')+1:]
         self.prac = prac
 
         self.tabl = ttk.Treeview(self)
@@ -41,11 +41,18 @@ class Create_RP(CTkFrame):
 
         self.count = 0
 
-        self.button_save = CTkButton(self, text='Добавить тему', command=self.save_in_table)
-        self.button_save.grid()
+        CTkButton(self, text='Добавить тему', command=self.save_in_table).grid()
+        CTkButton(self, text='Изменить тему', command=self.modification_in_tabl).grid()
+        CTkButton(self, text='Удалить тему', command=self.delete_in_tabl).grid()
+        CTkButton(self, text='Сохранить файл', command=self.save_file).grid()
+        CTkButton(self, text='Открыть файл', command=self.choose_file).grid()
+        CTkButton(self, text='Назад', command=self.back).grid()
 
-        self.button_save = CTkButton(self, text='Сохранить файл', command=self.save_file)
-        self.button_save.grid()
+
+    def back(self):
+        """Возврат на начальную форму"""
+        self.master.frame.grid()
+        self.destroy()
 
     def save_in_table(self):
         """Добавление темы в таблицу"""
@@ -58,14 +65,36 @@ class Create_RP(CTkFrame):
         else:
             showerror(title="Ошибка", message="Неверные значения")
 
+    def delete_in_tabl(self):
+        """Удаление выделенного элемента"""
+        for selected_item in self.tabl.selection():
+            self.tabl.delete(selected_item)
+        self.entry[0].delete(0, END)
+        self.entry[1].delete(0, END)
+
+    def modification_in_tabl(self):
+        """Изменение выделенного элемента"""
+        if self.entry[0].get() != '' and self.entry[1].get() != '' and self.entry[1].get().isdigit():
+            if len(self.tabl.selection()) == 1:
+                self.tabl.item(self.tabl.selection(), values =(self.entry[0].get().replace('\n', ' '), self.entry[1].get()))
+                self.entry[0].delete(0, END)
+                self.entry[1].delete(0, END)
+            else:
+                showerror(title="Ошибка", message="Нужно выбрать одно значение")
+        else:
+            showerror(title="Ошибка", message="Неверные значения")
+
     def save_file(self):
         """Сохранение в файл"""
-        for iid in self.tabl.get_children():
-            print(self.tabl.item(iid)['values'])
+        with open('Themes/' + self.name_p + self.prac + ' ' + '_'.join(self.id_group) + '.txt', 'w') as f:
+            for iid in self.tabl.get_children():
+                print(self.tabl.item(iid)['values'][0], self.tabl.item(iid)['values'][1], file=f)
 
     def item_selected(self, event):
         """Вывод выбраной строки в entry"""
         for selected_item in self.tabl.selection():
+            self.entry[0].delete(0, END)
+            self.entry[1].delete(0, END)
             self.entry[0].insert(0, self.tabl.item(selected_item)['values'][0])
             self.entry[1].insert(0, self.tabl.item(selected_item)['values'][1])
 
@@ -75,15 +104,27 @@ class Create_RP(CTkFrame):
         self.entry[0].delete(0, END)
         self.entry[1].delete(0, END)
 
+    def choose_file(self):
+        """Открытия окна с выбором файла"""
+        filetypes = (("Текстовый файл", "*.txt"),)
+        filename = fd.askopenfilename(title="Открыть файл", initialdir=os.getcwd()+'/Themes',
+                                      filetypes=filetypes)
+        if filename:
+            for iid in self.tabl.get_children():
+                self.tabl.delete(iid)
+            self.count = 0
+            with open(filename) as f:
+                for line in f:
+                    self.tabl.insert(parent='', index='end', iid=self.count, text='',
+                                     values=(line[:line.rfind(' ')], line[line.rfind(' ')+1:-1]))
+                    self.count += 1
+
 
 if __name__ == '__main__':
     root = CTk()
-    we = [{"name": "ИСП-221а_Основы проектирования баз данных (ИСП-221а/2)", "id_group": "4649",
-           "subject_id": '{"subject_id": 5548, "sub_group_id": 14717}', "student_id": "70029"},
-          {"name": "ИСП-221а_Основы проектирования баз данных (ИСП-221а/1)", "id_group": "4649",
-           "subject_id": '{"subject_id": 5548, "sub_group_id": 14716}', "student_id": "70002"},
-          {"name": "ИСП-221ав_Основы проектирования баз данных", "id_group": "4659",
-           "subject_id": '{"subject_id": 5548}', "student_id": "70027"}]
-    s = Create_RP(root, we)
+    we = [{"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/1)", "id_group": "4138", "subject_id": '{"subject_id": 2484, "sub_group_id": 13529}', "student_id": "61796"},
+	{"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/2)", "id_group": "4138", "subject_id": '{"subject_id": 2484, "sub_group_id": 13530}', "student_id": "61810"},
+	{"name": "ОИБ-320в_Основы алгоритмизации и программирования", "id_group": "4139", "subject_id": '{"subject_id": 2484}', "student_id": "61929"}]
+    s = Create_RP(root, we, 't')
     s.grid()
     root.mainloop()
