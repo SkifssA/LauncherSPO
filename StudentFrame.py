@@ -57,7 +57,7 @@ class StudentFrame(CTkScrollableFrame):
         self.turnout()
 
     def move(self, e):
-        '''Возможность быстро перемещаться по полям оценок вниз'''
+        '''Возможность быстро перемещаться по полям оценок вниз и в верх'''
         nums = re.findall(r'\d+', str(self.root.focus_get()))
         n = 1 if len(nums) == 1 else int(nums[1])
         if e.keysym == 'Down':
