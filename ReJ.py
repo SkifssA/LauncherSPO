@@ -82,12 +82,7 @@ class AvtoJ:
 
     def group_rows(self, date_from=''):
         '''Получение групп'''
-        if date_from == '':
-            mon = int(datetime.date().strftime('%m'))
-            if 13 > mon > 8:
-                date_from = '01.09.' + datetime.date().strftime('%Y')
-            else:
-                date_from = '01.01.' + datetime.date().strftime('%Y')
+        date_from = self.date_patch(date_from)
         data = {
             'slave_mode': '1',
             'empty_item': '1',
@@ -104,12 +99,7 @@ class AvtoJ:
 
     def disc_rows(self, id_group, date_from=''):
         '''Получение предметов группы'''
-        if date_from == '':
-            mon = int(datetime.date().strftime('%m'))
-            if 13 > mon > 8:
-                date_from = '01.09.' + datetime.date().strftime('%Y')
-            else:
-                date_from = '01.01.' + datetime.date().strftime('%Y')
+        date_from = self.date_patch(date_from)
         data = {
             'slave_mode': '1',
             'empty_item': '1',
