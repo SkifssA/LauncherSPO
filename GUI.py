@@ -223,6 +223,7 @@ class APP(CTk):
             showerror(title="Ошибка", message="Надо выбрать только теорию или только практику")
 
     def save_themes(self):
+        """Загрузка тем в журнал"""
         for id in self.tab.frame_tr.get_check_group():
             self.session.save_themes(ListOfDisciplines.Theory[id], prac='')
         for id in self.tab.frame_pr.get_check_group():
