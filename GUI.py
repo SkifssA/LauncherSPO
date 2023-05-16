@@ -7,7 +7,10 @@ from ReJ import AvtoJ
 from importlib import reload
 from Calendar import Calendar
 from RPread import CreateRP
-
+"""
+Переписать чтоб выделалось автоматом в группа и удрать её из списка
+К этому добавить работо способность остального приложения
+"""
 
 class GroupFrame(CTkScrollableFrame):
     '''Фрейм списка групп'''
