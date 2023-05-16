@@ -48,23 +48,21 @@ class GroupFrame(CTkScrollableFrame):
 
     def get_check_group(self) -> list[int]:
         '''Возвращение выделенных групп'''
-        chek = []
         for ch in list(i for i, x in enumerate(self.check_var[0]) if x.get() == 'on'):
             if not self.prac:
-                chek.append(ch)
-                chek.append(ch + 1)
+                yield ch
+                yield ch + 1
             elif ListOfDisciplines.Practice[ch]['name'].find('/2') != -1:
                 name = ListOfDisciplines.Practice[ch]['name']
                 if name[:name.find('_')] + 'в' == ListOfDisciplines.Practice[ch + 2]['name'][
                                                   :ListOfDisciplines.Practice[ch + 2]['name'].find('_')]:
-                    chek.append(ch)
-                    chek.append(ch + 2)
+                    yield ch
+                    yield ch + 2
                 else:
-                    chek.append(ch)
-                    chek.append(ch + 1)
+                    yield ch
+                    yield ch + 1
             else:
-                chek.append(ch)
-        return chek
+                yield ch
 
 
 
@@ -202,8 +200,8 @@ class APP(CTk):
 
     def create_student_frame(self):
         """Функция создания формы для явки"""
-        tr = self.tab.frame_tr.get_check_group()
-        pr = self.tab.frame_pr.get_check_group()
+        tr = list(self.tab.frame_tr.get_check_group())
+        pr = list(self.tab.frame_pr.get_check_group())
         if len(tr) == 2:
             self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Theory[tr[0]],
                                          ListOfDisciplines.Theory[tr[1]]])
