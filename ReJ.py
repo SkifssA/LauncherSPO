@@ -183,8 +183,11 @@ class AvtoJ:
                       date_whis=datetime.today().strftime('%d.%m.%Y'), prac=''):
         '''Вывод всех занятий в журнале'''
         date_from = self.date_patch(date_from)
-        return tuple(x['id'] for x in self.student_rows(id_group, subject_id,
+        try:
+            return tuple(x['id'] for x in self.student_rows(id_group, subject_id,
                                                         date_from, date_whis, prac=prac)['rows'][0]['lessons'])
+        except IndexError:
+            return []
 
     def close_open_lesson(self, id_group, subject_id, student_id, date_from='', prac='', open=False):
         '''Закрытие/открытие занятий'''
@@ -315,10 +318,13 @@ class AvtoJ:
     2. Понимание сколько было часов в 1 семестре(Считывание часов у группы с 1.09 - 31.12) +-
     """
 
-    def open_file_themes(self, disc):
+    def open_file_themes(self, disc, prac):
         themes = []
+        prac = 't' if prac == '' else 'p'
         for file in os.listdir(os.getcwd() + '/Themes'):
-            if disc['id_group'] in file and disc['name'][disc['name'].find('_') + 1:disc['name'].find(' ')] in file:
+            if disc['id_group'] in file and disc['name'][disc['name'].find('_') + 1:disc['name'].find(' ')] in file\
+                    and prac in file[:-4]:
+                print(file)
                 with open('Themes/' + file, 'r') as f:
                     for line in f:
                         themes += [line[:line.rfind(' ')]] * int(line[line.rfind(' ') + 1:-1])
@@ -328,7 +334,7 @@ class AvtoJ:
         k = len(self.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022', date_whis='31.12.2022',
                                    prac=prac))
         for less, theme in zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),
-                               self.open_file_themes(disc)[k:]):
+                               self.open_file_themes(disc, prac)[k:]):
             self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
 
     def uploading_topics(self, id_group, subject_id, lesson, theme, date_from='', prac=''):

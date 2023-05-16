@@ -39,7 +39,7 @@ class GroupFrame(CTkScrollableFrame):
             check.set(on_off)
 
     def get_check_group(self):
-        '''Возвращение вcех выделенных групп'''
+        '''Возвращение выделенных групп'''
         return tuple(i for i, x in enumerate(self.check_var[0]) if x.get() == 'on')
 
 
