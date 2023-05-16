@@ -7,18 +7,21 @@ from ReJ import AvtoJ
 from importlib import reload
 from Calendar import Calendar
 from RPread import CreateRP
+
 """
 Переписать чтоб выделалось автоматом в группа и удрать её из списка
 К этому добавить работо способность остального приложения
 """
 
+
 class GroupFrame(CTkScrollableFrame):
     '''Фрейм списка групп'''
 
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, prac, **kwargs):
         super().__init__(master, **kwargs)
         self.label = None
         self.check_var = [[], []]
+        self.prac = prac
 
     def all_del(self):
         '''Удаление всех групп с таблицы'''
@@ -32,18 +35,38 @@ class GroupFrame(CTkScrollableFrame):
         for group in group_list:
             if group['name'].find(filter) != -1:
                 self.check_var[0].append(tkinter.StringVar())
-                self.check_var[1].append(CTkCheckBox(self, text=group['name'],
-                                                     variable=self.check_var[0][-1], onvalue="on", offvalue="off"))
-                self.check_var[1][-1].pack(padx=20, pady=10, anchor='w')
+                v = group['name'].find('_')
+                if group['name'][v - 1:v] != 'в':
+                    self.check_var[1].append(CTkCheckBox(self, text=group['name'],
+                                                         variable=self.check_var[0][-1], onvalue="on", offvalue="off"))
+                    self.check_var[1][-1].pack(padx=20, pady=10, anchor='w')
 
     def all_check(self, on_off):
         '''Метот для выделения всех групп'''
         for check in self.check_var[0]:
             check.set(on_off)
 
-    def get_check_group(self):
+    def get_check_group(self) -> list[int]:
         '''Возвращение выделенных групп'''
-        return tuple(i for i, x in enumerate(self.check_var[0]) if x.get() == 'on')
+        chek = []
+        for ch in list(i for i, x in enumerate(self.check_var[0]) if x.get() == 'on'):
+            if not self.prac:
+                chek.append(ch)
+                chek.append(ch + 1)
+            elif ListOfDisciplines.Practice[ch]['name'].find('/2') != -1:
+                name = ListOfDisciplines.Practice[ch]['name']
+                if name[:name.find('_')] + 'в' == ListOfDisciplines.Practice[ch + 2]['name'][
+                                                  :ListOfDisciplines.Practice[ch + 2]['name'].find('_')]:
+                    chek.append(ch)
+                    chek.append(ch + 2)
+                else:
+                    chek.append(ch)
+                    chek.append(ch + 1)
+            else:
+                chek.append(ch)
+        return chek
+
+
 
 
 class TabView(CTkTabview):
@@ -58,8 +81,8 @@ class TabView(CTkTabview):
         self.add("Практика")
         self.add("Теория")
 
-        self.frame_pr = GroupFrame(self.tab('Практика'), width=self.width, height=self.height)
-        self.frame_tr = GroupFrame(self.tab('Теория'), width=self.width, height=self.height)
+        self.frame_pr = GroupFrame(self.tab('Практика'), True, width=self.width, height=self.height)
+        self.frame_tr = GroupFrame(self.tab('Теория'), False, width=self.width, height=self.height)
         self.recreate_frame('')
 
     def recreate_frame(self, filter):
@@ -181,23 +204,18 @@ class APP(CTk):
         """Функция создания формы для явки"""
         tr = self.tab.frame_tr.get_check_group()
         pr = self.tab.frame_pr.get_check_group()
-        if len(tr) + len(pr) == 1:
-            if len(tr) == 1:
-                self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Theory[tr[0]],
-                                             dics2=ListOfDisciplines.Theory[tr[0] + 1])
-            elif len(pr) == 1:
-                if ListOfDisciplines.Practice[pr[0]]['name'].find('/2') != -1:
-                    name = ListOfDisciplines.Practice[pr[0]]['name']
-                    if name[:name.find('_')] + 'в' == ListOfDisciplines.Practice[pr[0] + 1]['name'][
-                                                      :ListOfDisciplines.Practice[pr[0] + 1]['name'].find('_')]:
-                        self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]],
-                                                     dics2=ListOfDisciplines.Practice[pr[0] + 1], prac='1')
-                    elif name[:name.find('_')] + 'в' == ListOfDisciplines.Practice[pr[0] + 2]['name'][
-                                                        :ListOfDisciplines.Practice[pr[0] + 2]['name'].find('_')]:
-                        self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]],
-                                                     dics2=ListOfDisciplines.Practice[pr[0] + 2], prac='1')
-                else:
-                    self.studen_frame = Calendar(self, self.session, dics=ListOfDisciplines.Practice[pr[0]], prac='1')
+        if len(tr) == 2:
+            self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Theory[tr[0]],
+                                         ListOfDisciplines.Theory[tr[1]]])
+            self.frame.grid_forget()
+            self.studen_frame.grid()
+        elif len(pr) == 1:
+            self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Practice[pr[0]]], prac='1')
+            self.frame.grid_forget()
+            self.studen_frame.grid()
+        elif len(pr) == 2 and 0 < pr[1] - pr[0] < 3:
+            self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Practice[pr[0]],
+                                         ListOfDisciplines.Practice[pr[1]]], prac='1')
             self.frame.grid_forget()
             self.studen_frame.grid()
         else:
@@ -207,19 +225,12 @@ class APP(CTk):
         """Открытие окна с рп"""
         tr = self.tab.frame_tr.get_check_group()
         pr = self.tab.frame_pr.get_check_group()
-        disc = []
         if len(tr) == 0:
-            for id in pr:
-                disc.append(ListOfDisciplines.Practice[id])
-            prac = 'p'
-            self.rp = CreateRP(self, disc=disc, prac=prac)
+            self.rp = CreateRP(self, disc=[ListOfDisciplines.Practice[id] for id in pr], prac='p')
             self.frame.grid_forget()
             self.rp.grid()
         elif len(pr) == 0:
-            for id in tr:
-                disc.append(ListOfDisciplines.Theory[id])
-            prac = 't'
-            self.rp = CreateRP(self, disc=disc, prac=prac)
+            self.rp = CreateRP(self, disc=[ListOfDisciplines.Theory[id] for id in tr], prac='t')
             self.frame.grid_forget()
             self.rp.grid()
         else:
@@ -273,3 +284,4 @@ class APP(CTk):
 
 if __name__ == '__main__':
     APP()
+

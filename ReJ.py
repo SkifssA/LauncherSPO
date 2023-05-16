@@ -145,9 +145,9 @@ class AvtoJ:
         response = self.session.post(self.url[2], headers=self.head(), data=data).json()
         return response
 
-    def creat_str(self, name, id_group, subject_id, student_id):
+    def creat_str(self, name, id_group, subject_id):
         '''Создание списка практических и теоретических журналов'''
-        s = f'"name": "{name}", "id_group": "{id_group}", "subject_id": ' + f"'{subject_id}'" + f', "student_id": "{student_id}"'
+        s = f'"name": "{name}", "id_group": "{id_group}", "subject_id": ' + f"'{subject_id}'"
         return '\t{' + s + '},\n'
 
     def create_disc_list(self):
@@ -159,16 +159,12 @@ class AvtoJ:
             for disc in self.disc_rows(group['id'])['rows']:
                 student = self.student_rows(group['id'], disc['id'])
                 if student['total'] <= 5:
-                    theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
-                                           student['rows'][0]['student_id'])
-                    prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
-                                           student['rows'][0]['student_id'])
+                    theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'])
+                    prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'])
                 elif student['total'] <= 15:
-                    prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
-                                           student['rows'][0]['student_id'])
+                    prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'])
                 else:
-                    theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
-                                           student['rows'][0]['student_id'])
+                    theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'])
         return [prac + ']\n', theo + ']']
 
     def save_file_disc(self):
