@@ -7,11 +7,10 @@ from ReJ import AvtoJ
 from importlib import reload
 from Calendar import Calendar
 from RPread import CreateRP
+from ProgressBar import ProgressBar
 
-"""
-Переписать чтоб выделалось автоматом в группа и удрать её из списка
-К этому добавить работо способность остального приложения
-"""
+
+
 
 
 class GroupFrame(CTkScrollableFrame):
@@ -157,7 +156,7 @@ class LoginForm(CTkToplevel):
                     os.mkdir("Themes")
                 except FileExistsError:
                     pass
-                self.sessoin.save_file_disc()
+                ProgressBar(self, self.sessoin.save_file_disc)
             reload(ListOfDisciplines)
             self.destroy()
         else:
@@ -243,7 +242,7 @@ class APP(CTk):
 
     def upload_tabl(self):
         """Обновление журнала"""
-        self.session.save_file_disc()
+        ProgressBar(self, self.session.save_file_disc)
         reload(ListOfDisciplines)
         self.tab.destroy()
         self.tab = TabView(self.frame)

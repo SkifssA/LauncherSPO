@@ -4,11 +4,9 @@ from datetime import datetime
 import ListOfDisciplines
 from importlib import reload
 import os
+from queue import Queue
 
-"""
-Придумать разгроничение по семестрам!!!!!
-Соеденить выставление тем с основным приложением
-"""
+
 
 
 class AvtoJ:
@@ -150,7 +148,7 @@ class AvtoJ:
         s = f'"name": "{name}", "id_group": "{id_group}", "subject_id": ' + f"'{subject_id}'"
         return '\t{' + s + '},\n'
 
-    def create_disc_list(self):
+    def create_disc_list(self, que):
         '''Создание списков для работы'''
         prac = 'Practice = [\n'
         theo = 'Theory = [\n'
@@ -158,6 +156,7 @@ class AvtoJ:
             name = group['name'][:group['name'].index(' ')]
             for disc in self.disc_rows(group['id'])['rows']:
                 student = self.student_rows(group['id'], disc['id'])
+                que.put(name)
                 if student['total'] <= 5:
                     theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'])
                     prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'])
@@ -167,10 +166,10 @@ class AvtoJ:
                     theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'])
         return [prac + ']\n', theo + ']']
 
-    def save_file_disc(self):
+    def save_file_disc(self, que):
         '''Запись в файл'''
         with open('ListOfDisciplines.py', 'wb') as f:
-            list_disc = self.create_disc_list()
+            list_disc = self.create_disc_list(que)
             f.write(list_disc[0].encode('utf-8'))
             f.write(list_disc[1].encode('utf-8'))
         reload(ListOfDisciplines)

@@ -1,5 +1,7 @@
 from customtkinter import *
 import re
+from queue import Queue
+from ProgressBar import ProgressBar
 
 
 class StudentFrame(CTkScrollableFrame):
@@ -30,7 +32,7 @@ class StudentFrame(CTkScrollableFrame):
             self.student_lesson(i, j)
         if self.disc2 is not None:
             self.add_v_group(self.disc2, date_from, date_whis)
-        self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: self.all_save())
+        self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: ProgressBar(master, self.all_save))
         self.button_save.grid(row=2, column=0, pady=10, padx=10)
         self.button_create = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
         self.button_create.grid(row=2, column=1, pady=10, padx=10)
@@ -51,9 +53,11 @@ class StudentFrame(CTkScrollableFrame):
         self.master1.studen_frame.grid()
         self.root.destroy()
 
-    def all_save(self):
+    def all_save(self, que):
         '''Сохранение всей формы'''
+        que.put('Оценки')
         self.save_score()
+        que.put('Неявка')
         self.turnout()
 
     def move(self, e):
