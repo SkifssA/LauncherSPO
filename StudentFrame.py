@@ -1,6 +1,5 @@
 from customtkinter import *
 import re
-from queue import Queue
 from ProgressBar import ProgressBar
 
 
@@ -8,12 +7,11 @@ class StudentFrame(CTkScrollableFrame):
     '''Форма для проверки явки'''
 
     def __init__(self, master, session, dics=None, dics2=None, prac='', date_from=None, date_whis=None):
-
         self.date_from = date_from
         self.date_whis = date_whis
         self.root = CTkFrame(master)
         self.master1 = master
-        super().__init__(self.root, width=700, height=500)
+        super().__init__(self.root, width=750, height=500)
         self.grid(row=0, column=0, pady=10, padx=10, columnspan=5)
         self.session = session
         self.disc = dics
@@ -28,10 +26,13 @@ class StudentFrame(CTkScrollableFrame):
         self.label = []
         self.entry = []
         self.save = []
+        self.year_score = []
         for j, i in enumerate(self.rows):
             self.student_lesson(i, j)
         if self.disc2 is not None:
+            print('=' * 20)
             self.add_v_group(self.disc2, date_from, date_whis)
+        self.upload_year_score()
         self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: ProgressBar(master, self.all_save))
         self.button_save.grid(row=2, column=0, pady=10, padx=10)
         self.button_create = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
@@ -59,9 +60,11 @@ class StudentFrame(CTkScrollableFrame):
         self.save_score()
         que.put('Неявка')
         self.turnout()
+        que.put('Итоговые оценки')
+        self.upload_year_score()
 
     def move(self, e):
-        '''Возможность быстро перемещаться по полям оценок вниз и в верх'''
+        '''Возможность быстро перемещаться по полям оценок вниз и вверх'''
         nums = re.findall(r'\d+', str(self.root.focus_get()))
         n = 1 if len(nums) == 1 else int(nums[1])
         if e.keysym == 'Down':
@@ -70,6 +73,7 @@ class StudentFrame(CTkScrollableFrame):
         elif e.keysym == 'Up':
             if n > 0:
                 self.entry[n - 2].focus_set()
+        print(self.root.focus_get())
 
     def save_score(self):
         '''Сохранение оценок в журнал'''
@@ -126,6 +130,19 @@ class StudentFrame(CTkScrollableFrame):
         for j, i in enumerate(self.rows2):
             self.student_lesson(i, j + len(self.rows))
 
+    def upload_year_score(self):
+        """Обновление средней оценки"""
+        self.rows = self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
+                                              date_from=self.date_from, date_whis=self.date_whis)['rows']
+        for i, student in enumerate(self.rows):
+            self.year_score[i].set(f'    {student["aver_period"]}')
+        if self.rows2 is not None:
+            self.rows2 = self.session.student_rows(self.disc2['id_group'], self.disc2['subject_id'], prac=self.prac,
+                                                   date_from=self.date_from, date_whis=self.date_whis)['rows']
+            n = len(self.rows)
+            for i, student in enumerate(self.rows2):
+                self.year_score[n + i].set(f'    {student["aver_period"]}')
+
     def student_lesson(self, student, j):
         '''Метод создания явки на 1 студента'''
         self.label.append(CTkLabel(self, text=student['student_name']))
@@ -136,7 +153,11 @@ class StudentFrame(CTkScrollableFrame):
                 CTkOptionMenu(self, values=self.value_combobox, width=50, command=lambda x: self.p(j, x)))
             self.combo[-1][-1].grid(row=j, column=i + 1, padx=5, pady=5)
             self.combo[-1][-1].set(n['attendance']['value'])
-            self.save.append(False)
+
+        self.year_score.append(StringVar())
+        CTkLabel(self, textvariable=self.year_score[-1]).grid(row=j, column=len(student['lessons']) + 2, padx=5, pady=5)
+
+        self.save.append(False)
 
     def p(self, j, x):
         '''Метод проставления значений студенту до конца занятий'''
