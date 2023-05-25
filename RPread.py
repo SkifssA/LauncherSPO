@@ -82,6 +82,7 @@ class CreateRP(CTkFrame):
     def save_file(self):
         """Сохранение в файл"""
         with open('Themes/' + self.name_p + self.prac + ' ' + '_'.join(self.id_group) + '.txt', 'w') as f:
+            print(sum([int(self.tabl.item(iid)['values'][1]) for iid in self.tabl.get_children()]), file=f)
             for iid in self.tabl.get_children():
                 print(self.tabl.item(iid)['values'][0], self.tabl.item(iid)['values'][1], file=f)
 
@@ -109,6 +110,7 @@ class CreateRP(CTkFrame):
                 self.tabl.delete(iid)
             self.count = 0
             with open(filename) as f:
+                f.readline()
                 for line in f:
                     self.tabl.insert(parent='', index='end', iid=self.count, text='',
                                      values=(line[:line.rfind(' ')], line[line.rfind(' ') + 1:-1]))

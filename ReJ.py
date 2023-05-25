@@ -4,7 +4,6 @@ from datetime import datetime
 import ListOfDisciplines
 from importlib import reload
 import os
-from queue import Queue
 
 
 
@@ -321,6 +320,7 @@ class AvtoJ:
                     and prac in file[:-4]:
                 print(file)
                 with open('Themes/' + file, 'r') as f:
+                    f.readline()
                     for line in f:
                         themes += [line[:line.rfind(' ')]] * int(line[line.rfind(' ') + 1:-1])
         return themes
@@ -355,3 +355,9 @@ class AvtoJ:
             'view_lessons': 'false',
         }
         self.session.post(self.url[9], headers=self.head(), data=data)
+
+
+if __name__ == '__main__':
+    s = AvtoJ()
+    s.set_cookie('ssuz_sessionid=2pigzrfnegfn49vsl1t59ejxvcf91bya')
+    print(s.open_file_themes({"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/1)", "id_group": "4138", "subject_id": '{"subject_id": 2484, "sub_group_id": 13529}'}, '1'))

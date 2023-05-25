@@ -1,6 +1,11 @@
 from customtkinter import *
 import re
 from ProgressBar import ProgressBar
+from datetime import datetime
+"""
+Скрол оценок
+
+"""
 
 
 class StudentFrame(CTkScrollableFrame):
@@ -12,7 +17,7 @@ class StudentFrame(CTkScrollableFrame):
         self.root = CTkFrame(master)
         self.master1 = master
         super().__init__(self.root, width=750, height=500)
-        self.grid(row=0, column=0, pady=10, padx=10, columnspan=5)
+        self.grid(row=1, column=0, pady=10, padx=10, columnspan=5)
         self.session = session
         self.disc = dics
         self.prac = prac
@@ -33,15 +38,43 @@ class StudentFrame(CTkScrollableFrame):
             print('=' * 20)
             self.add_v_group(self.disc2, date_from, date_whis)
         self.upload_year_score()
+        CTkLabel(self.root, text=self.disc['name'], text_color='white') \
+            .grid(row=0, column=0, pady=10, padx=10, columnspan=3)
+        CTkLabel(self.root, text_color='white' if (cl := self.clock_back()) > 10 else 'red', text=f'Осталось часов {cl}') \
+            .grid(row=0, column=3, pady=10, padx=10, columnspan=2)
         self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: ProgressBar(master, self.all_save))
-        self.button_save.grid(row=2, column=0, pady=10, padx=10)
+        self.button_save.grid(row=3, column=0, pady=10, padx=10)
         self.button_create = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
-        self.button_create.grid(row=2, column=1, pady=10, padx=10)
+        self.button_create.grid(row=3, column=1, pady=10, padx=10)
         self.button_begin = CTkButton(self.root, text='Вернуться в начало', command=self.begin)
-        self.button_begin.grid(row=2, column=2, pady=10, padx=10)
+        self.button_begin.grid(row=3, column=2, pady=10, padx=10)
         self.button_back = CTkButton(self.root, text='Назад', command=self.back)
-        self.button_back.grid(row=2, column=3, pady=10, padx=10)
+        self.button_back.grid(row=3, column=3, pady=10, padx=10)
         self.add_score_ui()
+
+    def clock_back(self):
+        cl = -1
+
+        mon = int(datetime.today().strftime('%m'))
+        if 13 > mon > 8:
+            date_from = datetime.today().strftime('%Y')
+        else:
+            date_from = int(datetime.today().strftime('%Y')) - 1
+
+        prac = 't' if self.prac == '' else 'p'
+        for file in os.listdir(os.getcwd() + '/Themes'):
+            if self.disc['id_group'] in file and self.disc['name'][
+                                                 self.disc['name'].find('_') + 1:self.disc['name'].find(' ')] in file \
+                    and prac in file[:-4]:
+                print(file)
+                with open('Themes/' + file, 'r') as f:
+                    cl = int(f.readline())
+                print(len(self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
+                                             date_from=f'01.09.{date_from}',
+                                             date_whis=self.date_whis)['rows'][0]['lessons']), cl)
+        return cl - len(self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
+                                             date_from=f'01.09.{date_from}',
+                                             date_whis=self.date_whis)['rows'][0]['lessons'])
 
     def begin(self):
         """Возврат к начальной форме"""
