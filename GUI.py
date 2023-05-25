@@ -10,9 +10,6 @@ from RPread import CreateRP
 from ProgressBar import ProgressBar
 
 
-
-
-
 class GroupFrame(CTkScrollableFrame):
     '''Фрейм списка групп'''
 
@@ -62,8 +59,6 @@ class GroupFrame(CTkScrollableFrame):
                     yield ch + 1
             else:
                 yield ch
-
-
 
 
 class TabView(CTkTabview):
@@ -203,7 +198,7 @@ class APP(CTk):
         pr = list(self.tab.frame_pr.get_check_group())
         if len(tr) == 2:
             self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Theory[tr[0]],
-                                         ListOfDisciplines.Theory[tr[1]]])
+                                                                   ListOfDisciplines.Theory[tr[1]]])
             self.frame.grid_forget()
             self.studen_frame.grid()
         elif len(pr) == 1:
@@ -212,7 +207,7 @@ class APP(CTk):
             self.studen_frame.grid()
         elif len(pr) == 2 and 0 < pr[1] - pr[0] < 3:
             self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Practice[pr[0]],
-                                         ListOfDisciplines.Practice[pr[1]]], prac='1')
+                                                                   ListOfDisciplines.Practice[pr[1]]], prac='1')
             self.frame.grid_forget()
             self.studen_frame.grid()
         else:
@@ -221,7 +216,7 @@ class APP(CTk):
     def open_win_rp(self):
         """Открытие окна с рп"""
         tr = list(self.tab.frame_tr.get_check_group())
-        tr = list(self.tab.frame_tr.get_check_group())
+        pr = list(self.tab.frame_pr.get_check_group())
         if len(tr) == 0:
             self.rp = CreateRP(self, disc=[ListOfDisciplines.Practice[id] for id in pr], prac='p')
             self.frame.grid_forget()
@@ -281,4 +276,3 @@ class APP(CTk):
 
 if __name__ == '__main__':
     APP()
-
