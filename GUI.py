@@ -194,8 +194,8 @@ class APP(CTk):
 
     def create_student_frame(self):
         """Функция создания формы для явки"""
-        tr = list(self.tab.frame_tr.get_check_group())
-        pr = list(self.tab.frame_pr.get_check_group())
+        tr = tuple(self.tab.frame_tr.get_check_group())
+        pr = tuple(self.tab.frame_pr.get_check_group())
         if len(tr) == 2:
             self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Theory[tr[0]],
                                                                    ListOfDisciplines.Theory[tr[1]]])
@@ -215,8 +215,8 @@ class APP(CTk):
 
     def open_win_rp(self):
         """Открытие окна с рп"""
-        tr = list(self.tab.frame_tr.get_check_group())
-        pr = list(self.tab.frame_pr.get_check_group())
+        tr = tuple(self.tab.frame_tr.get_check_group())
+        pr = tuple(self.tab.frame_pr.get_check_group())
         if len(tr) == 0:
             self.rp = CreateRP(self, disc=[ListOfDisciplines.Practice[id] for id in pr], prac='p')
             self.frame.grid_forget()
