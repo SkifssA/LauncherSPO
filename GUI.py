@@ -220,8 +220,8 @@ class APP(CTk):
 
     def open_win_rp(self):
         """Открытие окна с рп"""
-        tr = self.tab.frame_tr.get_check_group()
-        pr = self.tab.frame_pr.get_check_group()
+        tr = list(self.tab.frame_tr.get_check_group())
+        tr = list(self.tab.frame_tr.get_check_group())
         if len(tr) == 0:
             self.rp = CreateRP(self, disc=[ListOfDisciplines.Practice[id] for id in pr], prac='p')
             self.frame.grid_forget()
