@@ -35,7 +35,6 @@ class StudentFrame(CTkScrollableFrame):
         for j, i in enumerate(self.rows):
             self.student_lesson(i, j)
         if self.disc2 is not None:
-            print('=' * 20)
             self.add_v_group(self.disc2, date_from, date_whis)
         self.upload_year_score()
         CTkLabel(self.root, text=self.disc['name'], text_color='white') \
