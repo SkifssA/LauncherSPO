@@ -228,11 +228,13 @@ class APP(CTk):
         else:
             showerror(title="Ошибка", message="Надо выбрать только теорию или только практику")
 
-    def save_themes(self):
+    def save_themes(self ,que):
         """Загрузка тем в журнал"""
         for id in self.tab.frame_tr.get_check_group():
+            que.put(f"Теория {ListOfDisciplines.Theory[id]['name'][:ListOfDisciplines.Theory[id]['name'].find('_')]}")
             self.session.save_themes(ListOfDisciplines.Theory[id], prac='')
         for id in self.tab.frame_pr.get_check_group():
+            que.put(f"Практика {ListOfDisciplines.Practice[id]['name'][:ListOfDisciplines.Practice[id]['name'].find('_')]}")
             self.session.save_themes(ListOfDisciplines.Practice[id], prac='1')
 
     def upload_tabl(self):
@@ -269,7 +271,7 @@ class APP(CTk):
         button.grid(row=3, column=2, pady=10, padx=10)
         button = CTkButton(self.frame, text='Открыть окно для рп', command=lambda: self.open_win_rp())
         button.grid(row=4, column=2, pady=10, padx=10)
-        button = CTkButton(self.frame, text='Заполнить темы', command=lambda: self.save_themes())
+        button = CTkButton(self.frame, text='Заполнить темы', command=lambda: ProgressBar(self, self.save_themes))
         button.grid(row=4, column=1, pady=10, padx=10)
         self.frame.grid()
 

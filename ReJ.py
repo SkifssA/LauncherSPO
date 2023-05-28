@@ -31,7 +31,11 @@ class AvtoJ:
             # Выставление оценок
             'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/save_lesson_score',
             # Запись темы урока
-            'https://ssuz.vip.edu35.ru/actions/register/lesson_register/lesson_register_save'
+            'https://ssuz.vip.edu35.ru/actions/register/lesson_register/lesson_register_save',
+            # Получение название подгрупп
+            'https://ssuz.vip.edu35.ru/actions/ssuz.register.actions.Pack/finalmarktypewindowaction',
+            # Задать вид оценки
+            'https://ssuz.vip.edu35.ru/actions/ssuz.register.actions.Pack/finalmarktypesaveaction',
         ]
         self.load = ''
         self.cookie = ''
@@ -354,10 +358,66 @@ class AvtoJ:
             'subject_id': nums[0],
             'view_lessons': 'false',
         }
-        self.session.post(self.url[9], headers=self.head(), data=data)
+        return self.session.post(self.url[9], headers=self.head(), data=data)
+
+
+    #ДОПИЛИ БЛЯТЬ
+    def uploader_sub_group_names(self, id_group, subject_id, date_from = ''):
+        date_from = self.date_patch(date_from)
+        nums = re.findall(r'\d+', subject_id)
+        data = {
+            'unit_id': '22',
+            'period_id': '30',
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'practical': '',
+            'slave_mode': '1',
+            'month': '',
+            'group_id': id_group,
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_sub_group_obj': subject_id,
+            'subject_id': nums[0],
+            'subperiod': '',
+            'mark': '0',
+        }
+        return self.session.post(self.url[10], headers=self.head(), data=data).json()['sub_group_names']
+
+
+    def аssign_rating(self, id_group, subject_id, type_score, mark = '', date_from = ''):
+        sub_g = self.uploader_sub_group_names(id_group, subject_id)
+        date_from = self.date_patch(date_from)
+        nums = re.findall(r'\d+', subject_id)
+        data = {
+            'group_id': id_group,
+            'period_id': '30',
+            'subject_sub_group_obj': subject_id,
+            'mark': mark,
+            'subperiod': '',
+            'unit_id': '22',
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'practical': '',
+            'slave_mode': '1',
+            'month': '',
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_id': nums[0],
+            'sub_group_names': sub_g[0],
+            'sub_group_names': sub_g[1],
+            'mark_name': type_score,
+            'mark_type_id': '23',
+        }
+        self.session.post(self.url[11], headers=self.head(), data=data)
 
 
 if __name__ == '__main__':
     s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=2pigzrfnegfn49vsl1t59ejxvcf91bya')
-    print(s.open_file_themes({"name": "ОИБ-320_Основы алгоритмизации и программирования (ОИБ-320/1)", "id_group": "4138", "subject_id": '{"subject_id": 2484, "sub_group_id": 13529}'}, '1'))
+    s.set_cookie('ssuz_sessionid=qiximh6ad1mzrb252ueazyjxmsvyl207')
+    print(s.uploader_sub_group_names(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id']))
+    s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], 'Годовая', mark=0)
+    s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], 'Итоговая', mark=1)
+    s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], '2 семестр(22/23)')
+

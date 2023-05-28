@@ -65,7 +65,6 @@ class StudentFrame(CTkScrollableFrame):
             if self.disc['id_group'] in file and self.disc['name'][
                                                  self.disc['name'].find('_') + 1:self.disc['name'].find(' ')] in file \
                     and prac in file[:-4]:
-                print(file)
                 with open('Themes/' + file, 'r') as f:
                     cl = int(f.readline())
                 print(len(self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,

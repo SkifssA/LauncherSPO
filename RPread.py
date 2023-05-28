@@ -115,3 +115,5 @@ class CreateRP(CTkFrame):
                     self.tabl.insert(parent='', index='end', iid=self.count, text='',
                                      values=(line[:line.rfind(' ')], line[line.rfind(' ') + 1:-1]))
                     self.count += 1
+
+
