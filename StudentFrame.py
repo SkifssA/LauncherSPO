@@ -2,6 +2,7 @@ from customtkinter import *
 import re
 from ProgressBar import ProgressBar
 from datetime import datetime
+
 """
 Скрол оценок
 
@@ -39,7 +40,8 @@ class StudentFrame(CTkScrollableFrame):
         self.upload_year_score()
         CTkLabel(self.root, text=self.disc['name'], text_color='white') \
             .grid(row=0, column=0, pady=10, padx=10, columnspan=3)
-        CTkLabel(self.root, text_color='white' if (cl := self.clock_back()) > 10 else 'red', text=f'Осталось часов {cl}') \
+        CTkLabel(self.root, text_color='white' if (cl := self.clock_back()) > 10 else 'red',
+                 text=f'Осталось часов {cl}') \
             .grid(row=0, column=3, pady=10, padx=10, columnspan=2)
         self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: ProgressBar(master, self.all_save))
         self.button_save.grid(row=3, column=0, pady=10, padx=10)
@@ -68,11 +70,11 @@ class StudentFrame(CTkScrollableFrame):
                 with open('Themes/' + file, 'r') as f:
                     cl = int(f.readline())
                 print(len(self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
-                                             date_from=f'01.09.{date_from}',
-                                             date_whis=self.date_whis)['rows'][0]['lessons']), cl)
+                                                    date_from=f'01.09.{date_from}',
+                                                    date_whis=self.date_whis)['rows'][0]['lessons']), cl)
         return cl - len(self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
-                                             date_from=f'01.09.{date_from}',
-                                             date_whis=self.date_whis)['rows'][0]['lessons'])
+                                                  date_from=f'01.09.{date_from}',
+                                                  date_whis=self.date_whis)['rows'][0]['lessons'])
 
     def begin(self):
         """Возврат к начальной форме"""
@@ -104,19 +106,6 @@ class StudentFrame(CTkScrollableFrame):
         elif e.keysym == 'Up':
             if n > 0:
                 self.entry[n - 2].focus_set()
-        print(self.root.focus_get())
-
-    def save_score(self):
-        '''Сохранение оценок в журнал'''
-        n = len(self.rows)
-        for i, entry in enumerate(self.entry[:n]):
-            self.session.expose_score(self.disc['id_group'], self.disc['subject_id'], self.rows[0]['lessons'][-1]['id'],
-                                      self.score[0]['rows'][0]['id'], entry.get(), self.rows[i]['student_id'])
-        if self.rows2 is not None:
-            for i, entry in enumerate(self.entry[n:]):
-                self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
-                                          self.rows2[0]['lessons'][-1]['id'],
-                                          self.score[1]['rows'][0]['id'], entry.get(), self.rows2[i]['student_id'])
 
     def add_score_ui(self):
         '''Создание полей для оценок в лаучере'''
@@ -220,3 +209,15 @@ class StudentFrame(CTkScrollableFrame):
                                                      self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
                                                      prac=self.prac)
                 self.save[id_student] = False
+
+    def save_score(self):
+        '''Сохранение оценок в журнал'''
+        n = len(self.rows)
+        for i, entry in enumerate(self.entry[:n]):
+            self.session.expose_score(self.disc['id_group'], self.disc['subject_id'], self.rows[0]['lessons'][-1]['id'],
+                                      self.score[0]['rows'][0]['id'], entry.get(), self.rows[i]['student_id'])
+        if self.rows2 is not None:
+            for i, entry in enumerate(self.entry[n:]):
+                self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
+                                          self.rows2[0]['lessons'][-1]['id'],
+                                          self.score[1]['rows'][0]['id'], entry.get(), self.rows2[i]['student_id'])

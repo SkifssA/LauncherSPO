@@ -2,12 +2,18 @@ import tkinter
 from tkinter.messagebox import showerror
 from customtkinter import *
 import os
-import ListOfDisciplines
-from ReJ import AvtoJ
 from importlib import reload
 from Calendar import Calendar
 from RPread import CreateRP
 from ProgressBar import ProgressBar
+from ReJ import AvtoJ
+
+try:
+    import ListOfDisciplines
+except ModuleNotFoundError:
+    with open('ListOfDisciplines.py', 'w') as f:
+        f.write('Practice = [\n]\nTheory = [\n]')
+    import ListOfDisciplines
 
 
 class GroupFrame(CTkScrollableFrame):
@@ -125,7 +131,6 @@ class LoginForm(CTkToplevel):
                     entry_login.insert(0, l_p[:l_p.index(';')])
                     entry_pass.insert(0, l_p[l_p.index(';') + 1:-1])
         except IOError:
-            print('файл заново создан')
             open('cash', 'w')
             with open('cash', 'r+') as f:
                 l_p = f.read()
@@ -228,13 +233,14 @@ class APP(CTk):
         else:
             showerror(title="Ошибка", message="Надо выбрать только теорию или только практику")
 
-    def save_themes(self ,que):
+    def save_themes(self, que):
         """Загрузка тем в журнал"""
         for id in self.tab.frame_tr.get_check_group():
             que.put(f"Теория {ListOfDisciplines.Theory[id]['name'][:ListOfDisciplines.Theory[id]['name'].find('_')]}")
             self.session.save_themes(ListOfDisciplines.Theory[id], prac='')
         for id in self.tab.frame_pr.get_check_group():
-            que.put(f"Практика {ListOfDisciplines.Practice[id]['name'][:ListOfDisciplines.Practice[id]['name'].find('_')]}")
+            que.put(
+                f"Практика {ListOfDisciplines.Practice[id]['name'][:ListOfDisciplines.Practice[id]['name'].find('_')]}")
             self.session.save_themes(ListOfDisciplines.Practice[id], prac='1')
 
     def upload_tabl(self):

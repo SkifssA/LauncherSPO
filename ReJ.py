@@ -1,7 +1,10 @@
 import requests
 import re
 from datetime import datetime
-import ListOfDisciplines
+try:
+    import ListOfDisciplines
+except ModuleNotFoundError:
+    pass
 from importlib import reload
 import os
 
@@ -385,7 +388,7 @@ class AvtoJ:
         return self.session.post(self.url[10], headers=self.head(), data=data).json()['sub_group_names']
 
 
-    def аssign_rating(self, id_group, subject_id, type_score, mark = '', date_from = ''):
+    def аssign_rating(self, id_group, subject_id, type_score, mark = '', subperiod = '', date_from = ''):
         sub_g = self.uploader_sub_group_names(id_group, subject_id)
         date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
@@ -394,7 +397,7 @@ class AvtoJ:
             'period_id': '30',
             'subject_sub_group_obj': subject_id,
             'mark': mark,
-            'subperiod': '',
+            'subperiod': subperiod,
             'unit_id': '22',
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
@@ -415,9 +418,9 @@ class AvtoJ:
 
 if __name__ == '__main__':
     s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=qiximh6ad1mzrb252ueazyjxmsvyl207')
+    s.set_cookie('ssuz_sessionid=de46xy0b4mfbwiut1l85uwvurkhstdvx')
     print(s.uploader_sub_group_names(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id']))
     s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], 'Годовая', mark=0)
     s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], 'Итоговая', mark=1)
-    s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], '2 семестр(22/23)')
+    s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], '2 семестр(22/23)', subperiod=400)
 
