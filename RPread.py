@@ -13,7 +13,8 @@ class CreateRP(CTkFrame):
 
         self.master = master
         self.id_group = sorted(set(x['id_group'] for x in disc))
-        self.name_p = disc[-1]['name'][disc[-1]['name'].find('_') + 1:]
+        self.name_p = disc[-1]['name'][disc[-1]['name'].find('_') + 1:disc[-1]['name'].find('(')]
+        print(self.name_p)
         self.prac = prac
 
         self.tabl = ttk.Treeview(self)
