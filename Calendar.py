@@ -95,7 +95,6 @@ class Calendar(CTkFrame):
                 date = datetime.strptime(f'{i}.{self.date_mass[0]}.{self.date_mass[1]}', '%d.%m.%y')
                 w = 6 if (d := int(datetime.strftime(date, '%w'))) == 0 else d - 1
                 if self.date.get() == datetime.strftime(date, '%d.%m.%Y'):
-                    print('='*20)
                     fill_date = 'red'
                 elif datetime.strftime(date, '%d.%m.%Y') in self.date_lesson:
                     fill_date = 'green'
