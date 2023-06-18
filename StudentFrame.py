@@ -40,8 +40,8 @@ class StudentFrame(CTkScrollableFrame):
         self.upload_year_score()
         CTkLabel(self.root, text=self.disc['name'], text_color='white') \
             .grid(row=0, column=0, pady=10, padx=10, columnspan=3)
-        CTkLabel(self.root, text_color='white' if (cl := self.clock_back()) > 10 else 'red',
-                 text=f'Осталось часов {cl}' if cl >= 0 else f'Выдано часов {cl}') \
+        CTkLabel(self.root, text_color='white' if (cl := self.clock_back()) > 10 or cl < 0 else 'red',
+                 text=f'Осталось часов {cl}' if cl >= 0 else f'Выдано часов {-cl}') \
             .grid(row=0, column=3, pady=10, padx=10, columnspan=2)
         self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: ProgressBar(master, self.all_save))
         self.button_save.grid(row=3, column=0, pady=10, padx=10)
