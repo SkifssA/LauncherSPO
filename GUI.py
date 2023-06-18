@@ -76,8 +76,8 @@ class TabView(CTkTabview):
         self.width = 500
 
         # Создание табл
-        self.add("Практика")
         self.add("Теория")
+        self.add("Практика")
 
         self.frame_pr = GroupFrame(self.tab('Практика'), True, width=self.width, height=self.height)
         self.frame_tr = GroupFrame(self.tab('Теория'), False, width=self.width, height=self.height)
