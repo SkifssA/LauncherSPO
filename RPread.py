@@ -1,5 +1,3 @@
-from typing import Any
-
 from customtkinter import *
 from tkinter import *
 from tkinter import ttk
