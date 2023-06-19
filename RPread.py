@@ -1,3 +1,5 @@
+from typing import Any
+
 from customtkinter import *
 from tkinter import *
 from tkinter import ttk
@@ -15,6 +17,9 @@ class CreateRP(CTkFrame):
         self.id_group = sorted(set(x['id_group'] for x in disc))
         self.name_p = disc[-1]['name'][disc[-1]['name'].find('_') + 1:disc[-1]['name'].find('(')]
         self.prac = prac
+
+        CTkLabel(self, text=self.name_p + (' Практика' if self.prac == 'p' else ' Теория'), text_color='white') \
+            .grid(row=0, column=0, pady=10, padx=10, columnspan=3)
 
         self.tabl = ttk.Treeview(self)
         self.tabl.grid()
