@@ -151,7 +151,7 @@ class AvtoJ:
 
     def creat_str(self, name, id_group, subject_id, student_id):
         '''Создание списка практических и теоретических журналов'''
-        s = f'"name": "{name} ", "id_group": {id_group}, "subject_id":'+f"'{subject_id}'" + f',"student_id": {student_id}'
+        s = f'"name": "{name} ", "id_group": "{id_group}", "subject_id":'+f"'{subject_id}'" + f',"student_id": {student_id}'
         return '\t{' + s + '},\n'
 
     def create_disc_list(self, que):

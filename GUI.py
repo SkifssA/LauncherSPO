@@ -187,13 +187,15 @@ class APP(CTk):
         else:
             self.destroy()
 
-    def button_close_open_lesson(self, open):
+    def button_close_open_lesson(self, open, que):
         """Функция для открытия/закрытия занятий"""
         for group_idl in self.tab.frame_tr.get_check_group():
             group = ListOfDisciplines.Theory[group_idl]
+            que.put(f"Теория {group['name'][:group['name'].find('_')]}")
             self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
         for group_idl in self.tab.frame_pr.get_check_group():
             group = ListOfDisciplines.Practice[group_idl]
+            que.put(f"Практика {group['name'][:group['name'].find('_')]}")
             self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'],
                                            prac='1', open=open)
 
@@ -269,7 +271,7 @@ class APP(CTk):
         button.grid(row=3, column=0, pady=10, padx=10)
         button = CTkButton(self.frame, text='Открыть занятия', command=lambda: self.button_close_open_lesson(True))
         button.grid(row=2, column=1, pady=10, padx=10)
-        button = CTkButton(self.frame, text='Закрыть занятия', command=lambda: self.button_close_open_lesson(False))
+        button = CTkButton(self.frame, text='Закрыть занятия', command=lambda: ProgressBar(self,lambda q:self.button_close_open_lesson(False, q)))
         button.grid(row=3, column=1, pady=10, padx=10)
         button = CTkButton(self.frame, text='Проверить явку', command=lambda: self.create_student_frame())
         button.grid(row=2, column=2, pady=10, padx=10)
