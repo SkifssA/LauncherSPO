@@ -112,6 +112,7 @@ class StudentFrame(CTkScrollableFrame):
         self.score = []
         self.score.append(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'],
                                                        self.rows[0]['lessons'][-1]['id']))
+
         if self.disc2 is not None:
             self.score.append(self.session.show_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
                                                            self.rows2[0]['lessons'][-1]['id']))

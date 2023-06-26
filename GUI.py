@@ -51,18 +51,20 @@ class GroupFrame(CTkScrollableFrame):
     def get_check_group(self) -> list[int]:
         '''Возвращение выделенных групп'''
         for ch in list(i for i, x in enumerate(self.check_var[0]) if x.get() == 'on'):
+            i = 1
             if not self.prac:
+                while ListOfDisciplines.Theory[ch]['subject_id'] != ListOfDisciplines.Theory[ch+i]['subject_id']:
+                    i += 1
                 yield ch
-                yield ch + 1
+                yield ch + i
             elif ListOfDisciplines.Practice[ch]['name'].find('/2') != -1:
-                name = ListOfDisciplines.Practice[ch]['name']
-                if name[:name.find('_')] + 'в' == ListOfDisciplines.Practice[ch + 2]['name'][
-                                                  :ListOfDisciplines.Practice[ch + 2]['name'].find('_')]:
-                    yield ch
-                    yield ch + 2
-                else:
-                    yield ch
-                    yield ch + 1
+                name = ListOfDisciplines.Practice[ch]['name'][:ListOfDisciplines.Practice[ch]['name'].find('(')]
+                name = name[:name.find('_')]+'в'+name[name.find('_'):]
+                while name != ListOfDisciplines.Practice[ch+i]['name']:
+                    i += 1
+                    print(name[:name.find('(')], ListOfDisciplines.Practice[ch+i]['name'])
+                yield ch
+                yield ch + i
             else:
                 yield ch
 
@@ -212,7 +214,7 @@ class APP(CTk):
             self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Practice[pr[0]]], prac='1')
             self.frame.grid_forget()
             self.studen_frame.grid()
-        elif len(pr) == 2 and 0 < pr[1] - pr[0] < 3:
+        elif len(pr) == 2:
             self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Practice[pr[0]],
                                                                    ListOfDisciplines.Practice[pr[1]]], prac='1')
             self.frame.grid_forget()
