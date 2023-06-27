@@ -390,6 +390,8 @@ class AvtoJ:
 
     def аssign_rating(self, id_group, subject_id, type_score, mark = '', subperiod = '', date_from = ''):
         sub_g = self.uploader_sub_group_names(id_group, subject_id)
+        if len(sub_g) == 0:
+            sub_g = [0,0]
         date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         data = {
@@ -416,11 +418,53 @@ class AvtoJ:
         self.session.post(self.url[11], headers=self.head(), data=data)
 
 
+    def score_final(self, id_group, subject_id, student_id, score, type_score,subperiod = '', date_from = ''):
+        date_from = self.date_patch(date_from)
+        nums = re.findall(r'\d+', subject_id)
+        if type_score == 'annual_estimation':
+            d = '{"lessons":{},"final_marks":{"'+f'{str(student_id)}_{type_score}'+'":{"mark":"'+str(score)+'","type":"'+type_score+'","student_id":'+str(student_id)+'}},"subperiod_marks":{}}'
+        else:
+            d = '{"lessons":{},"final_marks":{},"subperiod_marks":{"'+f'{str(student_id)}_subperiod_{id_group}_{subperiod}'+'":{'+f'"mark":"{score}","subperiod_id":"{subperiod}","student_id":{str(student_id)}'+'}}}'
+        data = {
+        'data': d,
+        'unit_id': 22,
+        'period_id': 30,
+        'date_from': date_from,
+        'date_to': datetime.today().strftime('%d.%m.%Y'),
+        'practical': '',
+        'slave_mode': '1',
+        'month': '',
+        'group_id': id_group,
+        'subject': '0',
+        'subject_gen_pr_id': '0',
+        'exam_subject_id': '0',
+        'subject_sub_group_obj': subject_id,
+        'subject_id': nums[0],
+        }
+        self.session.post('https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_save_rows', headers=self.head(), data=data)
+
+
+def sd(score):
+    i = int(score) if score % 1 < 0.75 else int(score)+1
+    return i
+
+def wwwww(disc):
+    print(disc['name'])
+    nums = re.findall(r'\d+', disc['subject_id'])
+    s.аssign_rating(disc['id_group'], disc['subject_id'], 'Годовая', mark=0)
+    s.аssign_rating(disc['id_group'], disc['subject_id'], 'Итоговая', mark=1)
+    s.аssign_rating(disc['id_group'], disc['subject_id'], '2 семестр(22/23)', subperiod=400)
+    for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
+        w = sd(float(z)) if (z:=stud['aver_period']) != '' else z
+        q = sd(float(x)) if (x:=stud[f"aver_subper_{nums[0]}_400"]) != '' else x
+        s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], w, 'annual_estimation')
+        s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], q, '', 400)
+
 if __name__ == '__main__':
     s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=de46xy0b4mfbwiut1l85uwvurkhstdvx')
-    print(s.uploader_sub_group_names(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id']))
-    s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], 'Годовая', mark=0)
-    s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], 'Итоговая', mark=1)
-    s.аssign_rating(ListOfDisciplines.Theory[8]['id_group'], ListOfDisciplines.Theory[8]['subject_id'], '2 семестр(22/23)', subperiod=400)
+    s.set_cookie('ssuz_sessionid=4wf3yr029r27rnyf4xamkb3vlkao6igc')
+    for disc in ListOfDisciplines.Theory:
+        wwwww(disc)
+
+
 
