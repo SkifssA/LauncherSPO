@@ -167,7 +167,7 @@ class AvtoJ:
                 if student['total'] <= 5:
                     theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
                     prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
-                elif student['total'] <= 15:
+                elif '(' in disc['name']:
                     prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
                 else:
                     theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
@@ -315,10 +315,7 @@ class AvtoJ:
         }
         self.session.post(self.url[8], headers=self.head(), data=data)
 
-    """
-    Задачи:
-    2. Понимание сколько было часов в 1 семестре(Считывание часов у группы с 1.09 - 31.12) +-
-    """
+
 
     def open_file_themes(self, disc, prac):
         themes = []
