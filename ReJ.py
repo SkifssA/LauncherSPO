@@ -78,20 +78,20 @@ class AvtoJ:
                                  data={'login_login': login,
                                        'login_password': password})
         try:
-            cook = {'ssuz_sessionid':'ydphvqo93f5po30ib45kqit4yie7ag1e'}
-            #cook = requests.utils.dict_from_cookiejar(self.session.cookies)
+            cook = {'ssuz_sessionid':'tmlat5t0xhumg5lwcuwkwtz9jdl9k4dz'}
+            cook = requests.utils.dict_from_cookiejar(self.session.cookies)
             self.set_cookie('ssuz_sessionid=' + cook['ssuz_sessionid'])
             return True
         except KeyError:
             return False
 
-    def group_rows(self, date_from=''):
+    def group_rows(self,prac = '', date_from=''):
         '''Получение групп'''
         date_from = self.date_patch(date_from)
         data = {
             'slave_mode': '1',
             'empty_item': '1',
-            'practical': '',
+            'practical': prac,
             'unit_id': '22',
             'period_id': '30',
             'date_from': date_from,
@@ -102,13 +102,13 @@ class AvtoJ:
         response = self.session.post(self.url[0], headers=self.head(), data=data).json()
         return response
 
-    def disc_rows(self, id_group, date_from=''):
+    def disc_rows(self, id_group, prac = '', date_from=''):
         '''Получение предметов группы'''
         date_from = self.date_patch(date_from)
         data = {
             'slave_mode': '1',
             'empty_item': '1',
-            'practical': '',
+            'practical': prac,
             'unit_id': '22',
             'period_id': '30',
             'date_from': date_from,
@@ -159,10 +159,10 @@ class AvtoJ:
         '''Создание списков для работы'''
         prac = 'Practice = [\n'
         theo = 'Theory = [\n'
-        for group in self.group_rows()['rows']:
+        for group in self.group_rows(prac='1',date_from='01.09.2022')['rows']:
             name = group['name'][:group['name'].index(' ')]
-            for disc in self.disc_rows(group['id'])['rows']:
-                student = self.student_rows(group['id'], disc['id'])
+            for disc in self.disc_rows(group['id'],prac='1',date_from='01.09.2022')['rows']:
+                student = self.student_rows(group['id'], disc['id'],prac='1', date_from='01.09.2022')
                 que.put(name)
                 if student['total'] <= 5:
                     theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
@@ -216,6 +216,7 @@ class AvtoJ:
                 'view_lessons': 'false',
             }
             self.session.post(self.url[url], headers=self.head(), data=data)
+        return len(self.id_lesson_row(id_group, subject_id, prac=prac))
 
     def setting_turnout(self, id_group, subject_id, student_id, lesson, x, date_from='', prac=''):
         '''Выставление явки в журнал'''
@@ -359,7 +360,7 @@ class AvtoJ:
             'subject_id': nums[0],
             'view_lessons': 'false',
         }
-        return self.session.post(self.url[9], headers=self.head(), data=data)
+        return self.session.post(self.url[9], headers=self.head(), data=data).json()
 
 
     #ДОПИЛИ БЛЯТЬ
@@ -471,13 +472,28 @@ def wwwww2(disc):
     print('2 и неотистованых', x)
 
 
+def wwwww3(disc):
+    print(disc['name'])
+    for i in s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022'):
+        if s.uploading_topics(disc['id_group'], disc['subject_id'], i, '', date_from='01.09.2022')['message'] != 'Занятие закрыто!':
+            print('ОТКРЫТО БЛЯЯЯЯТЬ')
+    return len(s.id_lesson_row(disc['id_group'], disc['subject_id'],date_from='01.09.2022'))
+
+
+
+
 
 
 if __name__ == '__main__':
     s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=ydphvqo93f5po30ib45kqit4yie7ag1e')
+    s.set_cookie('ssuz_sessionid=b581z8jfv25xnlqth0xoom32qnwwigmq')
+    n = 0
     for disc in ListOfDisciplines.Theory:
-        wwwww2(disc)
+        i = wwwww3(disc)
+        print(i, '\n'+'='*20)
+        n += i
+
+    print(n)
 
 
 

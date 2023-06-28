@@ -34,7 +34,7 @@ class GroupFrame(CTkScrollableFrame):
         '''Создание "галачек" с группами'''
         self.all_del()
         self.check_var = [[], []]
-        for group in group_list:
+        for i, group in enumerate(group_list):
             if group['name'].find(filter) != -1:
                 self.check_var[0].append(tkinter.StringVar())
                 v = group['name'].find('_')
@@ -55,6 +55,7 @@ class GroupFrame(CTkScrollableFrame):
             if not self.prac:
                 while ListOfDisciplines.Theory[ch]['subject_id'] != ListOfDisciplines.Theory[ch+i]['subject_id']:
                     i += 1
+                    print(ListOfDisciplines.Theory[ch]['subject_id'], ListOfDisciplines.Theory[ch+i]['subject_id'])
                 yield ch
                 yield ch + i
             elif ListOfDisciplines.Practice[ch]['name'].find('/2') != -1:
@@ -191,15 +192,19 @@ class APP(CTk):
 
     def button_close_open_lesson(self, open, que):
         """Функция для открытия/закрытия занятий"""
+        i = 0
         for group_idl in self.tab.frame_tr.get_check_group():
             group = ListOfDisciplines.Theory[group_idl]
             que.put(f"Теория {group['name'][:group['name'].find('_')]}")
-            self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
+            i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
+        print(i)
+        i = 0
         for group_idl in self.tab.frame_pr.get_check_group():
             group = ListOfDisciplines.Practice[group_idl]
-            que.put(f"Практика {group['name'][:group['name'].find('_')]}")
-            self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'],
+            que.put(f"Практика {group['name'][group['name'].find('('):]}")
+            i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'],
                                            prac='1', open=open)
+        print(i)
 
     def create_student_frame(self):
         """Функция создания формы для явки"""
