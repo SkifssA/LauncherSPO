@@ -78,7 +78,8 @@ class AvtoJ:
                                  data={'login_login': login,
                                        'login_password': password})
         try:
-            cook = requests.utils.dict_from_cookiejar(self.session.cookies)
+            cook = {'ssuz_sessionid':'ydphvqo93f5po30ib45kqit4yie7ag1e'}
+            #cook = requests.utils.dict_from_cookiejar(self.session.cookies)
             self.set_cookie('ssuz_sessionid=' + cook['ssuz_sessionid'])
             return True
         except KeyError:
@@ -460,11 +461,26 @@ def wwwww(disc):
         s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], w, 'annual_estimation')
         s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], q, '', 400)
 
+def wwwww2(disc):
+    print(disc['name'])
+    e, x = 0, 0
+    for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
+        w = sd(float(z)) if (z:=stud['aver_period']) != '' else z
+        if w == 2 or w == '':
+            x += 1
+        elif w > 3:
+            e += 1
+    print('5 и 4 в %', (e*100)/s.student_rows(disc['id_group'], disc['subject_id'])['total'])
+    print('2 и неотистованых', x)
+
+
+
+
 if __name__ == '__main__':
     s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=4wf3yr029r27rnyf4xamkb3vlkao6igc')
+    s.set_cookie('ssuz_sessionid=ydphvqo93f5po30ib45kqit4yie7ag1e')
     for disc in ListOfDisciplines.Theory:
-        wwwww(disc)
+        wwwww2(disc)
 
 
 
