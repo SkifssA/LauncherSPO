@@ -462,7 +462,7 @@ def wwwww(disc):
         s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], q, '', 400)
 
 def wwwww2(disc):
-    print(disc['name'])
+    print(disc['name'], '')
     e, x = 0, 0
     for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
         w = sd(float(z)) if (z:=stud['aver_period']) != '' else z
