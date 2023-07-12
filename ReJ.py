@@ -1,14 +1,13 @@
 import requests
 import re
 from datetime import datetime
+
 try:
     import ListOfDisciplines
 except ModuleNotFoundError:
     pass
 from importlib import reload
 import os
-
-
 
 
 class AvtoJ:
@@ -78,14 +77,14 @@ class AvtoJ:
                                  data={'login_login': login,
                                        'login_password': password})
         try:
-            cook = {'ssuz_sessionid':'tmlat5t0xhumg5lwcuwkwtz9jdl9k4dz'}
+            cook = {'ssuz_sessionid': 'tmlat5t0xhumg5lwcuwkwtz9jdl9k4dz'}
             cook = requests.utils.dict_from_cookiejar(self.session.cookies)
             self.set_cookie('ssuz_sessionid=' + cook['ssuz_sessionid'])
             return True
         except KeyError:
             return False
 
-    def group_rows(self,prac = '', date_from=''):
+    def group_rows(self, prac='', date_from='', date_to=datetime.today().strftime('%d.%m.%Y')):
         '''Получение групп'''
         date_from = self.date_patch(date_from)
         data = {
@@ -95,14 +94,14 @@ class AvtoJ:
             'unit_id': '22',
             'period_id': '30',
             'date_from': date_from,
-            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'date_to': date_to,
             'month': '',
             'filter': ''
         }
         response = self.session.post(self.url[0], headers=self.head(), data=data).json()
         return response
 
-    def disc_rows(self, id_group, prac = '', date_from=''):
+    def disc_rows(self, id_group, prac='', date_from=''):
         '''Получение предметов группы'''
         date_from = self.date_patch(date_from)
         data = {
@@ -152,25 +151,29 @@ class AvtoJ:
 
     def creat_str(self, name, id_group, subject_id, student_id):
         '''Создание списка практических и теоретических журналов'''
-        s = f'"name": "{name} ", "id_group": "{id_group}", "subject_id":'+f"'{subject_id}'" + f',"student_id": {student_id}'
+        s = f'"name": "{name} ", "id_group": "{id_group}", "subject_id": "{subject_id}","student_id": "{student_id}"'
         return '\t{' + s + '},\n'
 
     def create_disc_list(self, que):
         '''Создание списков для работы'''
         prac = 'Practice = [\n'
         theo = 'Theory = [\n'
-        for group in self.group_rows(prac='1',date_from='01.09.2022')['rows']:
+        for group in self.group_rows(prac='1', date_from='01.09.2022')['rows']:
             name = group['name'][:group['name'].index(' ')]
-            for disc in self.disc_rows(group['id'],prac='1',date_from='01.09.2022')['rows']:
-                student = self.student_rows(group['id'], disc['id'],prac='1', date_from='01.09.2022')
+            for disc in self.disc_rows(group['id'], prac='1', date_from='01.09.2022')['rows']:
+                student = self.student_rows(group['id'], disc['id'], prac='1', date_from='01.09.2022')
                 que.put(name)
                 if student['total'] <= 5:
-                    theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
-                    prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
+                    theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
+                                           student['rows'][0]['student_id'])
+                    prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
+                                           student['rows'][0]['student_id'])
                 elif '(' in disc['name']:
-                    prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
+                    prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
+                                           student['rows'][0]['student_id'])
                 else:
-                    theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'], student['rows'][0]['student_id'])
+                    theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
+                                           student['rows'][0]['student_id'])
         return [prac + ']\n', theo + ']']
 
     def save_file_disc(self, que):
@@ -187,7 +190,7 @@ class AvtoJ:
         date_from = self.date_patch(date_from)
         try:
             return tuple(x['id'] for x in self.student_rows(id_group, subject_id,
-                                                        date_from, date_whis, prac=prac)['rows'][0]['lessons'])
+                                                            date_from, date_whis, prac=prac)['rows'][0]['lessons'])
         except IndexError:
             return []
 
@@ -316,13 +319,11 @@ class AvtoJ:
         }
         self.session.post(self.url[8], headers=self.head(), data=data)
 
-
-
     def open_file_themes(self, disc, prac):
         themes = []
         prac = 't' if prac == '' else 'p'
         for file in os.listdir(os.getcwd() + '/Themes'):
-            if disc['id_group'] in file and disc['name'][disc['name'].find('_') + 1:disc['name'].find(' ')] in file\
+            if disc['id_group'] in file and disc['name'][disc['name'].find('_') + 1:disc['name'].find(' ')] in file \
                     and prac in file[:-4]:
                 print(file)
                 with open('Themes/' + file, 'r') as f:
@@ -362,9 +363,8 @@ class AvtoJ:
         }
         return self.session.post(self.url[9], headers=self.head(), data=data).json()
 
-
-    #ДОПИЛИ БЛЯТЬ
-    def uploader_sub_group_names(self, id_group, subject_id, date_from = ''):
+    # ДОПИЛИ БЛЯТЬ
+    def uploader_sub_group_names(self, id_group, subject_id, date_from=''):
         date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         data = {
@@ -386,11 +386,10 @@ class AvtoJ:
         }
         return self.session.post(self.url[10], headers=self.head(), data=data).json()['sub_group_names']
 
-
-    def аssign_rating(self, id_group, subject_id, type_score, mark = '', subperiod = '', date_from = ''):
+    def аssign_rating(self, id_group, subject_id, type_score, mark='', subperiod='', date_from=''):
         sub_g = self.uploader_sub_group_names(id_group, subject_id)
         if len(sub_g) == 0:
-            sub_g = [0,0]
+            sub_g = [0, 0]
         date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         data = {
@@ -416,36 +415,53 @@ class AvtoJ:
         }
         self.session.post(self.url[11], headers=self.head(), data=data)
 
-
-    def score_final(self, id_group, subject_id, student_id, score, type_score,subperiod = '', date_from = ''):
+    def score_final(self, id_group, subject_id, student_id, score, type_score, subperiod='', date_from=''):
         date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         if type_score == 'annual_estimation':
-            d = '{"lessons":{},"final_marks":{"'+f'{str(student_id)}_{type_score}'+'":{"mark":"'+str(score)+'","type":"'+type_score+'","student_id":'+str(student_id)+'}},"subperiod_marks":{}}'
+            d = '{"lessons":{},"final_marks":{"' + f'{str(student_id)}_{type_score}' + '":{"mark":"' + str(
+                score) + '","type":"' + type_score + '","student_id":' + str(student_id) + '}},"subperiod_marks":{}}'
         else:
-            d = '{"lessons":{},"final_marks":{},"subperiod_marks":{"'+f'{str(student_id)}_subperiod_{id_group}_{subperiod}'+'":{'+f'"mark":"{score}","subperiod_id":"{subperiod}","student_id":{str(student_id)}'+'}}}'
+            d = '{"lessons":{},"final_marks":{},"subperiod_marks":{"' + f'{str(student_id)}_subperiod_{id_group}_{subperiod}' + '":{' + f'"mark":"{score}","subperiod_id":"{subperiod}","student_id":{str(student_id)}' + '}}}'
         data = {
-        'data': d,
-        'unit_id': 22,
-        'period_id': 30,
-        'date_from': date_from,
-        'date_to': datetime.today().strftime('%d.%m.%Y'),
-        'practical': '',
-        'slave_mode': '1',
-        'month': '',
-        'group_id': id_group,
-        'subject': '0',
-        'subject_gen_pr_id': '0',
-        'exam_subject_id': '0',
-        'subject_sub_group_obj': subject_id,
-        'subject_id': nums[0],
+            'data': d,
+            'unit_id': 22,
+            'period_id': 30,
+            'date_from': date_from,
+            'date_to': datetime.today().strftime('%d.%m.%Y'),
+            'practical': '',
+            'slave_mode': '1',
+            'month': '',
+            'group_id': id_group,
+            'subject': '0',
+            'subject_gen_pr_id': '0',
+            'exam_subject_id': '0',
+            'subject_sub_group_obj': subject_id,
+            'subject_id': nums[0],
         }
-        self.session.post('https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_save_rows', headers=self.head(), data=data)
+        self.session.post('https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_save_rows',
+                          headers=self.head(), data=data)
+
+    def today_list(self):
+        e = self.group_rows(date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
+        mass = [[], []]
+        for i in e:
+            for j, x in enumerate(ListOfDisciplines.Theory):
+                if i['id'] == int(x['id_group']):
+                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from='03.03.2023', date_whis='03.03.2023'):
+                        mass[0].append(ListOfDisciplines.Theory[j])
+            for j, x in enumerate(ListOfDisciplines.Practice):
+                if i['id'] == int(x['id_group']):
+                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from='03.03.2023', date_whis='03.03.2023',
+                                       prac='1'):
+                        mass[1].append(ListOfDisciplines.Practice[j])
+        return mass
 
 
 def sd(score):
-    i = int(score) if score % 1 < 0.75 else int(score)+1
+    i = int(score) if score % 1 < 0.75 else int(score) + 1
     return i
+
 
 def wwwww(disc):
     print(disc['name'])
@@ -454,46 +470,36 @@ def wwwww(disc):
     s.аssign_rating(disc['id_group'], disc['subject_id'], 'Итоговая', mark=1)
     s.аssign_rating(disc['id_group'], disc['subject_id'], '2 семестр(22/23)', subperiod=400)
     for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
-        w = sd(float(z)) if (z:=stud['aver_period']) != '' else z
-        q = sd(float(x)) if (x:=stud[f"aver_subper_{nums[0]}_400"]) != '' else x
+        w = sd(float(z)) if (z := stud['aver_period']) != '' else z
+        q = sd(float(x)) if (x := stud[f"aver_subper_{nums[0]}_400"]) != '' else x
         s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], w, 'annual_estimation')
         s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], q, '', 400)
+
 
 def wwwww2(disc):
     print(disc['name'], '')
     e, x = 0, 0
     for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
-        w = sd(float(z)) if (z:=stud['aver_period']) != '' else z
+        w = sd(float(z)) if (z := stud['aver_period']) != '' else z
         if w == 2 or w == '':
             x += 1
         elif w > 3:
             e += 1
-    print('5 и 4 в %', (e*100)/s.student_rows(disc['id_group'], disc['subject_id'])['total'])
+    print('5 и 4 в %', (e * 100) / s.student_rows(disc['id_group'], disc['subject_id'])['total'])
     print('2 и неотистованых', x)
 
 
 def wwwww3(disc):
     print(disc['name'])
     for i in s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022'):
-        if s.uploading_topics(disc['id_group'], disc['subject_id'], i, '', date_from='01.09.2022')['message'] != 'Занятие закрыто!':
+        if s.uploading_topics(disc['id_group'], disc['subject_id'], i, '', date_from='01.09.2022')[
+            'message'] != 'Занятие закрыто!':
             print('ОТКРЫТО БЛЯЯЯЯТЬ')
-    return len(s.id_lesson_row(disc['id_group'], disc['subject_id'],date_from='01.09.2022'))
-
-
-
+    return len(s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022'))
 
 
 
 if __name__ == '__main__':
     s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=b581z8jfv25xnlqth0xoom32qnwwigmq')
-    n = 0
-    for disc in ListOfDisciplines.Theory:
-        i = wwwww3(disc)
-        print(i, '\n'+'='*20)
-        n += i
-
-    print(n)
-
-
-
+    s.set_cookie('ssuz_sessionid=t8wyvd3k4cxqvhzin528xbreugyluzpf')
+    print(today_list())

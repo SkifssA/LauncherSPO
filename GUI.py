@@ -33,37 +33,37 @@ class GroupFrame(CTkScrollableFrame):
     def create_group_checkbox(self, group_list, filter):
         '''Создание "галачек" с группами'''
         self.all_del()
-        self.check_var = [[], []]
+        self.check_var = [[], [], []]
         for i, group in enumerate(group_list):
             if group['name'].find(filter) != -1:
-                self.check_var[0].append(tkinter.StringVar())
                 v = group['name'].find('_')
                 if group['name'][v - 1:v] != 'в':
+                    self.check_var[0].append(tkinter.StringVar())
                     self.check_var[1].append(CTkCheckBox(self, text=group['name'],
                                                          variable=self.check_var[0][-1], onvalue="on", offvalue="off"))
                     self.check_var[1][-1].pack(padx=20, pady=10, anchor='w')
+                    self.check_var[2].append(i)
 
     def all_check(self, on_off):
         '''Метот для выделения всех групп'''
         for check in self.check_var[0]:
             check.set(on_off)
 
-    def get_check_group(self) -> list[int]:
+    def get_check_group(self) -> tuple[int]:
         '''Возвращение выделенных групп'''
-        for ch in list(i for i, x in enumerate(self.check_var[0]) if x.get() == 'on'):
+        for ch in list(
+                self.check_var[2][j] for j in range(len(self.check_var[0])) if self.check_var[0][j].get() == 'on'):
             i = 1
             if not self.prac:
-                while ListOfDisciplines.Theory[ch]['subject_id'] != ListOfDisciplines.Theory[ch+i]['subject_id']:
+                while ListOfDisciplines.Theory[ch]['subject_id'] != ListOfDisciplines.Theory[ch + i]['subject_id']:
                     i += 1
-                    print(ListOfDisciplines.Theory[ch]['subject_id'], ListOfDisciplines.Theory[ch+i]['subject_id'])
                 yield ch
                 yield ch + i
             elif ListOfDisciplines.Practice[ch]['name'].find('/2') != -1:
                 name = ListOfDisciplines.Practice[ch]['name'][:ListOfDisciplines.Practice[ch]['name'].find('(')]
-                name = name[:name.find('_')]+'в'+name[name.find('_'):]
-                while name != ListOfDisciplines.Practice[ch+i]['name']:
+                name = name[:name.find('_')] + 'в' + name[name.find('_'):]
+                while name != ListOfDisciplines.Practice[ch + i]['name']:
                     i += 1
-                    print(name[:name.find('(')], ListOfDisciplines.Practice[ch+i]['name'])
                 yield ch
                 yield ch + i
             else:
@@ -76,9 +76,10 @@ class TabView(CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.height = 450
-        self.width = 500
+        self.width = 700
 
         # Создание табл
+
         self.add("Теория")
         self.add("Практика")
 
@@ -86,13 +87,20 @@ class TabView(CTkTabview):
         self.frame_tr = GroupFrame(self.tab('Теория'), False, width=self.width, height=self.height)
         self.recreate_frame('')
 
-    def recreate_frame(self, filter):
+    def recreate_frame(self, filter, today=None):
         '''Создание перечисления с группами'''
-        self.frame_pr.create_group_checkbox(ListOfDisciplines.Practice, filter)
-        self.frame_pr.pack()
+        if filter == 'Сегодня':
+            self.frame_pr.create_group_checkbox(today[1], '')
+            self.frame_pr.pack()
 
-        self.frame_tr.create_group_checkbox(ListOfDisciplines.Theory, filter)
-        self.frame_tr.pack()
+            self.frame_tr.create_group_checkbox(today[0], '')
+            self.frame_tr.pack()
+        else:
+            self.frame_pr.create_group_checkbox(ListOfDisciplines.Practice, filter)
+            self.frame_pr.pack()
+
+            self.frame_tr.create_group_checkbox(ListOfDisciplines.Theory, filter)
+            self.frame_tr.pack()
 
     def all_check_in_tabl(self, name_tabl, on_off):
         '''Выделение всех групп'''
@@ -120,6 +128,7 @@ class LoginForm(CTkToplevel):
         # Ожидание закрытия окна
         self.grab_set()
         self.wait_window()
+        return
 
     def creat_login_form(self):
         '''Создание формы авторизации'''
@@ -185,6 +194,7 @@ class APP(CTk):
 
         LoginForm(self.session)
         if self.session.cookie != '':  # Основная отработка
+            self.today = self.session.today_list()
             self.main_frame()
             self.mainloop()
         else:
@@ -203,13 +213,15 @@ class APP(CTk):
             group = ListOfDisciplines.Practice[group_idl]
             que.put(f"Практика {group['name'][group['name'].find('('):]}")
             i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'],
-                                           prac='1', open=open)
+                                                prac='1', open=open)
         print(i)
 
     def create_student_frame(self):
         """Функция создания формы для явки"""
         tr = tuple(self.tab.frame_tr.get_check_group())
         pr = tuple(self.tab.frame_pr.get_check_group())
+        print(tr)
+        print(pr)
         if len(tr) == 2:
             self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Theory[tr[0]],
                                                                    ListOfDisciplines.Theory[tr[1]]])
@@ -266,7 +278,8 @@ class APP(CTk):
         self.tab = TabView(self.frame)
         self.studen_frame = None
         self.entry = CTkEntry(self.frame, placeholder_text="Поиск", width=300)
-        button = CTkButton(self.frame, text='Найти', command=lambda: self.tab.recreate_frame(self.entry.get()))
+        button = CTkButton(self.frame, text='Найти', command=lambda: self.tab.recreate_frame(self.entry.get(),
+                                                                                             today=None if self.entry.get() != 'Сегодня' else self.today))
         button.grid(row=0, column=2, pady=10, padx=10)
         self.entry.grid(row=0, column=0, pady=10, padx=10, columnspan=2)
         self.tab.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
@@ -278,7 +291,8 @@ class APP(CTk):
         button.grid(row=3, column=0, pady=10, padx=10)
         button = CTkButton(self.frame, text='Открыть занятия', command=lambda: self.button_close_open_lesson(True))
         button.grid(row=2, column=1, pady=10, padx=10)
-        button = CTkButton(self.frame, text='Закрыть занятия', command=lambda: ProgressBar(self,lambda q:self.button_close_open_lesson(False, q)))
+        button = CTkButton(self.frame, text='Закрыть занятия',
+                           command=lambda: ProgressBar(self, lambda q: self.button_close_open_lesson(False, q)))
         button.grid(row=3, column=1, pady=10, padx=10)
         button = CTkButton(self.frame, text='Проверить явку', command=lambda: self.create_student_frame())
         button.grid(row=2, column=2, pady=10, padx=10)
