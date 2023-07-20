@@ -8,6 +8,7 @@ except ModuleNotFoundError:
     pass
 from importlib import reload
 import os
+from bs4 import BeautifulSoup
 
 
 class AvtoJ:
@@ -39,8 +40,16 @@ class AvtoJ:
             # Задать вид оценки
             'https://ssuz.vip.edu35.ru/actions/ssuz.register.actions.Pack/finalmarktypesaveaction',
         ]
-        self.load = ''
         self.cookie = ''
+        self.load = ''
+        r = self.session.get('https://ssuz.vip.edu35.ru/auth/login-page')
+        print(r)
+        soup = BeautifulSoup(r.content, 'html.parser')
+
+        self.csrf = soup.find('input', {'name': 'csrfmiddlewaretoken'})['value']
+        self.cookie = f'csrftoken={r.cookies["csrftoken"]}'
+
+
 
     def head(self):
         '''Создание заголовка'''
@@ -51,8 +60,18 @@ class AvtoJ:
             'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
             'Accept-Encoding': 'gzip, deflate, br',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Cookie': self.cookie
+            'Cookie': self.cookie,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer':'https://ssuz.vip.edu35.ru/auth/login-page',
+            'Sec-Ch-Ua': '"Not.A/Brand";v = "8", "Chromium";v = "114", "Microsoft Edge";v = "114"',
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': '"Windows"',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
         }
+        if self.cookie.find('ssuz_sessionid') != -1:
+            head_['X-Csrftoken'] = self.cookie[self.cookie.rfind('=')+1:]
         return head_
 
     def date_patch(self, date_f):
@@ -73,13 +92,14 @@ class AvtoJ:
 
     def login(self, login, password):
         '''Авторизация'''
+
         data = self.session.post('https://ssuz.vip.edu35.ru/auth/login', headers=self.head(),
-                                 data={'login_login': login,
+                                 data={'csrfmiddlewaretoken': self.csrf,
+                                       'login_login': login,
                                        'login_password': password})
         try:
-            cook = {'ssuz_sessionid': 'tmlat5t0xhumg5lwcuwkwtz9jdl9k4dz'}
             cook = requests.utils.dict_from_cookiejar(self.session.cookies)
-            self.set_cookie('ssuz_sessionid=' + cook['ssuz_sessionid'])
+            self.set_cookie(f'ssuz_sessionid={cook["ssuz_sessionid"]}; csrftoken={cook["csrftoken"]}')
             return True
         except KeyError:
             return False
@@ -151,7 +171,7 @@ class AvtoJ:
 
     def creat_str(self, name, id_group, subject_id, student_id):
         '''Создание списка практических и теоретических журналов'''
-        s = f'"name": "{name} ", "id_group": "{id_group}", "subject_id": "{subject_id}","student_id": "{student_id}"'
+        s = f"'name': '{name} ', 'id_group': '{id_group}', 'subject_id': '{subject_id}','student_id': '{student_id}'"
         return '\t{' + s + '},\n'
 
     def create_disc_list(self, que):
@@ -448,14 +468,50 @@ class AvtoJ:
         for i in e:
             for j, x in enumerate(ListOfDisciplines.Theory):
                 if i['id'] == int(x['id_group']):
-                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from='03.03.2023', date_whis='03.03.2023'):
+                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from='03.03.2023',
+                                          date_whis='03.03.2023'):
                         mass[0].append(ListOfDisciplines.Theory[j])
             for j, x in enumerate(ListOfDisciplines.Practice):
                 if i['id'] == int(x['id_group']):
-                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from='03.03.2023', date_whis='03.03.2023',
-                                       prac='1'):
+                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from='03.03.2023',
+                                          date_whis='03.03.2023',
+                                          prac='1'):
                         mass[1].append(ListOfDisciplines.Practice[j])
         return mass
+
+    def ved_get(self):
+        data = {
+            'start': '0',
+            'm3_window_id': 'cmp_2b72f74a',
+            'grid_id': 'cmp_850ea220',
+            'ssuz.exam_score.actions.PeriodSelectPack_id': '30',
+            'ssuz.exam_score.actions.SubperiodSelectPack_id': '400',
+            'filter': 'Копылов',
+            'id': '-1',
+        }
+        return self.session.post('https://ssuz.vip.edu35.ru/actions/exam_score/objectrowsaction',
+                                 headers=self.head(), data=data).json()['rows']
+
+    def ved_score(self, exam_id, id_st, score):
+        data = {
+            'exam_sheet_id': exam_id,
+            'm3_window_id': 'cmp_2fb9c023',
+            'grid_id': 'cmp_83d63e96',
+            'xaction': 'update',
+            'rows': '{' + f'"student_id":{id_st},"score_23":"{score}"' + '}'
+        }
+        return self.session.post('https://ssuz.vip.edu35.ru/actions/exam_score/exam_score_rows',
+                                 headers=self.head(), data=data)
+
+    def ved_score_type(self, exam_id):
+        data = {
+            'exam_sheet_id': exam_id,
+            'm3_window_id': 'cmp_eb198448',
+            'grid_id': 'cmp_850ea220',
+            'score_type_ids': '[23]',
+        }
+        return self.session.post('https://ssuz.vip.edu35.ru/actions/exam_score/re_score_type_save_action',
+                                 headers=self.head(), data=data)
 
 
 def sd(score):
@@ -498,8 +554,14 @@ def wwwww3(disc):
     return len(s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022'))
 
 
-
 if __name__ == '__main__':
     s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=t8wyvd3k4cxqvhzin528xbreugyluzpf')
-    print(today_list())
+    s.set_cookie('ssuz_sessionid=ztoi20yh3xv911evywzzvsvihm1cvgmu')
+    for exam in s.ved_get():
+        s.ved_score_type(exam['id'])
+        for disc in ListOfDisciplines.Theory:
+            if disc['name'].find(exam['group_actual_name'][:exam['group_actual_name'].find(' ')]) != -1:
+                print(disc['name'])
+                for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
+                    s.ved_score(exam['id'], stud['student_id'], stud['final_grade'])
+                break

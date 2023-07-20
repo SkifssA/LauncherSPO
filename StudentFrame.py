@@ -3,14 +3,9 @@ import re
 from ProgressBar import ProgressBar
 from datetime import datetime
 
-"""
-Скрол оценок
-
-"""
-
 
 class StudentFrame(CTkScrollableFrame):
-    '''Форма для проверки явки'''
+    """Форма для проверки явки"""
 
     def __init__(self, master, session, dics=None, dics2=None, prac='', date_from=None, date_whis=None):
         self.date_from = date_from
@@ -69,9 +64,6 @@ class StudentFrame(CTkScrollableFrame):
                     and prac in file[:-4]:
                 with open('Themes/' + file, 'r') as f:
                     cl = int(f.readline())
-                print(len(self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
-                                                    date_from=f'01.09.{date_from}',
-                                                    date_whis=self.date_whis)['rows'][0]['lessons']), cl)
         return cl - len(self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
                                                   date_from=f'01.09.{date_from}',
                                                   date_whis=self.date_whis)['rows'][0]['lessons'])
@@ -88,7 +80,7 @@ class StudentFrame(CTkScrollableFrame):
         self.root.destroy()
 
     def all_save(self, que):
-        '''Сохранение всей формы'''
+        """Сохранение всей формы"""
         que.put('Оценки')
         self.save_score()
         que.put('Неявка')
@@ -97,7 +89,7 @@ class StudentFrame(CTkScrollableFrame):
         self.upload_year_score()
 
     def move(self, e):
-        '''Возможность быстро перемещаться по полям оценок вниз и вверх'''
+        """Возможность быстро перемещаться по полям оценок вниз и вверх"""
         nums = re.findall(r'\d+', str(self.root.focus_get()))
         n = 1 if len(nums) == 1 else int(nums[1])
         if e.keysym == 'Down':
@@ -108,7 +100,7 @@ class StudentFrame(CTkScrollableFrame):
                 self.entry[n - 2].focus_set()
 
     def add_score_ui(self):
-        '''Создание полей для оценок в лаучере'''
+        """Создание полей для оценок в лаунчере"""
         self.score = []
         self.score.append(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'],
                                                        self.rows[0]['lessons'][-1]['id']))
@@ -132,7 +124,7 @@ class StudentFrame(CTkScrollableFrame):
             self.button_create.configure(state='disabled')
 
     def add_score(self):
-        '''Создание полей для оценок в журнале'''
+        """Создание полей для оценок в журнале"""
         self.session.create_score_pole(self.disc['id_group'], self.disc['subject_id'],
                                        self.rows[0]['lessons'][-1]['id'])
         self.rows = self.session.student_rows(self.disc['id_group'], self.disc['subject_id'], prac=self.prac,
@@ -145,7 +137,7 @@ class StudentFrame(CTkScrollableFrame):
         self.add_score_ui()
 
     def add_v_group(self, dics, date_from, date_whis):
-        '''Добавление группы "в"'''
+        """Добавление группы 'в'"""
         self.rows2 = self.session.student_rows(dics['id_group'], dics['subject_id'], prac=self.prac,
                                                date_from=date_from, date_whis=date_whis)['rows']
         for j, i in enumerate(self.rows2):
@@ -165,7 +157,7 @@ class StudentFrame(CTkScrollableFrame):
                 self.year_score[n + i].set(f'    {student["aver_period"]}')
 
     def student_lesson(self, student, j):
-        '''Метод создания явки на 1 студента'''
+        """Метод создания явки на 1 студента"""
         self.label.append(CTkLabel(self, text=student['student_name']))
         self.label[-1].grid(row=j, column=0, padx=20, pady=5)
         self.combo.append([])
@@ -181,7 +173,7 @@ class StudentFrame(CTkScrollableFrame):
         self.save.append(False)
 
     def p(self, j, x):
-        '''Метод проставления значений студенту до конца занятий'''
+        """Метод проставления значений студенту до конца занятий"""
         self.save[j] = True
         set_box = False
         for box in self.combo[j]:
@@ -191,7 +183,7 @@ class StudentFrame(CTkScrollableFrame):
                 box.set('' if x == 'О' else x)
 
     def turnout(self):
-        '''Выставление явки в журнал'''
+        """Выставление явки в журнал"""
         n = len(self.rows)
         for id_student, student in enumerate(self.combo[:n]):
             for id_lesson, lesson in enumerate(student):
@@ -212,7 +204,7 @@ class StudentFrame(CTkScrollableFrame):
                 self.save[id_student] = False
 
     def save_score(self):
-        '''Сохранение оценок в журнал'''
+        """Сохранение оценок в журнал"""
         n = len(self.rows)
         for i, entry in enumerate(self.entry[:n]):
             self.session.expose_score(self.disc['id_group'], self.disc['subject_id'], self.rows[0]['lessons'][-1]['id'],
