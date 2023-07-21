@@ -120,7 +120,7 @@ class LoginForm(CTkToplevel):
         self.check_var.set('on')
         x = (self.winfo_screenwidth() - 210) / 2
         y = (self.winfo_screenheight() - 200) / 2
-        self.geometry("210x200+%d+%d" % (x, y))
+        self.geometry("+%d+%d" % (x, y))
         self.title('')
         self.resizable(False, False)
         # Создание формы
@@ -181,6 +181,8 @@ class APP(CTk):
 
     def __init__(self):
         super().__init__()
+
+        print(self.winfo_screenheight() / 1080)
         self.studen_frame = None
         set_appearance_mode("Dark")
         set_default_color_theme('blue')
@@ -306,4 +308,7 @@ class APP(CTk):
 
 
 if __name__ == '__main__':
+    s = CTk()
+    set_widget_scaling(s.winfo_screenheight() / 1080)
+    s.destroy()
     APP()
