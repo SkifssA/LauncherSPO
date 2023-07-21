@@ -26,7 +26,6 @@ class StudentFrame(CTkScrollableFrame):
         self.combo = []
         self.label = []
         self.entry = []
-        self.save = []
         self.year_score = []
         for j, i in enumerate(self.rows):
             self.student_lesson(i, j)
@@ -170,11 +169,8 @@ class StudentFrame(CTkScrollableFrame):
         self.year_score.append(StringVar())
         CTkLabel(self, textvariable=self.year_score[-1]).grid(row=j, column=len(student['lessons']) + 2, padx=5, pady=5)
 
-        self.save.append(False)
-
     def p(self, j, x):
         """Метод проставления значений студенту до конца занятий"""
-        self.save[j] = True
         set_box = False
         for box in self.combo[j]:
             if box.get() == x:
@@ -187,21 +183,17 @@ class StudentFrame(CTkScrollableFrame):
         n = len(self.rows)
         for id_student, student in enumerate(self.combo[:n]):
             for id_lesson, lesson in enumerate(student):
-                if self.save[id_student]:
-                    self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
-                                                 self.rows[id_student]['student_id'],
-                                                 self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
-                                                 prac=self.prac)
-            self.save[id_student] = False
+                self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
+                                             self.rows[id_student]['student_id'],
+                                             self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
+                                             prac=self.prac)
         if self.rows2 is not None:
             for id_student, student in enumerate(self.combo[n:]):
                 for id_lesson, lesson in enumerate(student):
-                    if self.save[id_student + n]:
-                        self.session.setting_turnout(self.disc2['id_group'], self.disc2['subject_id'],
-                                                     self.rows2[id_student]['student_id'],
-                                                     self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
-                                                     prac=self.prac)
-                self.save[id_student] = False
+                    self.session.setting_turnout(self.disc2['id_group'], self.disc2['subject_id'],
+                                                 self.rows2[id_student]['student_id'],
+                                                 self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
+                                                 prac=self.prac)
 
     def save_score(self):
         """Сохранение оценок в журнал"""
