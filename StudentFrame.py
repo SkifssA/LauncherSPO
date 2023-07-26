@@ -109,7 +109,6 @@ class StudentFrame(CTkScrollableFrame):
                                                            self.rows2[0]['lessons'][-1]['id']))
         if self.score[0]['total'] != 0:
             for com in range(len(self.combo)):
-
                 self.entry.append(CTkEntry(self, width=10))
                 if com < len(self.rows):
                     self.entry[-1].insert(0, self.rows[com]['lessons'][-1][f'work_{self.score[0]["rows"][0]["id"]}'][

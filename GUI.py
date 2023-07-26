@@ -7,6 +7,7 @@ from Calendar import Calendar
 from RPread import CreateRP
 from ProgressBar import ProgressBar
 from ReJ import AvtoJ
+from ExamFrame import Exam
 
 try:
     import ListOfDisciplines
@@ -222,8 +223,6 @@ class APP(CTk):
         """Функция создания формы для явки"""
         tr = tuple(self.tab.frame_tr.get_check_group())
         pr = tuple(self.tab.frame_pr.get_check_group())
-        print(tr)
-        print(pr)
         if len(tr) == 2:
             self.studen_frame = Calendar(self, self.session, dics=[ListOfDisciplines.Theory[tr[0]],
                                                                    ListOfDisciplines.Theory[tr[1]]])
@@ -238,6 +237,16 @@ class APP(CTk):
                                                                    ListOfDisciplines.Practice[pr[1]]], prac='1')
             self.frame.grid_forget()
             self.studen_frame.grid()
+        else:
+            showerror(title="Ошибка", message="Надо выбрать 1 группу")
+
+    def create_exam_frame(self):
+        tr = tuple(self.tab.frame_tr.get_check_group())
+        if len(tr) == 2:
+            self.exam_frame = Exam(self, self.session, disc=ListOfDisciplines.Theory[tr[0]],
+                                                                   disc2=ListOfDisciplines.Theory[tr[1]])
+            self.frame.grid_forget()
+            self.exam_frame.root.grid()
         else:
             showerror(title="Ошибка", message="Надо выбрать 1 группу")
 
@@ -304,6 +313,8 @@ class APP(CTk):
         button.grid(row=4, column=2, pady=10, padx=10)
         button = CTkButton(self.frame, text='Заполнить темы', command=lambda: ProgressBar(self, self.save_themes))
         button.grid(row=4, column=1, pady=10, padx=10)
+        button = CTkButton(self.frame, text='TEST', command=lambda: self.create_exam_frame())
+        button.grid(row=4, column=0, pady=10, padx=10)
         self.frame.grid()
 
 

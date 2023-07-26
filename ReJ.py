@@ -435,14 +435,15 @@ class AvtoJ:
         }
         self.session.post(self.url[11], headers=self.head(), data=data)
 
-    def score_final(self, id_group, subject_id, student_id, score, type_score, subperiod='', date_from=''):
+    def score_final(self, id_group, subject_id, student_id, score, type_score='', subperiod='', date_from=''):
         date_from = self.date_patch(date_from)
         nums = re.findall(r'\d+', subject_id)
         if type_score == 'annual_estimation':
-            d = '{"lessons":{},"final_marks":{"' + f'{str(student_id)}_{type_score}' + '":{"mark":"' + str(
-                score) + '","type":"' + type_score + '","student_id":' + str(student_id) + '}},"subperiod_marks":{}}'
+            d = '{"lessons":{},"final_marks":{"' + f'{str(student_id)}_{type_score}' + '":{"mark":"' + \
+                f'{str(score)}","type":"{type_score}","student_id":{str(student_id)}' + '}},"subperiod_marks":{}}'
         else:
-            d = '{"lessons":{},"final_marks":{},"subperiod_marks":{"' + f'{str(student_id)}_subperiod_{id_group}_{subperiod}' + '":{' + f'"mark":"{score}","subperiod_id":"{subperiod}","student_id":{str(student_id)}' + '}}}'
+            d = '{"lessons":{},"final_marks":{},"subperiod_marks":{"' + f'{str(student_id)}_subperiod_{id_group}_{subperiod}' +\
+                '":{' + f'"mark":"{score}","subperiod_id":"{subperiod}","student_id":{str(student_id)}' + '}}}'
         data = {
             'data': d,
             'unit_id': 22,
@@ -468,25 +469,25 @@ class AvtoJ:
         for i in e:
             for j, x in enumerate(ListOfDisciplines.Theory):
                 if i['id'] == int(x['id_group']):
-                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from='03.03.2023',
-                                          date_whis='03.03.2023'):
+                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from=datetime.today().strftime('%d.%m.%Y'),
+                                          date_whis=datetime.today().strftime('%d.%m.%Y')):
                         mass[0].append(ListOfDisciplines.Theory[j])
             for j, x in enumerate(ListOfDisciplines.Practice):
                 if i['id'] == int(x['id_group']):
-                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from='03.03.2023',
-                                          date_whis='03.03.2023',
+                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from=datetime.today().strftime('%d.%m.%Y'),
+                                          date_whis=datetime.today().strftime('%d.%m.%Y'),
                                           prac='1'):
                         mass[1].append(ListOfDisciplines.Practice[j])
         return mass
 
-    def ved_get(self):
+    def ved_get(self, per, subper, family):
         data = {
             'start': '0',
             'm3_window_id': 'cmp_2b72f74a',
             'grid_id': 'cmp_850ea220',
-            'ssuz.exam_score.actions.PeriodSelectPack_id': '30',
-            'ssuz.exam_score.actions.SubperiodSelectPack_id': '400',
-            'filter': 'Копылов',
+            #'ssuz.exam_score.actions.PeriodSelectPack_id': per,
+            #'ssuz.exam_score.actions.SubperiodSelectPack_id': subper,
+            'filter': family,
             'id': '-1',
         }
         return self.session.post('https://ssuz.vip.edu35.ru/actions/exam_score/objectrowsaction',
@@ -529,11 +530,11 @@ def wwwww(disc):
         w = sd(float(z)) if (z := stud['aver_period']) != '' else z
         q = sd(float(x)) if (x := stud[f"aver_subper_{nums[0]}_400"]) != '' else x
         s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], w, 'annual_estimation')
-        s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], q, '', 400)
+        s.score_final(disc['id_group'], disc['subject_id'], stud['student_id'], q, 400)
 
 
 def wwwww2(disc):
-    print(disc['name'], '')
+    print(disc['name'])
     e, x = 0, 0
     for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
         w = sd(float(z)) if (z := stud['aver_period']) != '' else z
