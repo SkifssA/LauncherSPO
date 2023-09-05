@@ -43,7 +43,6 @@ class AvtoJ:
         self.cookie = ''
         self.load = ''
         r = self.session.get('https://ssuz.vip.edu35.ru/auth/login-page')
-        print(r)
         soup = BeautifulSoup(r.content, 'html.parser')
 
         self.csrf = soup.find('input', {'name': 'csrfmiddlewaretoken'})['value']
@@ -63,7 +62,7 @@ class AvtoJ:
             'Cookie': self.cookie,
             'X-Requested-With': 'XMLHttpRequest',
             'Referer':'https://ssuz.vip.edu35.ru/auth/login-page',
-            'Sec-Ch-Ua': '"Not.A/Brand";v = "8", "Chromium";v = "114", "Microsoft Edge";v = "114"',
+            'Sec-Ch-Ua': '"Chromium";v="116", "Not)A;Brand";v="24", "Microsoft Edge";v="116"',
             'Sec-Ch-Ua-Mobile': '?0',
             'Sec-Ch-Ua-Platform': '"Windows"',
             'Sec-Fetch-Dest': 'empty',
@@ -71,10 +70,10 @@ class AvtoJ:
             'Sec-Fetch-Site': 'same-origin',
         }
         if self.cookie.find('ssuz_sessionid') != -1:
-            head_['X-Csrftoken'] = self.cookie[self.cookie.rfind('=')+1:]
+            head_['X-Xsrftoken'] = self.cookie[self.cookie.rfind('=')+1:]
         return head_
 
-    def date_patch(self, date_f):
+    def date_patch(self, date_f = ''):
         """Выставление правильного времени"""
         date_from = date_f
         if date_f == '':
@@ -88,6 +87,7 @@ class AvtoJ:
     def set_cookie(self, cookie):
         '''Установка куки(Для тестов, а то банит XD)'''
         self.session.get('https://ssuz.vip.edu35.ru', cookies={'Cookie': cookie})
+        print(cookie)
         self.cookie = cookie
 
     def login(self, login, password):
@@ -97,9 +97,11 @@ class AvtoJ:
                                  data={'csrfmiddlewaretoken': self.csrf,
                                        'login_login': login,
                                        'login_password': password})
+        print(data)
         try:
             cook = requests.utils.dict_from_cookiejar(self.session.cookies)
-            self.set_cookie(f'ssuz_sessionid={cook["ssuz_sessionid"]}; csrftoken={cook["csrftoken"]}')
+            print(cook)
+            self.set_cookie(f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={cook["ssuz_sessionid"]}; csrftoken={cook["csrftoken"]}')
             return True
         except KeyError:
             return False
@@ -118,6 +120,7 @@ class AvtoJ:
             'month': '',
             'filter': ''
         }
+        print(self.session.post(self.url[0], headers=self.head(), data=data))
         response = self.session.post(self.url[0], headers=self.head(), data=data).json()
         return response
 
@@ -178,10 +181,10 @@ class AvtoJ:
         '''Создание списков для работы'''
         prac = 'Practice = [\n'
         theo = 'Theory = [\n'
-        for group in self.group_rows(prac='1', date_from='01.09.2022')['rows']:
+        for group in self.group_rows(prac='', date_from=self.date_patch())['rows']:
             name = group['name'][:group['name'].index(' ')]
-            for disc in self.disc_rows(group['id'], prac='1', date_from='01.09.2022')['rows']:
-                student = self.student_rows(group['id'], disc['id'], prac='1', date_from='01.09.2022')
+            for disc in self.disc_rows(group['id'], prac='', date_from=self.date_patch())['rows']:
+                student = self.student_rows(group['id'], disc['id'], prac='', date_from=self.date_patch())
                 que.put(name)
                 if student['total'] <= 5:
                     theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
@@ -433,7 +436,7 @@ class AvtoJ:
             'mark_name': type_score,
             'mark_type_id': '23',
         }
-        self.session.post(self.url[11], headers=self.head(), data=data)
+        print(self.session.post(self.url[11], headers=self.head(), data=data))
 
     def score_final(self, id_group, subject_id, student_id, score, type_score='', subperiod='', date_from=''):
         date_from = self.date_patch(date_from)
@@ -485,8 +488,8 @@ class AvtoJ:
             'start': '0',
             'm3_window_id': 'cmp_2b72f74a',
             'grid_id': 'cmp_850ea220',
-            #'ssuz.exam_score.actions.PeriodSelectPack_id': per,
-            #'ssuz.exam_score.actions.SubperiodSelectPack_id': subper,
+            'ssuz.exam_score.actions.PeriodSelectPack_id': per,
+            'ssuz.exam_score.actions.SubperiodSelectPack_id': subper,
             'filter': family,
             'id': '-1',
         }
