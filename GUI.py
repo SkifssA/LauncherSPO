@@ -197,7 +197,7 @@ class APP(CTk):
 
         LoginForm(self.session)
         if self.session.cookie != '':  # Основная отработка
-            #self.today = self.session.today_list()
+            self.today = self.session.today_list()
             self.main_frame()
             self.mainloop()
         else:

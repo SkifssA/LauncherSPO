@@ -87,7 +87,6 @@ class AvtoJ:
     def set_cookie(self, cookie):
         '''Установка куки(Для тестов, а то банит XD)'''
         self.session.get('https://ssuz.vip.edu35.ru', cookies={'Cookie': cookie})
-        print(cookie)
         self.cookie = cookie
 
     def login(self, login, password):
@@ -97,10 +96,8 @@ class AvtoJ:
                                  data={'csrfmiddlewaretoken': self.csrf,
                                        'login_login': login,
                                        'login_password': password})
-        print(data)
         try:
             cook = requests.utils.dict_from_cookiejar(self.session.cookies)
-            print(cook)
             self.set_cookie(f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={cook["ssuz_sessionid"]}; csrftoken={cook["csrftoken"]}')
             return True
         except KeyError:
