@@ -282,6 +282,14 @@ class APP(CTk):
         self.tab.destroy()
         self.tab = TabView(self.frame)
         self.tab.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
+    def on_button_click(self):
+        input_text = self.entry.get()
+        # .lower()
+        today = None if input_text != 'Сегодня' else self.today
+        self.tab.recreate_frame(input_text, today)
+    def on_enter_pressed(self, event):
+        # Вызвать функцию on_button_click при нажатии клавиши Enter
+        self.on_button_click()
 
     def main_frame(self):
         """Основная функция отрисовки виджетов"""
@@ -289,10 +297,12 @@ class APP(CTk):
         self.tab = TabView(self.frame)
         self.studen_frame = None
         self.entry = CTkEntry(self.frame, placeholder_text="Поиск", width=300)
-        button = CTkButton(self.frame, text='Найти', command=lambda: self.tab.recreate_frame(self.entry.get(),
-                                                                                             today=None if self.entry.get() != 'Сегодня' else self.today))
+        button = CTkButton(self.frame, text='Найти', command=self.on_button_click)
         button.grid(row=0, column=2, pady=10, padx=10)
         self.entry.grid(row=0, column=0, pady=10, padx=10, columnspan=2)
+        # Привязать событие <Return> к полю ввода
+        self.entry.bind("<Return>", self.on_enter_pressed)
+
         self.tab.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
         button = CTkButton(self.frame, text='Выбрать всё',
                            command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'on'))
