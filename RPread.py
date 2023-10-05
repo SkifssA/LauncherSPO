@@ -33,9 +33,9 @@ class CreateRP(CTkFrame):
         self.tabl.heading("t", text="Тема", anchor=CENTER)
         self.tabl.heading("c", text="Кол-во часов", anchor=CENTER)
 
-        self.entry = [CTkEntry(self, width=500), CTkEntry(self)]
-        self.entry[0].grid()
-        self.entry[1].grid()
+        self.entry = [CTkEntry(self, width=300,placeholder_text="Введите тему"), CTkEntry(self,placeholder_text="Введите часы")]
+        self.entry[0].grid(row=2, column=0,sticky='ew')
+        self.entry[1].grid(row=2, column=1,sticky='ew')
 
         self.count = 0
 

@@ -144,7 +144,7 @@ class APP(CTk):
         button = CTkButton(self.frame, text='Снять всё',
                            command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'off'))
         button.grid(row=3, column=0, pady=10, padx=10)
-        button = CTkButton(self.frame, text='Открыть занятия', command=lambda: self.button_close_open_lesson(True))
+        button = CTkButton(self.frame, text='Открыть занятия', command=lambda: ProgressBar(self, lambda q: self.button_close_open_lesson(True, q)))
         button.grid(row=2, column=1, pady=10, padx=10)
         button = CTkButton(self.frame, text='Закрыть занятия',
                            command=lambda: ProgressBar(self, lambda q: self.button_close_open_lesson(False, q)))
