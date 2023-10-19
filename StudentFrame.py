@@ -101,24 +101,25 @@ class StudentFrame(CTkScrollableFrame):
 
     def add_score_ui(self):
         """Создание полей для оценок в лаунчере"""
-        self.score.append([])
-        n = len(self.score) - 1
-        self.score[n].append(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'],
+        self.score = []
+
+        self.score.append(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'],
                                                        self.rows[0]['lessons'][-1]['id']))
 
         if self.disc2 is not None:
-            self.score[n].append(self.session.show_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
-                                                           self.rows2[0]['lessons'][-1]['id']))
-        if self.score[n][0]['total'] != 0:
+            self.score.append(self.session.show_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
+                                                              self.rows2[0]['lessons'][-1]['id']))
+        n = self.score[0]['total'] - 1
+        if self.score[0]['total'] != 0:
             self.entry.append([])
             for com in range(len(self.combo)):
                 self.entry[n].append(CTkEntry(self, width=10))
                 if com < len(self.rows):
-                    self.entry[n][-1].insert(0, self.rows[com]['lessons'][-1][f'work_{self.score[n][0]["rows"][self.score[n][0]["total"] - n - 1]["id"]}'][
+                    self.entry[n][-1].insert(0, self.rows[com]['lessons'][-1][f'work_{self.score[0]["rows"][self.score[0]["total"] - n - 1]["id"]}'][
                         'type_id_36_score'])
                 else:
                     self.entry[n][-1].insert(0, self.rows2[com - len(self.rows)]['lessons'][-1][
-                        f'work_{self.score[n][1]["rows"][self.score[n][0]["total"] - n - 1]["id"]}'][
+                        f'work_{self.score[1]["rows"][self.score[0]["total"] - n - 1]["id"]}'][
                         'type_id_36_score'])
                 self.entry[n][-1].grid(row=com, column=len(self.combo[0]) + 1 + n, pady=5, padx=5)
                 self.entry[n][-1].bind('<KeyPress>', lambda e: self.move(e))
@@ -200,12 +201,12 @@ class StudentFrame(CTkScrollableFrame):
     def save_score(self):
         """Сохранение оценок в журнал"""
         n = len(self.rows)
-        for j, s in enumerate(self.score):
-            for i, entry in enumerate(self.entry[j][:n]):
+        for j, s in enumerate(self.entry):
+            for i, entry in enumerate(s[:n]):
                 self.session.expose_score(self.disc['id_group'], self.disc['subject_id'], self.rows[0]['lessons'][-1]['id'],
-                                          s[0]['rows'][len(self.score) - j - 1]['id'], entry.get(), self.rows[i]['student_id'])
+                                          self.score[0]['rows'][self.score[0]['total'] - j - 1]['id'], entry.get(), self.rows[i]['student_id'])
             if self.rows2 is not None:
-                for i, entry in enumerate(self.entry[j][n:]):
+                for i, entry in enumerate(s[n:]):
                     self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
                                               self.rows2[0]['lessons'][-1]['id'],
-                                              s[1]['rows'][len(self.score) - j - 1]['id'], entry.get(), self.rows2[i]['student_id'])
+                                              self.score[1]['rows'][self.score[0]['total'] - j - 1]['id'], entry.get(), self.rows2[i]['student_id'])
