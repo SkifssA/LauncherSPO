@@ -109,7 +109,7 @@ class StudentFrame(CTkScrollableFrame):
         if self.disc2 is not None:
             self.score.append(self.session.show_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
                                                               self.rows2[0]['lessons'][-1]['id']))
-        n = self.score[0]['total'] - 1
+        n = len(self.entry)
         if self.score[0]['total'] != 0:
             self.entry.append([])
             for com in range(len(self.combo)):
