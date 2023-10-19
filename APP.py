@@ -9,13 +9,13 @@ from ExamFrame import Exam
 from LoginForm import LoginForm
 from TabView import TabView
 
+
 class APP(CTk):
     """Основное приложение"""
 
-    def __init__(self,ListOfDisciplines):
+    def __init__(self, ListOfDisciplines):
         super().__init__()
         self.ListOfDisciplines = ListOfDisciplines
-
 
         print(self.winfo_screenheight() / 1080)
         self.studen_frame = None
@@ -29,7 +29,7 @@ class APP(CTk):
         self.resizable(False, False)
         self.frame = None
 
-        LoginForm(self.session,self.ListOfDisciplines)
+        LoginForm(self.session, self.ListOfDisciplines)
         if self.session.cookie != '':  # Основная отработка
             self.today = self.session.today_list()
             self.main_frame()
@@ -44,14 +44,12 @@ class APP(CTk):
             group = self.ListOfDisciplines.Theory[group_idl]
             que.put(f"Теория {group['name'][:group['name'].find('_')]}")
             i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
-        print(i)
         i = 0
         for group_idl in self.tab.frame_pr.get_check_group():
             group = self.ListOfDisciplines.Practice[group_idl]
             que.put(f"Практика {group['name'][group['name'].find('('):]}")
             i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'],
                                                 prac='1', open=open)
-        print(i)
 
     def create_student_frame(self):
         """Функция создания формы для явки"""
@@ -78,7 +76,7 @@ class APP(CTk):
         tr = tuple(self.tab.frame_tr.get_check_group())
         if len(tr) == 2:
             self.exam_frame = Exam(self, self.session, disc=self.ListOfDisciplines.Theory[tr[0]],
-                                                                   disc2=self.ListOfDisciplines.Theory[tr[1]])
+                                   disc2=self.ListOfDisciplines.Theory[tr[1]])
             self.frame.grid_forget()
             self.exam_frame.root.grid()
         else:
@@ -102,7 +100,8 @@ class APP(CTk):
     def save_themes(self, que):
         """Загрузка тем в журнал"""
         for id in self.tab.frame_tr.get_check_group():
-            que.put(f"Теория {self.ListOfDisciplines.Theory[id]['name'][:self.ListOfDisciplines.Theory[id]['name'].find('_')]}")
+            que.put(
+                f"Теория {self.ListOfDisciplines.Theory[id]['name'][:self.ListOfDisciplines.Theory[id]['name'].find('_')]}")
             self.session.save_themes(self.ListOfDisciplines.Theory[id], prac='')
         for id in self.tab.frame_pr.get_check_group():
             que.put(
@@ -114,13 +113,15 @@ class APP(CTk):
         ProgressBar(self, self.session.save_file_disc)
         reload(self.ListOfDisciplines)
         self.tab.destroy()
-        self.tab = TabView(self.ListOfDisciplines,self.frame)
+        self.tab = TabView(self.ListOfDisciplines, self.frame)
         self.tab.grid(row=1, column=0, pady=10, padx=10, columnspan=3)
+
     def on_button_click(self):
         input_text = self.entry.get()
         # .lower()
         today = None if input_text != 'Сегодня' else self.today
         self.tab.recreate_frame(input_text, today)
+
     def on_enter_pressed(self, event):
         # Вызвать функцию on_button_click при нажатии клавиши Enter
         self.on_button_click()
@@ -128,7 +129,7 @@ class APP(CTk):
     def main_frame(self):
         """Основная функция отрисовки виджетов"""
         self.frame = CTkFrame(self)
-        self.tab = TabView(self.ListOfDisciplines,self.frame)
+        self.tab = TabView(self.ListOfDisciplines, self.frame)
         self.studen_frame = None
         self.entry = CTkEntry(self.frame, placeholder_text="Поиск", width=300)
         button = CTkButton(self.frame, text='Найти', command=self.on_button_click)
@@ -144,7 +145,8 @@ class APP(CTk):
         button = CTkButton(self.frame, text='Снять всё',
                            command=lambda: self.tab.all_check_in_tabl(self.tab.get(), 'off'))
         button.grid(row=3, column=0, pady=10, padx=10)
-        button = CTkButton(self.frame, text='Открыть занятия', command=lambda: ProgressBar(self, lambda q: self.button_close_open_lesson(True, q)))
+        button = CTkButton(self.frame, text='Открыть занятия',
+                           command=lambda: ProgressBar(self, lambda q: self.button_close_open_lesson(True, q)))
         button.grid(row=2, column=1, pady=10, padx=10)
         button = CTkButton(self.frame, text='Закрыть занятия',
                            command=lambda: ProgressBar(self, lambda q: self.button_close_open_lesson(False, q)))

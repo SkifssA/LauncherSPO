@@ -46,7 +46,7 @@ class Calendar(CTkFrame):
         self.mount.set(self.mount_mass[self.date_mass[0] - 1])
         self.date.set(f'{datetime.strftime(date_now, "%d")}.{self.date_mass[0]:02}.20{self.date_mass[1]}')
         self.canvas_mass = [[None for _ in range(6)] for _ in range(7)]
-        if datetime.now().strftime('%d.%m.%Y') not in  self.date_lesson:
+        if datetime.now().strftime('%d.%m.%Y') not in self.date_lesson:
             self.open_button.configure(state='disabled')
         self.create_days()
 
