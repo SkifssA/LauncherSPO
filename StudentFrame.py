@@ -114,11 +114,11 @@ class StudentFrame(CTkScrollableFrame):
             for com in range(len(self.combo)):
                 self.entry[n].append(CTkEntry(self, width=10))
                 if com < len(self.rows):
-                    self.entry[n][-1].insert(0, self.rows[com]['lessons'][-1][f'work_{self.score[n][0]["rows"][self.score[n][0]['total'] - n - 1]["id"]}'][
+                    self.entry[n][-1].insert(0, self.rows[com]['lessons'][-1][f'work_{self.score[n][0]["rows"][self.score[n][0]["total"] - n - 1]["id"]}'][
                         'type_id_36_score'])
                 else:
                     self.entry[n][-1].insert(0, self.rows2[com - len(self.rows)]['lessons'][-1][
-                        f'work_{self.score[n][1]["rows"][self.score[n][0]['total'] - n - 1]["id"]}'][
+                        f'work_{self.score[n][1]["rows"][self.score[n][0]["total"] - n - 1]["id"]}'][
                         'type_id_36_score'])
                 self.entry[n][-1].grid(row=com, column=len(self.combo[0]) + 1 + n, pady=5, padx=5)
                 self.entry[n][-1].bind('<KeyPress>', lambda e: self.move(e))
