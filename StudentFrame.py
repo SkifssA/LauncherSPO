@@ -45,7 +45,8 @@ class StudentFrame(CTkScrollableFrame):
         self.button_begin.grid(row=3, column=2, pady=10, padx=10)
         self.button_back = CTkButton(self.root, text='Назад', command=self.back)
         self.button_back.grid(row=3, column=3, pady=10, padx=10)
-        for i in range(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'], self.rows[0]['lessons'][-1]['id'])['total']):
+        for i in range(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'],
+                                                    self.rows[0]['lessons'][-1]['id'])['total']):
             self.add_score_ui()
 
     def clock_back(self):
@@ -108,14 +109,15 @@ class StudentFrame(CTkScrollableFrame):
 
         if self.disc2 is not None:
             self.score.append(self.session.show_score_pole(self.disc2['id_group'], self.disc2['subject_id'],
-                                                              self.rows2[0]['lessons'][-1]['id']))
+                                                           self.rows2[0]['lessons'][-1]['id']))
         n = len(self.entry)
         if self.score[0]['total'] != 0:
             self.entry.append([])
             for com in range(len(self.combo)):
                 self.entry[n].append(CTkEntry(self, width=10))
                 if com < len(self.rows):
-                    self.entry[n][-1].insert(0, self.rows[com]['lessons'][-1][f'work_{self.score[0]["rows"][self.score[0]["total"] - n - 1]["id"]}'][
+                    self.entry[n][-1].insert(0, self.rows[com]['lessons'][-1][
+                        f'work_{self.score[0]["rows"][self.score[0]["total"] - n - 1]["id"]}'][
                         'type_id_36_score'])
                 else:
                     self.entry[n][-1].insert(0, self.rows2[com - len(self.rows)]['lessons'][-1][
@@ -123,7 +125,7 @@ class StudentFrame(CTkScrollableFrame):
                         'type_id_36_score'])
                 self.entry[n][-1].grid(row=com, column=len(self.combo[0]) + 1 + n, pady=5, padx=5)
                 self.entry[n][-1].bind('<KeyPress>', lambda e: self.move(e))
-            #self.button_create.configure(state='disabled')
+            # self.button_create.configure(state='disabled')
 
     def add_score(self):
         """Создание полей для оценок в журнале"""
@@ -170,7 +172,8 @@ class StudentFrame(CTkScrollableFrame):
             self.combo[-1][-1].set(n['attendance']['value'])
 
         self.year_score.append(StringVar())
-        CTkLabel(self, textvariable=self.year_score[-1]).grid(row=j, column=len(student['lessons']) + 10, padx=5, pady=5)
+        CTkLabel(self, textvariable=self.year_score[-1]).grid(row=j, column=len(student['lessons']) + 10, padx=5,
+                                                              pady=5)
 
     def p(self, j, x):
         """Метод проставления значений студенту до конца занятий"""
@@ -186,27 +189,36 @@ class StudentFrame(CTkScrollableFrame):
         n = len(self.rows)
         for id_student, student in enumerate(self.combo[:n]):
             for id_lesson, lesson in enumerate(student):
-                self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
-                                             self.rows[id_student]['student_id'],
-                                             self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
-                                             prac=self.prac)
+                if lesson.get() != ' ':
+                    self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
+                                                 self.rows[id_student]['student_id'],
+                                                 self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
+                                                 prac=self.prac)
         if self.rows2 is not None:
             for id_student, student in enumerate(self.combo[n:]):
                 for id_lesson, lesson in enumerate(student):
-                    self.session.setting_turnout(self.disc2['id_group'], self.disc2['subject_id'],
-                                                 self.rows2[id_student]['student_id'],
-                                                 self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
-                                                 prac=self.prac)
+                    if lesson.get() != ' ':
+                        self.session.setting_turnout(self.disc2['id_group'], self.disc2['subject_id'],
+                                                     self.rows2[id_student]['student_id'],
+                                                     self.rows2[id_student]['lessons'][id_lesson]['id'], lesson.get(),
+                                                     prac=self.prac)
 
     def save_score(self):
         """Сохранение оценок в журнал"""
         n = len(self.rows)
         for j, s in enumerate(self.entry):
             for i, entry in enumerate(s[:n]):
-                self.session.expose_score(self.disc['id_group'], self.disc['subject_id'], self.rows[0]['lessons'][-1]['id'],
-                                          self.score[0]['rows'][self.score[0]['total'] - j - 1]['id'], entry.get(), self.rows[i]['student_id'])
+                if entry.get() != ' ':
+                    self.session.expose_score(self.disc['id_group'], self.disc['subject_id'],
+                                              self.rows[0]['lessons'][-1]['id'],
+                                              self.score[0]['rows'][self.score[0]['total'] - j - 1]['id'],
+                                              entry.get(),
+                                              self.rows[i]['student_id'])
             if self.rows2 is not None:
                 for i, entry in enumerate(s[n:]):
-                    self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
-                                              self.rows2[0]['lessons'][-1]['id'],
-                                              self.score[1]['rows'][self.score[0]['total'] - j - 1]['id'], entry.get(), self.rows2[i]['student_id'])
+                    if entry.get() != ' ':
+                        self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
+                                                  self.rows2[0]['lessons'][-1]['id'],
+                                                  self.score[1]['rows'][self.score[0]['total'] - j - 1]['id'],
+                                                  entry.get(),
+                                                  self.rows2[i]['student_id'])
