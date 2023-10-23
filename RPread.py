@@ -55,7 +55,7 @@ class CreateRP(CTkFrame):
         """Добавление темы в таблицу"""
         if self.entry[0].get() != '' and self.entry[1].get() != '' and self.entry[1].get().isdigit():
             self.tabl.insert(parent='', index='end', iid=self.count, text='',
-                             values=(self.entry[0].get().replace('\n', ' '), self.entry[1].get()))
+                             values=(self.entry[0].get().replace('\n', ' '), self.entry[1].get().replace('\n', '')))
             self.entry[0].delete(0, END)
             self.entry[1].delete(0, END)
             self.count += 1
