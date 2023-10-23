@@ -171,15 +171,17 @@ class AvtoJ:
         response = self.session.post(self.url[2], headers=self.head(), data=data).json()
         return response
 
-    def creat_str(self, name, id_group, subject_id, student_id):
+    def creat_str(self, name, id_group, subject_id, student_id, id_list):
         '''Создание списка практических и теоретических журналов'''
-        s = f"'name': '{name} ', 'id_group': '{id_group}', 'subject_id': '{subject_id}','student_id': '{student_id}'"
+        s = f"'name': '{name} ', 'id_group': '{id_group}', 'subject_id': '{subject_id}','student_id': '{student_id}', 'id':{id_list}"
         return '\t{' + s + '},\n'
 
     def create_disc_list(self, que):
         '''Создание списков для работы'''
         prac = 'Practice = [\n'
         theo = 'Theory = [\n'
+        p_id = 0
+        t_id = 0
         for group in self.group_rows(prac='', date_from=self.date_patch())['rows']:
             name = group['name'][:group['name'].index(' ')]
             for disc in self.disc_rows(group['id'], prac='', date_from=self.date_patch())['rows']:
@@ -187,15 +189,19 @@ class AvtoJ:
                 que.put(name)
                 if student['total'] <= 5:
                     theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
-                                           student['rows'][0]['student_id'])
+                                           student['rows'][0]['student_id'], t_id)
                     prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
-                                           student['rows'][0]['student_id'])
+                                           student['rows'][0]['student_id'], p_id)
+                    p_id += 1
+                    t_id += 1
                 elif '(' in disc['name']:
                     prac += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
-                                           student['rows'][0]['student_id'])
+                                           student['rows'][0]['student_id'], p_id)
+                    p_id += 1
                 else:
                     theo += self.creat_str(name + '_' + disc['name'], group['id'], disc['id'],
-                                           student['rows'][0]['student_id'])
+                                           student['rows'][0]['student_id'], t_id)
+                    t_id += 1
         return [prac + ']\n', theo + ']']
 
     def save_file_disc(self, que):

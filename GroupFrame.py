@@ -20,7 +20,7 @@ class GroupFrame(CTkScrollableFrame):
         '''Создание "галачек" с группами'''
         self.all_del()
         self.check_var = [[], [], []]
-        for i, group in enumerate(group_list):
+        for group in group_list:
             if group['name'].find(filter) != -1:
                 v = group['name'].find('_')
                 if group['name'][v - 1:v] != 'в':
@@ -28,7 +28,7 @@ class GroupFrame(CTkScrollableFrame):
                     self.check_var[1].append(CTkCheckBox(self, text=group['name'],
                                                          variable=self.check_var[0][-1], onvalue="on", offvalue="off"))
                     self.check_var[1][-1].pack(padx=20, pady=10, anchor='w')
-                    self.check_var[2].append(i)
+                    self.check_var[2].append(group['id'])
 
     def all_check(self, on_off):
         '''Метот для выделения всех групп'''
