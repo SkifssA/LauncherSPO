@@ -1,3 +1,5 @@
+import random
+
 import requests
 import re
 from datetime import datetime
@@ -260,9 +262,8 @@ class AvtoJ:
             'exam_subject_id': '0',
             'subject_sub_group_obj': subject_id,
             'subject_id': nums[0],
-            'view_lessons': 'false',
         }
-        self.session.post(self.url[5], headers=self.head(), data=data)
+        return self.session.post(self.url[5], headers=self.head(), data=data)
 
     def create_score_pole(self, id_group, subject_id, lesson, date_from='', prac=''):
         '''Создание поля для оценок'''
@@ -555,14 +556,42 @@ def wwwww3(disc):
     return len(s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022'))
 
 
+
+def random_list(n, list_d):
+    s = []
+    while not len(set(s)) == n:
+        s.append(random.randint(0, len(list_d)-1))
+    st = []
+    for i in set(s):
+        st.append(list_d[i])
+    return st
+
+def wwwww4(disc, n):
+    print(disc['name'])
+    date_lesson = set(
+        [x['date'] for x in s.student_rows(disc['id_group'], disc['subject_id'])[
+            'rows'][0]['lessons']])
+    id_student = s.student_rows(disc['id_group'], disc['subject_id'])['rows']
+    for d in date_lesson:
+        print(d)
+        print(datetime.strftime(datetime.strptime(d, '%d.%m.%Y'), '%a'))
+        if not datetime.strftime(datetime.strptime(d, '%d.%m.%Y'), '%a') == 'Sat':
+            st = random_list(n, id_student)
+            for i in s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from=d, date_whis=d):
+                for j in st:
+                    print(s.setting_turnout(disc['id_group'], disc['subject_id'], j['student_id'], i, 'Н'))
+                    pass
+
+
+
+
+
 if __name__ == '__main__':
     s = AvtoJ()
-    s.set_cookie('ssuz_sessionid=ztoi20yh3xv911evywzzvsvihm1cvgmu')
-    for exam in s.ved_get():
-        s.ved_score_type(exam['id'])
-        for disc in ListOfDisciplines.Theory:
-            if disc['name'].find(exam['group_actual_name'][:exam['group_actual_name'].find(' ')]) != -1:
-                print(disc['name'])
-                for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
-                    s.ved_score(exam['id'], stud['student_id'], stud['final_grade'])
-                break
+    print(s.login('1051110511_t0087', '0knvK1a6'))
+
+    wwwww4(ListOfDisciplines.Theory[2], 2)
+    wwwww4(ListOfDisciplines.Theory[4], 4)
+    wwwww4(ListOfDisciplines.Theory[6], 2)
+    wwwww4(ListOfDisciplines.Theory[10], 3)
+

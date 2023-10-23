@@ -54,4 +54,8 @@ class GroupFrame(CTkScrollableFrame):
                 yield ch + i
             else:
                 yield ch
+
+    def __get_check_group(self) -> tuple:
+        for i in list(self.__get_check_group()):
+            print(self.check_var[1][i]._text)
 # .............................................. #
