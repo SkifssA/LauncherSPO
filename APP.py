@@ -86,11 +86,11 @@ class APP(CTk):
         """Открытие окна с рп"""
         tr = tuple(self.tab.frame_tr.get_check_group())
         pr = tuple(self.tab.frame_pr.get_check_group())
-        if len(tr) == 0:
+        if len(tr) == 0 and not len(pr) == 0:
             self.rp = CreateRP(self, disc=[self.ListOfDisciplines.Practice[id] for id in pr], prac='p')
             self.frame.grid_forget()
             self.rp.grid()
-        elif len(pr) == 0:
+        elif len(pr) == 0 and not len(tr) == 0:
             self.rp = CreateRP(self, disc=[self.ListOfDisciplines.Theory[id] for id in tr], prac='t')
             self.frame.grid_forget()
             self.rp.grid()
