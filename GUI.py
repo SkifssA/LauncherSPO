@@ -20,6 +20,6 @@ except ModuleNotFoundError:
 
 if __name__ == '__main__':
     s = CTk()
-    #set_widget_scaling(s.winfo_screenheight() / 1080)
+    set_widget_scaling(s.winfo_screenheight() / 1080)
     s.destroy()
     APP(ListOfDisciplines)
