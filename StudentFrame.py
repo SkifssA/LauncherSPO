@@ -33,10 +33,12 @@ class StudentFrame(CTkScrollableFrame):
             self.add_v_group(self.disc2, date_from, date_whis)
         self.upload_year_score()
         CTkLabel(self.root, text=self.disc['name'], text_color='white') \
-            .grid(row=0, column=0, pady=10, padx=10, columnspan=3)
+            .grid(row=0, column=0, pady=10, padx=10, columnspan=2)
+        CTkLabel(self.root, text=self.date_from, text_color='white')\
+            .grid(row=0, column=2, pady=10, padx=10)
         CTkLabel(self.root, text_color='white' if (cl := self.clock_back()) > 10 or cl < 0 else 'red',
                  text=f'Осталось часов {cl}' if cl >= 0 else f'Выдано часов {-cl}') \
-            .grid(row=0, column=3, pady=10, padx=10, columnspan=2)
+            .grid(row=0, column=3, pady=10, padx=10)
         self.button_save = CTkButton(self.root, text='Сохранить', command=lambda: ProgressBar(master, self.all_save))
         self.button_save.grid(row=3, column=0, pady=10, padx=10)
         self.button_create = CTkButton(self.root, text='Создать поле для оценок', command=lambda: self.add_score())
@@ -163,7 +165,7 @@ class StudentFrame(CTkScrollableFrame):
     def student_lesson(self, student, j):
         """Метод создания явки на 1 студента"""
         self.label.append(CTkLabel(self, text=student['student_name']))
-        self.label[-1].grid(row=j, column=0, padx=20, pady=5)
+        self.label[-1].grid(row=j, column=0, padx=20, pady=5, sticky='w')
         self.combo.append([])
         for i, n in enumerate(student['lessons']):
             self.combo[-1].append(
