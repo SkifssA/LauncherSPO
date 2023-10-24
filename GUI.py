@@ -1,13 +1,4 @@
-import tkinter
-from tkinter.messagebox import showerror
 from customtkinter import *
-import os
-from importlib import reload
-from Calendar import Calendar
-from RPread import CreateRP
-from ProgressBar import ProgressBar
-from ReJ import AvtoJ
-from ExamFrame import Exam
 from APP import APP
 
 try:
