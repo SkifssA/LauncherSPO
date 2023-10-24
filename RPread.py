@@ -20,10 +20,10 @@ class CreateRP(CTkFrame):
             .grid(row=0, column=0, pady=10, padx=10, columnspan=3)
 
         self.tabl = ttk.Treeview(self)
-        self.tabl.grid()
+        self.tabl.grid(row=1, column=0, columnspan=3)
         self.tabl['columns'] = ('t', 'c')
         self.tabl.column("#0", width=0, stretch=NO)
-        self.tabl.column("t", anchor=CENTER, width=500)
+        self.tabl.column("t", anchor=CENTER, width=650)
         self.tabl.column("c", anchor=CENTER, width=100)
 
         self.tabl.bind("<<TreeviewSelect>>", self.item_selected)
@@ -33,18 +33,26 @@ class CreateRP(CTkFrame):
         self.tabl.heading("t", text="Тема", anchor=CENTER)
         self.tabl.heading("c", text="Кол-во часов", anchor=CENTER)
 
-        self.entry = [CTkEntry(self, width=300,placeholder_text="Введите тему"), CTkEntry(self,placeholder_text="Введите часы")]
-        self.entry[0].grid(row=2, column=0,sticky='ew')
-        self.entry[1].grid(row=2, column=1,sticky='ew')
+        self.entry = [CTkEntry(self, width=650,placeholder_text="Введите тему"),
+                      CTkEntry(self,width=100,placeholder_text="Введите часы")]
+        self.entry[0].grid(row=2, column=0,columnspan=2,sticky='ew')
+        self.entry[1].grid(row=2, column=2,sticky='ew')
 
         self.count = 0
-
-        CTkButton(self, text='Добавить тему', command=self.save_in_table).grid()
-        CTkButton(self, text='Изменить тему', command=self.modification_in_tabl).grid()
-        CTkButton(self, text='Удалить тему', command=self.delete_in_tabl).grid()
-        CTkButton(self, text='Сохранить файл', command=self.save_file).grid()
-        CTkButton(self, text='Открыть файл', command=self.choose_file).grid()
-        CTkButton(self, text='Назад', command=self.back).grid()
+        f = CTkFrame(self)
+        CTkButton(f, text='Добавить тему', command=self.save_in_table)\
+            .grid(row=0, column=0, pady=10, padx=10)
+        CTkButton(f, text='Изменить тему', command=self.modification_in_tabl)\
+            .grid(row=0, column=1, pady=10, padx=10)
+        CTkButton(f, text='Удалить тему', command=self.delete_in_tabl)\
+            .grid(row=0, column=2, pady=10, padx=10)
+        CTkButton(f, text='Сохранить файл', command=self.save_file)\
+            .grid(row=1, column=0, pady=10, padx=10)
+        CTkButton(f, text='Открыть файл', command=self.choose_file)\
+            .grid(row=1, column=1, pady=10, padx=10)
+        CTkButton(f, text='Назад', command=self.back)\
+            .grid(row=1, column=2, pady=10, padx=10)
+        f.grid(row=3, column=0, pady=10, padx=10, columnspan=3)
 
     def back(self):
         """Возврат на начальную форму"""
