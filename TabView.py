@@ -23,9 +23,9 @@ class TabView(CTkTabview):
         self.frame_tr = GroupFrame(self.ListOfDisciplines,self.tab('Теория'), False, width=self.width, height=self.height)
         self.recreate_frame('')
 
-    def recreate_frame(self, filter, today=None):
+    def recreate_frame(self, filter='', today=None):
         '''Создание перечисления с группами'''
-        if filter == 'Сегодня':
+        if today:
             self.frame_pr.create_group_checkbox(today[1], '')
             self.frame_pr.pack()
 

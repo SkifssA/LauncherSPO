@@ -119,7 +119,8 @@ class APP(CTk):
     def on_button_click(self):
         input_text = self.entry.get()
         today = None if input_text.lower() != 'сегодня' else self.today
-        self.tab.recreate_frame(input_text, today)
+        print(today)
+        self.tab.recreate_frame(today=today)
 
     def on_enter_pressed(self, event):
         # Вызвать функцию on_button_click при нажатии клавиши Enter
