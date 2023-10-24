@@ -119,7 +119,6 @@ class APP(CTk):
     def on_button_click(self):
         input_text = self.entry.get()
         today = None if input_text.lower() != 'сегодня' else self.today
-        print(today)
         self.tab.recreate_frame(today=today)
 
     def on_enter_pressed(self, event):
@@ -132,6 +131,7 @@ class APP(CTk):
         self.tab = TabView(self.ListOfDisciplines, self.frame)
         self.studen_frame = None
         self.entry = CTkEntry(self.frame, placeholder_text="Поиск", width=300)
+        self.entry.insert(0, 'Сегодня')
         button = CTkButton(self.frame, text='Найти', command=self.on_button_click)
         button.grid(row=0, column=2, pady=10, padx=10)
         self.entry.grid(row=0, column=0, pady=10, padx=10, columnspan=2)
