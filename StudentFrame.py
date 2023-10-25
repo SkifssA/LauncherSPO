@@ -3,7 +3,9 @@ import re
 from ProgressBar import ProgressBar
 from datetime import datetime
 
-
+"""Для каждого ученика надо сделать словарь с явкой, оценкой и изменением
+После надо придумть алгоритм просморта изменений и менять последний элемент словаря
+и по нему уже опредялять что нужно перезаписывать, а что нет"""
 class StudentFrame(CTkScrollableFrame):
     """Форма для проверки явки"""
 
