@@ -1,6 +1,7 @@
 from customtkinter import *
 from APP import APP
 
+
 try:
     import ListOfDisciplines
 except ModuleNotFoundError:
