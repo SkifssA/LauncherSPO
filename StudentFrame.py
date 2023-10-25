@@ -179,6 +179,7 @@ class StudentFrame(CTkScrollableFrame):
 
     def p(self, j, x):
         """Метод проставления значений студенту до конца занятий"""
+        print('='*20)
         set_box = False
         for box in self.combo[j]:
             if box.get() == x:
@@ -210,7 +211,7 @@ class StudentFrame(CTkScrollableFrame):
         n = len(self.rows)
         for j, s in enumerate(self.entry):
             for i, entry in enumerate(s[:n]):
-                if entry.get() != ' ':
+                if entry.get() != '':
                     self.session.expose_score(self.disc['id_group'], self.disc['subject_id'],
                                               self.rows[0]['lessons'][-1]['id'],
                                               self.score[0]['rows'][self.score[0]['total'] - j - 1]['id'],
@@ -218,7 +219,7 @@ class StudentFrame(CTkScrollableFrame):
                                               self.rows[i]['student_id'])
             if self.rows2 is not None:
                 for i, entry in enumerate(s[n:]):
-                    if entry.get() != ' ':
+                    if entry.get() != '':
                         self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
                                                   self.rows2[0]['lessons'][-1]['id'],
                                                   self.score[1]['rows'][self.score[0]['total'] - j - 1]['id'],
