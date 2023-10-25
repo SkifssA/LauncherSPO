@@ -222,6 +222,6 @@ class StudentFrame(CTkScrollableFrame):
                     if entry.get() != '':
                         self.session.expose_score(self.disc2['id_group'], self.disc2['subject_id'],
                                                   self.rows2[0]['lessons'][-1]['id'],
-                                                  self.score[1]['rows'][self.score[0]['total'] - j - 1]['id'],
+                                                  self.score[1]['rows'][self.score[1]['total'] - j - 1]['id'],
                                                   entry.get(),
                                                   self.rows2[i]['student_id'])
