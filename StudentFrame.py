@@ -1,6 +1,4 @@
 from customtkinter import *
-import re
-import pyautogui as pag
 from ProgressBar import ProgressBar
 from datetime import datetime
 """scroll поменяй """
@@ -96,11 +94,15 @@ class StudentFrame(CTkScrollableFrame):
         if e.keysym == 'Down':
             if i < len(self.student_all) - 1:
                 self.student_all[i + 1]['score'][n].focus_set()
-                self._parent_canvas.yview("scroll", self.scroll, "units")
+                print(i)
+                if i > 11:
+                    self._parent_canvas.yview("scroll", self.scroll, "units")
         elif e.keysym == 'Up':
             if i > 0:
                 self.student_all[i - 1]['score'][n].focus_set()
-                self._parent_canvas.yview("scroll", -self.scroll, "units")
+                print(i, len(self.student_all) - 12)
+                if len(self.student_all) - 12 > i:
+                    self._parent_canvas.yview("scroll", -self.scroll, "units")
         elif e.keysym == 'Left':
             if n > 0:
                 self.student_all[i]['score'][n - 1].focus_set()
@@ -111,7 +113,6 @@ class StudentFrame(CTkScrollableFrame):
     def validator(self, e, entry, i):
         self.student_all[i]['modification'] = True
         text = entry.get()
-        print(text)
         if not text.isdigit():
             entry.delete(0, END)
             self.student_all[i]['modification'] = False
@@ -120,7 +121,6 @@ class StudentFrame(CTkScrollableFrame):
         elif len(text) > 1:
             entry.delete(0, END)
             entry.insert(0, text[:1])
-        print(entry.get())
 
     def add_score_ui(self):
         """Создание полей для оценок в лаунчере"""
