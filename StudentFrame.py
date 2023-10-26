@@ -30,7 +30,7 @@ class StudentFrame(CTkScrollableFrame):
         if self.disc2 is not None:
             self.add_v_group(self.disc2, date_from, date_whis)
         self.upload_year_score()
-        self.scroll = self.student_all[0]['name'].cget('width') + 5
+
         CTkLabel(self.root, text=self.disc['name'], text_color='white') \
             .grid(row=0, column=0, pady=10, padx=10, columnspan=2)
         CTkLabel(self.root, text=self.date_from, text_color='white') \
@@ -46,6 +46,7 @@ class StudentFrame(CTkScrollableFrame):
         self.button_begin.grid(row=3, column=2, pady=10, padx=10)
         self.button_back = CTkButton(self.root, text='Назад', command=self.back)
         self.button_back.grid(row=3, column=3, pady=10, padx=10)
+        self.scroll = int(38 * master.winfo_screenheight() / 1080)
         for i in range(self.session.show_score_pole(self.disc['id_group'], self.disc['subject_id'],
                                                     self.rows[0]['lessons'][-1]['id'])['total']):
             self.add_score_ui()
@@ -95,11 +96,11 @@ class StudentFrame(CTkScrollableFrame):
         if e.keysym == 'Down':
             if i < len(self.student_all) - 1:
                 self.student_all[i + 1]['score'][n].focus_set()
-                print(self._parent_canvas.yview("scroll", self.scroll, "units"))
+                self._parent_canvas.yview("scroll", self.scroll, "units")
         elif e.keysym == 'Up':
             if i > 0:
                 self.student_all[i - 1]['score'][n].focus_set()
-                print(self._parent_canvas.yview("scroll", -self.scroll, "units"))
+                self._parent_canvas.yview("scroll", -self.scroll, "units")
         elif e.keysym == 'Left':
             if n > 0:
                 self.student_all[i]['score'][n - 1].focus_set()
