@@ -119,7 +119,7 @@ class APP(CTk):
     def on_button_click(self, event=None):
         input_text = self.entry.get()
         today = None if input_text.lower() != 'сегодня' else self.today
-        self.tab.recreate_frame(today=today)
+        self.tab.recreate_frame(filter=input_text, today=today)
 
     def main_frame(self):
         """Основная функция отрисовки виджетов"""
