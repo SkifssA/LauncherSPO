@@ -1,7 +1,7 @@
 from customtkinter import *
 from ProgressBar import ProgressBar
 from datetime import datetime
-"""scroll поменяй """
+
 class StudentFrame(CTkScrollableFrame):
     """Форма для проверки явки"""
 
@@ -21,6 +21,7 @@ class StudentFrame(CTkScrollableFrame):
         self.rows2 = None
         self.value_combobox = ['', 'Н', 'Б', 'У', 'О']
         self.score = []
+        self.up_down = [0, 11]
         """{name: label, lesson: combo, score: entry, year_score: year_score, modification: bool}"""
         self.student_all = []
         for j, i in enumerate(self.rows):
@@ -95,20 +96,24 @@ class StudentFrame(CTkScrollableFrame):
             if i < len(self.student_all) - 1:
                 self.student_all[i + 1]['score'][n].focus_set()
                 print(i)
-                if i > 11:
+                if self.up_down[1] < i != len(self.student_all)-1:
                     self._parent_canvas.yview("scroll", self.scroll, "units")
+                    self.up_down[1] += 1
+                    self.up_down[0] += 1
         elif e.keysym == 'Up':
             if i > 0:
                 self.student_all[i - 1]['score'][n].focus_set()
-                print(i, len(self.student_all) - 12)
-                if len(self.student_all) - 12 > i:
+                if self.up_down[0] + 1 > i != 0:
                     self._parent_canvas.yview("scroll", -self.scroll, "units")
+                    self.up_down[1] -= 1
+                    self.up_down[0] -= 1
         elif e.keysym == 'Left':
             if n > 0:
                 self.student_all[i]['score'][n - 1].focus_set()
         elif e.keysym == 'Right':
             if n < len(self.student_all[0]['score']):
                 self.student_all[i]['score'][n + 1].focus_set()
+        print(self.up_down)
 
     def validator(self, e, entry, i):
         self.student_all[i]['modification'] = True
