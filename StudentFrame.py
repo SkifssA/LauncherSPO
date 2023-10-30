@@ -95,7 +95,6 @@ class StudentFrame(CTkScrollableFrame):
         if e.keysym == 'Down':
             if i < len(self.student_all) - 1:
                 self.student_all[i + 1]['score'][n].focus_set()
-                print(i)
                 if self.up_down[1] < i != len(self.student_all)-1:
                     self._parent_canvas.yview("scroll", self.scroll, "units")
                     self.up_down[1] += 1
@@ -113,7 +112,6 @@ class StudentFrame(CTkScrollableFrame):
         elif e.keysym == 'Right':
             if n < len(self.student_all[0]['score']):
                 self.student_all[i]['score'][n + 1].focus_set()
-        print(self.up_down)
 
     def validator(self, e, entry, i):
         self.student_all[i]['modification'] = True
@@ -218,11 +216,10 @@ class StudentFrame(CTkScrollableFrame):
         for id_student, student in enumerate(self.student_all[:n]):
             for id_lesson, lesson in enumerate(student['lesson']):
                 if student['modification']:
-                    print(self.rows[id_student]['student_name'])
-                    print(self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
+                    self.session.setting_turnout(self.disc['id_group'], self.disc['subject_id'],
                                                        self.rows[id_student]['student_id'],
                                                        self.rows[id_student]['lessons'][id_lesson]['id'], lesson.get(),
-                                                       prac=self.prac).json())
+                                                       prac=self.prac)
         if self.rows2 is not None:
             for id_student, student in enumerate(self.student_all[n:]):
                 for id_lesson, lesson in enumerate(student['lesson']):
