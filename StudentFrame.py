@@ -148,7 +148,7 @@ class StudentFrame(CTkScrollableFrame):
                         'type_id_36_score'])
                 self.student_all[com]['score'][-1].grid(row=com, column=len(self.student_all[com]['lesson']) + 1 + n,
                                                         pady=5, padx=5)
-                self.student_all[com]['score'][-1].bind('<KeyPress>', lambda e, i=com, n=n: self.move(e, i, n))
+                self.student_all[com]['score'][-1].bind('<KeyPress>', lambda e, i=com, w=n: self.move(e, i, w))
                 self.student_all[com]['score'][-1].bind('<FocusOut>',
                                                         lambda e, entry=self.student_all[com]['score'][-1],
                                                                i=com: self.validator(e, entry, i))
@@ -197,7 +197,7 @@ class StudentFrame(CTkScrollableFrame):
         self.student_all[-1]['name'].grid(row=j, column=0, padx=20, pady=5, sticky='w')
         for i, n in enumerate(student['lessons']):
             self.student_all[-1]['lesson'].append(
-                CTkOptionMenu(self, values=self.value_combobox, width=50, command=lambda x, i=i: self.p(j, i, x)))
+                CTkOptionMenu(self, values=self.value_combobox, width=50, command=lambda x, w=i: self.p(j, w, x)))
             self.student_all[-1]['lesson'][-1].grid(row=j, column=i + 1, padx=5, pady=5)
             self.student_all[-1]['lesson'][-1].set(n['attendance']['value'])
 

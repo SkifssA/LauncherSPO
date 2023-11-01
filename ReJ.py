@@ -44,13 +44,18 @@ class AvtoJ:
         ]
         self.cookie = ''
         self.load = ''
+
+        mon = int(datetime.today().strftime('%m'))
+        if 13 > mon > 8:
+            self.period_id = int(datetime.today().strftime('%y')) + 8 + (int(datetime.today().strftime('%y')) - 23)
+        else:
+            self.period_id = int(datetime.today().strftime('%y')) + 8 + (int(datetime.today().strftime('%y')) - 23) + 1
+        print(self.period_id)
         r = self.session.get('https://ssuz.vip.edu35.ru/auth/login-page')
         soup = BeautifulSoup(r.content, 'html.parser')
 
         self.csrf = soup.find('input', {'name': 'csrfmiddlewaretoken'})['value']
         self.cookie = f'csrftoken={r.cookies["csrftoken"]}'
-
-
 
     def head(self):
         '''Создание заголовка'''
@@ -63,7 +68,7 @@ class AvtoJ:
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'Cookie': self.cookie,
             'X-Requested-With': 'XMLHttpRequest',
-            'Referer':'https://ssuz.vip.edu35.ru/auth/login-page',
+            'Referer': 'https://ssuz.vip.edu35.ru/auth/login-page',
             'Sec-Ch-Ua': '"Chromium";v="116", "Not)A;Brand";v="24", "Microsoft Edge";v="116"',
             'Sec-Ch-Ua-Mobile': '?0',
             'Sec-Ch-Ua-Platform': '"Windows"',
@@ -72,10 +77,10 @@ class AvtoJ:
             'Sec-Fetch-Site': 'same-origin',
         }
         if self.cookie.find('ssuz_sessionid') != -1:
-            head_['X-Xsrftoken'] = self.cookie[self.cookie.rfind('=')+1:]
+            head_['X-Xsrftoken'] = self.cookie[self.cookie.rfind('=') + 1:]
         return head_
 
-    def date_patch(self, date_f = ''):
+    def date_patch(self, date_f=''):
         """Выставление правильного времени"""
         date_from = date_f
         if date_f == '':
@@ -100,7 +105,8 @@ class AvtoJ:
                                        'login_password': password})
         try:
             cook = requests.utils.dict_from_cookiejar(self.session.cookies)
-            self.set_cookie(f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={cook["ssuz_sessionid"]}; csrftoken={cook["csrftoken"]}')
+            self.set_cookie(
+                f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={cook["ssuz_sessionid"]}; csrftoken={cook["csrftoken"]}')
             return True
         except KeyError:
             return False
@@ -113,7 +119,7 @@ class AvtoJ:
             'empty_item': '1',
             'practical': prac,
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': date_to,
             'month': '',
@@ -131,7 +137,7 @@ class AvtoJ:
             'empty_item': '1',
             'practical': prac,
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
             'month': '',
@@ -156,7 +162,7 @@ class AvtoJ:
             'empty_item': '1',
             'practical': prac,
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': date_whis,
             'month': '',
@@ -233,7 +239,7 @@ class AvtoJ:
                 'student_id': student_id,
                 'practical': prac,
                 'unit_id': '22',
-                'period_id': '30',
+                'period_id': self.period_id,
                 'date_from': date_from,
                 'date_to': datetime.today().strftime('%d.%m.%Y'),
                 'slave_mode': '1',
@@ -257,7 +263,7 @@ class AvtoJ:
             'data': '{' + f'"lesson_id":{lesson},"attendance":"{x}","student_id":{student_id}' + '}',
             'practical': prac,
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
             'slave_mode': '1',
@@ -279,7 +285,7 @@ class AvtoJ:
             'lesson_id': lesson,
             'practical': prac,
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
             'slave_mode': '1',
@@ -305,7 +311,7 @@ class AvtoJ:
             'lesson_id': lesson,
             'practical': prac,
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
             'slave_mode': '1',
@@ -331,7 +337,7 @@ class AvtoJ:
             'data': '{' + f'"lesson_id": {lesson}, "attendance": "", "work_id": "{wokr_id}", "score_type_id": "36", "score": "{score}", "student_id": {student_id}' + '}',
             'practical': prac,
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
             'slave_mode': '1',
@@ -375,7 +381,7 @@ class AvtoJ:
             'lesson_id': lesson,
             'practical': prac,
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
             'slave_mode': '1',
@@ -396,7 +402,7 @@ class AvtoJ:
         nums = re.findall(r'\d+', subject_id)
         data = {
             'unit_id': '22',
-            'period_id': '30',
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
             'practical': '',
@@ -421,7 +427,7 @@ class AvtoJ:
         nums = re.findall(r'\d+', subject_id)
         data = {
             'group_id': id_group,
-            'period_id': '30',
+            'period_id': self.period_id,
             'subject_sub_group_obj': subject_id,
             'mark': mark,
             'subperiod': subperiod,
@@ -449,12 +455,12 @@ class AvtoJ:
             d = '{"lessons":{},"final_marks":{"' + f'{str(student_id)}_{type_score}' + '":{"mark":"' + \
                 f'{str(score)}","type":"{type_score}","student_id":{str(student_id)}' + '}},"subperiod_marks":{}}'
         else:
-            d = '{"lessons":{},"final_marks":{},"subperiod_marks":{"' + f'{str(student_id)}_subperiod_{id_group}_{subperiod}' +\
+            d = '{"lessons":{},"final_marks":{},"subperiod_marks":{"' + f'{str(student_id)}_subperiod_{id_group}_{subperiod}' + \
                 '":{' + f'"mark":"{score}","subperiod_id":"{subperiod}","student_id":{str(student_id)}' + '}}}'
         data = {
             'data': d,
             'unit_id': 22,
-            'period_id': 30,
+            'period_id': self.period_id,
             'date_from': date_from,
             'date_to': datetime.today().strftime('%d.%m.%Y'),
             'practical': '',
@@ -476,12 +482,14 @@ class AvtoJ:
         for i in e:
             for j, x in enumerate(ListOfDisciplines.Theory):
                 if i['id'] == int(x['id_group']):
-                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from=datetime.today().strftime('%d.%m.%Y'),
+                    if self.id_lesson_row(x['id_group'], x['subject_id'],
+                                          date_from=datetime.today().strftime('%d.%m.%Y'),
                                           date_whis=datetime.today().strftime('%d.%m.%Y')):
                         mass[0].append(ListOfDisciplines.Theory[j])
             for j, x in enumerate(ListOfDisciplines.Practice):
                 if i['id'] == int(x['id_group']):
-                    if self.id_lesson_row(x['id_group'], x['subject_id'], date_from=datetime.today().strftime('%d.%m.%Y'),
+                    if self.id_lesson_row(x['id_group'], x['subject_id'],
+                                          date_from=datetime.today().strftime('%d.%m.%Y'),
                                           date_whis=datetime.today().strftime('%d.%m.%Y'),
                                           prac='1'):
                         mass[1].append(ListOfDisciplines.Practice[j])
@@ -562,15 +570,15 @@ def wwwww3(disc):
     return len(s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022'))
 
 
-
 def random_list(n, list_d):
     s = []
     while not len(set(s)) == n:
-        s.append(random.randint(0, len(list_d)-1))
+        s.append(random.randint(0, len(list_d) - 1))
     st = []
     for i in set(s):
         st.append(list_d[i])
     return st
+
 
 def wwwww4(disc, n):
     print(disc['name'])
@@ -589,9 +597,6 @@ def wwwww4(disc, n):
                     pass
 
 
-
-
-
 if __name__ == '__main__':
     s = AvtoJ()
     print(s.login('1051110511_t0087', '0knvK1a6'))
@@ -600,4 +605,3 @@ if __name__ == '__main__':
     wwwww4(ListOfDisciplines.Theory[4], 4)
     wwwww4(ListOfDisciplines.Theory[6], 2)
     wwwww4(ListOfDisciplines.Theory[10], 3)
-
