@@ -596,12 +596,25 @@ def wwwww4(disc, n):
                     print(s.setting_turnout(disc['id_group'], disc['subject_id'], j['student_id'], i, 'Н'))
                     pass
 
+def kol_vo_ch(disc, prac=''):
+    return len(s.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac))
+
+
+def kol_vo():
+    w = 0
+    for i in (0, 2, 4, 6, 8, 10):
+        w += kol_vo_ch(ListOfDisciplines.Theory[i])
+        print(f'{ListOfDisciplines.Theory[i]["name"]} {kol_vo_ch(ListOfDisciplines.Theory[i])}')
+    for i in (0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16):
+        w += kol_vo_ch(ListOfDisciplines.Practice[i], prac='1')
+        print(f'{ListOfDisciplines.Practice[i]["name"]} {kol_vo_ch(ListOfDisciplines.Practice[i], prac="1")}')
+    print(w)
+
+
 
 if __name__ == '__main__':
     s = AvtoJ()
     print(s.login('1051110511_t0087', '0knvK1a6'))
+    kol_vo()
 
-    wwwww4(ListOfDisciplines.Theory[2], 2)
-    wwwww4(ListOfDisciplines.Theory[4], 4)
-    wwwww4(ListOfDisciplines.Theory[6], 2)
-    wwwww4(ListOfDisciplines.Theory[10], 3)
+
