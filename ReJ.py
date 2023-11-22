@@ -51,7 +51,7 @@ class AvtoJ:
         else:
             self.period_id = int(datetime.today().strftime('%y')) + 8 + (int(datetime.today().strftime('%y')) - 23) + 1
         print(self.period_id)
-        r = self.session.get('https://ssuz.vip.edu35.ru/auth/login-page')
+        r = self.session.get('https://ssuz.vip.edu35.ru/auth/login-page', verify=False)
         soup = BeautifulSoup(r.content, 'html.parser')
 
         self.csrf = soup.find('input', {'name': 'csrfmiddlewaretoken'})['value']
@@ -61,8 +61,8 @@ class AvtoJ:
         '''Создание заголовка'''
         head_ = {  # Заголовок запроса
             'Host': 'ssuz.vip.edu35.ru',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0',
-            'Accept': '*/*',
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36 Edg/119.0.0.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
             'Accept-Encoding': 'gzip, deflate, br',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -70,14 +70,19 @@ class AvtoJ:
             'X-Requested-With': 'XMLHttpRequest',
             'Referer': 'https://ssuz.vip.edu35.ru/auth/login-page',
             'Sec-Ch-Ua': '"Chromium";v="116", "Not)A;Brand";v="24", "Microsoft Edge";v="116"',
+            'Cache-Control':'max-age=0',
+            'Sec-Fetch-Dest':'document',
+            'Sec-Fetch-Mode':'navigate',
+            'Sec-Fetch-Site':'cross-site',
+            'Sec-Fetch-User':'?1',
+            'Upgrade-Insecure-Requests':'1',
             'Sec-Ch-Ua-Mobile': '?0',
             'Sec-Ch-Ua-Platform': '"Windows"',
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Site': 'same-origin',
+            'X-Xsrftoken': self.cookie[self.cookie.find('csrftoken=') + len('csrftoken='):]
         }
-        if self.cookie.find('ssuz_sessionid') != -1:
-            head_['X-Xsrftoken'] = self.cookie[self.cookie.rfind('=') + 1:]
         return head_
 
     def date_patch(self, date_f=''):
@@ -106,7 +111,7 @@ class AvtoJ:
         try:
             cook = requests.utils.dict_from_cookiejar(self.session.cookies)
             self.set_cookie(
-                f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={cook["ssuz_sessionid"]}; csrftoken={cook["csrftoken"]}')
+                f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={cook["ssuz_sessionid"]};csrftoken={cook["csrftoken"]}')
             return True
         except KeyError:
             return False
@@ -174,7 +179,9 @@ class AvtoJ:
             'subject_sub_group_obj': subject_id,
             'subject_id': nums[0],
         }
-        response = self.session.post(self.url[2], headers=self.head(), data=data).json()
+        s = self.session.post(self.url[2], headers=self.head(), data=data)
+        print(s)
+        response = s.json()
         return response
 
     def creat_str(self, name, id_group, subject_id, student_id, id_list):
