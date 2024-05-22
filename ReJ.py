@@ -1,6 +1,11 @@
 import random
 
 import requests
+
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 import re
 from datetime import datetime
 
@@ -90,6 +95,7 @@ class AvtoJ:
         date_from = date_f
         if date_f == '':
             mon = int(datetime.today().strftime('%m'))
+            # date_from = '01.09.2023'# + datetime.today().strftime('%Y')
             if 13 > mon > 8:
                 date_from = '01.09.' + datetime.today().strftime('%Y')
             else:
@@ -238,6 +244,7 @@ class AvtoJ:
     def close_open_lesson(self, id_group, subject_id, student_id, date_from='', prac='', open=False):
         '''Закрытие/открытие занятий'''
         date_from = self.date_patch(date_from)
+        print(date_from)
         url = 4 if open else 3
         nums = re.findall(r'\d+', subject_id)
         for lesson in self.id_lesson_row(id_group, subject_id, prac=prac):
@@ -259,7 +266,9 @@ class AvtoJ:
                 'subject_id': nums[0],
                 'view_lessons': 'false',
             }
-            self.session.post(self.url[url], headers=self.head(), data=data)
+            s = self.session.post(self.url[url], headers=self.head(), data=data)
+            print(269,data)
+            print(270,s.json())
         return len(self.id_lesson_row(id_group, subject_id, prac=prac))
 
     def setting_turnout(self, id_group, subject_id, student_id, lesson, x, date_from='', prac=''):
@@ -373,11 +382,14 @@ class AvtoJ:
         return themes
 
     def save_themes(self, disc, prac=''):
-        k = len(self.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022', date_whis='31.12.2022',
-                                   prac=prac))
-        for less, theme in zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),
-                               self.open_file_themes(disc, prac)[k:]):
-            self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
+        
+        k = len(self.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2023', date_whis=datetime.today().strftime('%d.%m.%Y'),prac=prac))
+        # sss = zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),self.open_file_themes(disc, prac)[k:])
+        sss = zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),self.open_file_themes(disc, prac))
+        for less, theme in sss:
+            s = self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
+            print(less, theme)
+            print(s)
 
     def uploading_topics(self, id_group, subject_id, lesson, theme, date_from='', prac=''):
         """Ввод темы в журнал"""
