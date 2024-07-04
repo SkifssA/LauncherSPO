@@ -17,7 +17,7 @@ class APP(CTk):
         super().__init__()
         self.ListOfDisciplines = ListOfDisciplines
 
-        print(self.winfo_screenheight() / 1080)
+        # print(self.winfo_screenheight() / 1080)
         self.studen_frame = None
         set_appearance_mode("Dark")
         set_default_color_theme('blue')
@@ -37,6 +37,46 @@ class APP(CTk):
         else:
             self.destroy()
 
+    def test_count_hours(self, open, que):
+        """Функция для открытия/закрытия занятий"""
+        i = 0
+        tr = tuple(self.tab.frame_tr.get_check_group())
+        pr = tuple(self.tab.frame_pr.get_check_group())
+        if len(tr) == 2:
+            for group_idl in self.tab.frame_tr.get_check_group():
+              # print(group_idl)
+              group = self.ListOfDisciplines.Theory[group_idl]
+              # print(group)
+              # print(type(group))
+              self.sss = self.session.student_rows(group['id_group'],group['subject_id'],prac='')
+              print(group['name'],len(self.sss['rows'][0]['lessons']))
+              # print(3,len(self.sss[0]['lessons']))
+              # print(3,self.sss['rows'][0]['lessons'])
+              que.put(f"Теория {group['name'][:group['name'].find('_')]}")
+              # i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
+            
+        elif len(pr) != 0:
+          # print(len(pr))
+          # print(pr)
+          # for group_idl in self.tab.frame_pr.get_check_group():
+          for group_idl in pr:
+              # print(group_idl)
+              group = self.ListOfDisciplines.Practice[group_idl]
+              # print(group)
+              # print(type(group))
+              self.sss = self.session.student_rows(group['id_group'],group['subject_id'],prac='1')
+              print(group['name'],len(self.sss['rows'][0]['lessons']))
+              # print(3,len(self.sss[0]['lessons']))
+              # print(3,self.sss['rows'][0]['lessons'])
+              que.put(f"Практика {group['name'][:group['name'].find('_')]}")
+              # i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
+            
+        # elif len(pr) == 2:
+        #   print(len(pr))
+        # else:
+        #     showerror(title="Ошибка", message="Надо выбрать 1 группу")
+
+        
     def button_close_open_lesson(self, open, que):
         """Функция для открытия/закрытия занятий"""
         i = 0
@@ -155,7 +195,10 @@ class APP(CTk):
         button.grid(row=4, column=2, pady=10, padx=10)
         button = CTkButton(self.frame, text='Заполнить темы', command=lambda: ProgressBar(self, self.save_themes))
         button.grid(row=4, column=1, pady=10, padx=10)
-        button = CTkButton(self.frame, text='TEST', command=lambda: self.create_exam_frame())
+        # button = CTkButton(self.frame, text='TEST', command=lambda: self.create_exam_frame())
+        # button.grid(row=4, column=0, pady=10, padx=10)
+        button = CTkButton(self.frame, text='Проверка часов',command=lambda: ProgressBar(self, lambda q: self.test_count_hours(False, q)))
         button.grid(row=4, column=0, pady=10, padx=10)
+       
         self.frame.grid()
 # .............................................. #

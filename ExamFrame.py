@@ -94,5 +94,5 @@ class Exam(CTkScrollableFrame):
         self.type_score(self.disc[1])
         for i in self.exam_id:
             self.session.ved_score_type(i)
-        for i, x in enumerate(self.score_exam):
-            print(self.rows[i], x.get())
+        # for i, x in enumerate(self.score_exam):
+        #     print(self.rows[i], x.get())

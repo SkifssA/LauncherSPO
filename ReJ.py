@@ -55,7 +55,7 @@ class AvtoJ:
             self.period_id = int(datetime.today().strftime('%y')) + 8 + (int(datetime.today().strftime('%y')) - 23)
         else:
             self.period_id = int(datetime.today().strftime('%y')) + 8 + (int(datetime.today().strftime('%y')) - 23) + 1
-        print(self.period_id)
+        # print('rej 58',self.period_id)
         r = self.session.get('https://ssuz.vip.edu35.ru/auth/login-page', verify=False)
         soup = BeautifulSoup(r.content, 'html.parser')
 
@@ -136,8 +136,9 @@ class AvtoJ:
             'month': '',
             'filter': ''
         }
-        print(self.session.post(self.url[0], headers=self.head(), data=data))
+        # print('rej 139',self.session.post(self.url[0], headers=self.head(), data=data))
         response = self.session.post(self.url[0], headers=self.head(), data=data).json()
+        # print(141,response)
         return response
 
     def disc_rows(self, id_group, prac='', date_from=''):
@@ -186,8 +187,8 @@ class AvtoJ:
             'subject_id': nums[0],
         }
         s = self.session.post(self.url[2], headers=self.head(), data=data)
-        print(s)
         response = s.json()
+        # print('rej 189',response)
         return response
 
     def creat_str(self, name, id_group, subject_id, student_id, id_list):
@@ -244,7 +245,7 @@ class AvtoJ:
     def close_open_lesson(self, id_group, subject_id, student_id, date_from='', prac='', open=False):
         '''Закрытие/открытие занятий'''
         date_from = self.date_patch(date_from)
-        print(date_from)
+        print('rej 247',date_from)
         url = 4 if open else 3
         nums = re.findall(r'\d+', subject_id)
         for lesson in self.id_lesson_row(id_group, subject_id, prac=prac):
@@ -374,7 +375,7 @@ class AvtoJ:
         for file in os.listdir(os.getcwd() + '/Themes'):
             if disc['id_group'] in file and disc['name'][disc['name'].find('_') + 1:disc['name'].find(' ')] in file \
                     and prac in file[:-4]:
-                print(file)
+                print('rej 377',file)
                 with open('Themes/' + file, 'r') as f:
                     f.readline()
                     for line in f:
@@ -388,8 +389,8 @@ class AvtoJ:
         sss = zip(self.id_lesson_row(disc['id_group'], disc['subject_id'], prac=prac),self.open_file_themes(disc, prac))
         for less, theme in sss:
             s = self.uploading_topics(disc['id_group'], disc['subject_id'], less, theme, prac=prac)
-            print(less, theme)
-            print(s)
+            print('rej 391',less, theme)
+            print(s,'rej 392')
 
     def uploading_topics(self, id_group, subject_id, lesson, theme, date_from='', prac=''):
         """Ввод темы в журнал"""
@@ -465,7 +466,7 @@ class AvtoJ:
             'mark_name': type_score,
             'mark_type_id': '23',
         }
-        print(self.session.post(self.url[11], headers=self.head(), data=data))
+        print('rej 468',self.session.post(self.url[11], headers=self.head(), data=data))
 
     def score_final(self, id_group, subject_id, student_id, score, type_score='', subperiod='', date_from=''):
         date_from = self.date_patch(date_from)
@@ -555,7 +556,7 @@ def sd(score):
 
 
 def wwwww(disc):
-    print(disc['name'])
+    print('rej 558',disc['name'])
     nums = re.findall(r'\d+', disc['subject_id'])
     s.аssign_rating(disc['id_group'], disc['subject_id'], 'Годовая', mark=0)
     s.аssign_rating(disc['id_group'], disc['subject_id'], 'Итоговая', mark=1)
@@ -568,7 +569,7 @@ def wwwww(disc):
 
 
 def wwwww2(disc):
-    print(disc['name'])
+    print('rej 571',disc['name'])
     e, x = 0, 0
     for stud in s.student_rows(disc['id_group'], disc['subject_id'])['rows']:
         w = sd(float(z)) if (z := stud['aver_period']) != '' else z
@@ -577,11 +578,11 @@ def wwwww2(disc):
         elif w > 3:
             e += 1
     print('5 и 4 в %', (e * 100) / s.student_rows(disc['id_group'], disc['subject_id'])['total'])
-    print('2 и неотистованых', x)
+    print('2 и не отестованных', x)
 
 
 def wwwww3(disc):
-    print(disc['name'])
+    print('rej 584',disc['name'])
     for i in s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from='01.09.2022'):
         if s.uploading_topics(disc['id_group'], disc['subject_id'], i, '', date_from='01.09.2022')[
             'message'] != 'Занятие закрыто!':
@@ -600,19 +601,19 @@ def random_list(n, list_d):
 
 
 def wwwww4(disc, n):
-    print(disc['name'])
+    print('rej 603',disc['name'])
     date_lesson = set(
         [x['date'] for x in s.student_rows(disc['id_group'], disc['subject_id'])[
             'rows'][0]['lessons']])
     id_student = s.student_rows(disc['id_group'], disc['subject_id'])['rows']
     for d in date_lesson:
-        print(d)
-        print(datetime.strftime(datetime.strptime(d, '%d.%m.%Y'), '%a'))
+        print('rej 609',d)
+        print('rej 610',datetime.strftime(datetime.strptime(d, '%d.%m.%Y'), '%a'))
         if not datetime.strftime(datetime.strptime(d, '%d.%m.%Y'), '%a') == 'Sat':
             st = random_list(n, id_student)
             for i in s.id_lesson_row(disc['id_group'], disc['subject_id'], date_from=d, date_whis=d):
                 for j in st:
-                    print(s.setting_turnout(disc['id_group'], disc['subject_id'], j['student_id'], i, 'Н'))
+                    print('rej 615',s.setting_turnout(disc['id_group'], disc['subject_id'], j['student_id'], i, 'Н'))
                     pass
 
 def kol_vo_ch(disc, prac=''):
@@ -623,7 +624,8 @@ def kol_vo():
     w = 0
     for i in (0, 2, 4, 6, 8, 10):
         w += kol_vo_ch(ListOfDisciplines.Theory[i])
-        print(f'{ListOfDisciplines.Theory[i]["name"]} {kol_vo_ch(ListOfDisciplines.Theory[i])}')
+        print(f'{ListOfDisciplines.Theory[i]["name"]} {kol_vo_ch(ListOfDisciplines.Theory[i])} ')
+        print('rej 627')
     for i in (0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16):
         w += kol_vo_ch(ListOfDisciplines.Practice[i], prac='1')
         print(f'{ListOfDisciplines.Practice[i]["name"]} {kol_vo_ch(ListOfDisciplines.Practice[i], prac="1")}')

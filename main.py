@@ -22,7 +22,6 @@ class ProgressBar(CTkToplevel):
 
     def start(self):
         if not self.thread.is_alive():
-            print('='*20)
             self.destroy()
         self.after(100, self.start)
 
