@@ -27,9 +27,10 @@ class LoginForm(CTkToplevel):
 
     def creat_login_form(self):
         '''Создание формы авторизации'''
-        entry_login = CTkEntry(master=self, placeholder_text="login")
+        entry_login = CTkEntry(master=self, placeholder_text="csrftoken")
         entry_login.pack(padx=20, pady=10)
-        entry_pass = CTkEntry(master=self, placeholder_text="password", show='*')
+        # entry_pass = CTkEntry(master=self, placeholder_text="password", show='*')
+        entry_pass = CTkEntry(master=self, placeholder_text="ssuz_sessionid	")
         entry_pass.pack(padx=20, pady=15)
         try:
             with open('cash', 'r+') as f:
@@ -48,8 +49,7 @@ class LoginForm(CTkToplevel):
         checkbox = CTkCheckBox(master=self, text="Запомнить меня",
                                 variable=self.check_var,onvalue="on", offvalue="off")
         checkbox.pack(padx=20, pady=10)
-        button = CTkButton(master=self, text="Вход",
-                           command=lambda: self.work_login_form(entry_login.get(), entry_pass.get()))
+        button = CTkButton(master=self, text="Вход",command=lambda: self.work_login_form(entry_login.get(), entry_pass.get()))
         button.pack(padx=20, pady=10)
 
     def work_login_form(self, login, password):

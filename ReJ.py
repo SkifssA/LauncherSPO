@@ -104,20 +104,21 @@ class AvtoJ:
 
     def set_cookie(self, cookie):
         '''Установка куки(Для тестов, а то банит XD)'''
-        self.session.get('https://ssuz.vip.edu35.ru', cookies={'Cookie': cookie})
+        self.session.get('https://ssuz.vip.edu35.ru', cookies={'Cookie': cookie},verify=False)
         self.cookie = cookie
 
     def login(self, login, password):
         '''Авторизация'''
 
-        data = self.session.post('https://ssuz.vip.edu35.ru/auth/login', headers=self.head(),
-                                 data={'csrfmiddlewaretoken': self.csrf,
-                                       'login_login': login,
-                                       'login_password': password})
+        # data = self.session.post('https://ssuz.vip.edu35.ru/auth/login', headers=self.head(),verify=False,
+        #         data={'csrfmiddlewaretoken': self.csrf,'login_login': login,'login_password': password})
+        # print(data.json())
+
         try:
             cook = requests.utils.dict_from_cookiejar(self.session.cookies)
-            self.set_cookie(
-                f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={cook["ssuz_sessionid"]};csrftoken={cook["csrftoken"]}')
+            print("11111111111111111111111111111",cook)
+            # self.set_cookie(f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={cook["ssuz_sessionid"]};csrftoken={cook["csrftoken"]}')
+            self.set_cookie(f'csrf_token_header_name=X-XSRFTOKEN;ssuz_sessionid={password};csrftoken={login}')
             return True
         except KeyError:
             return False
@@ -137,7 +138,7 @@ class AvtoJ:
             'filter': ''
         }
         # print('rej 139',self.session.post(self.url[0], headers=self.head(), data=data))
-        response = self.session.post(self.url[0], headers=self.head(), data=data).json()
+        response = self.session.post(self.url[0], headers=self.head(),verify=False, data=data).json()
         # print(141,response)
         return response
 
@@ -160,7 +161,7 @@ class AvtoJ:
             'exam_subject_id': '0',
             'subject_sub_group_obj': '',
         }
-        response = self.session.post(self.url[1], headers=self.head(), data=data).json()
+        response = self.session.post(self.url[1], headers=self.head(), data=data,verify=False).json()
         return response
 
     def student_rows(self, id_group, subject_id, date_from='',
@@ -186,7 +187,7 @@ class AvtoJ:
             'subject_sub_group_obj': subject_id,
             'subject_id': nums[0],
         }
-        s = self.session.post(self.url[2], headers=self.head(), data=data)
+        s = self.session.post(self.url[2], headers=self.head(), data=data,verify=False)
         response = s.json()
         # print('rej 189',response)
         return response
@@ -267,7 +268,7 @@ class AvtoJ:
                 'subject_id': nums[0],
                 'view_lessons': 'false',
             }
-            s = self.session.post(self.url[url], headers=self.head(), data=data)
+            s = self.session.post(self.url[url], headers=self.head(), data=data,verify=False)
             print(269,data)
             print(270,s.json())
         return len(self.id_lesson_row(id_group, subject_id, prac=prac))
@@ -292,7 +293,7 @@ class AvtoJ:
             'subject_sub_group_obj': subject_id,
             'subject_id': nums[0],
         }
-        return self.session.post(self.url[5], headers=self.head(), data=data)
+        return self.session.post(self.url[5], headers=self.head(), data=data,verify=False)
 
     def create_score_pole(self, id_group, subject_id, lesson, date_from='', prac=''):
         '''Создание поля для оценок'''
@@ -318,7 +319,7 @@ class AvtoJ:
             'description': '',
             'lesson_work_id': '0',
         }
-        self.session.post(self.url[6], headers=self.head(), data=data)
+        self.session.post(self.url[6], headers=self.head(), data=data,verify=False)
 
     def show_score_pole(self, id_group, subject_id, lesson, date_from='', prac=''):
         '''Получение id поля для оценок'''
@@ -344,7 +345,7 @@ class AvtoJ:
             'description': '',
             'lesson_work_id': '0',
         }
-        return self.session.post(self.url[7], headers=self.head(), data=data).json()
+        return self.session.post(self.url[7], headers=self.head(), data=data,verify=False).json()
 
     def expose_score(self, id_group, subject_id, lesson, wokr_id, score, student_id, date_from='', prac=''):
         '''Выставление оценок'''
@@ -367,7 +368,7 @@ class AvtoJ:
             'subject_id': nums[0],
             'view_lessons': 'false',
         }
-        self.session.post(self.url[8], headers=self.head(), data=data)
+        self.session.post(self.url[8], headers=self.head(), data=data,verify=False)
 
     def open_file_themes(self, disc, prac):
         themes = []
@@ -414,7 +415,7 @@ class AvtoJ:
             'subject_id': nums[0],
             'view_lessons': 'false',
         }
-        return self.session.post(self.url[9], headers=self.head(), data=data).json()
+        return self.session.post(self.url[9], headers=self.head(), data=data,verify=False).json()
 
     # ДОПИЛИ БЛЯТЬ
     def uploader_sub_group_names(self, id_group, subject_id, date_from=''):
@@ -437,7 +438,7 @@ class AvtoJ:
             'subperiod': '',
             'mark': '0',
         }
-        return self.session.post(self.url[10], headers=self.head(), data=data).json()['sub_group_names']
+        return self.session.post(self.url[10], headers=self.head(), data=data,verify=False).json()['sub_group_names']
 
     def аssign_rating(self, id_group, subject_id, type_score, mark='', subperiod='', date_from=''):
         sub_g = self.uploader_sub_group_names(id_group, subject_id)
@@ -466,7 +467,7 @@ class AvtoJ:
             'mark_name': type_score,
             'mark_type_id': '23',
         }
-        print('rej 468',self.session.post(self.url[11], headers=self.head(), data=data))
+        print('rej 468',self.session.post(self.url[11], headers=self.head(), data=data,verify=False))
 
     def score_final(self, id_group, subject_id, student_id, score, type_score='', subperiod='', date_from=''):
         date_from = self.date_patch(date_from)
@@ -494,7 +495,7 @@ class AvtoJ:
             'subject_id': nums[0],
         }
         self.session.post('https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_save_rows',
-                          headers=self.head(), data=data)
+                          headers=self.head(), verify=False,data=data)
 
     def today_list(self):
         e = self.group_rows(date_from=datetime.today().strftime('%d.%m.%Y'))['rows']
@@ -526,7 +527,7 @@ class AvtoJ:
             'id': '-1',
         }
         return self.session.post('https://ssuz.vip.edu35.ru/actions/exam_score/objectrowsaction',
-                                 headers=self.head(), data=data).json()['rows']
+                                 headers=self.head(),verify=False, data=data).json()['rows']
 
     def ved_score(self, exam_id, id_st, score):
         data = {
@@ -537,7 +538,7 @@ class AvtoJ:
             'rows': '{' + f'"student_id":{id_st},"score_23":"{score}"' + '}'
         }
         return self.session.post('https://ssuz.vip.edu35.ru/actions/exam_score/exam_score_rows',
-                                 headers=self.head(), data=data)
+                                 headers=self.head(),verify=False, data=data)
 
     def ved_score_type(self, exam_id):
         data = {
@@ -547,7 +548,7 @@ class AvtoJ:
             'score_type_ids': '[23]',
         }
         return self.session.post('https://ssuz.vip.edu35.ru/actions/exam_score/re_score_type_save_action',
-                                 headers=self.head(), data=data)
+                                 headers=self.head(),verify=False, data=data)
 
 
 def sd(score):
