@@ -37,6 +37,46 @@ class APP(CTk):
         else:
             self.destroy()
 
+    def verify_lessons_themes(self, open, que):
+        """Проверка всех тем занятий по дням"""
+        
+        # i = 0
+        # tr = tuple(self.tab.frame_tr.get_check_group())
+        # pr = tuple(self.tab.frame_pr.get_check_group())
+        # print("" % ( tr))
+        # print("" % ( pr))
+        # if len(tr) == 2:
+            
+        #     for group_idl in self.tab.frame_tr.get_check_group():
+        #       # print(group_idl)
+        #       group = self.ListOfDisciplines.Theory[group_idl]
+        #       # print(group)
+        #       # print(type(group))
+        #       self.sss = self.session.student_rows(group['id_group'],group['subject_id'],prac='')
+        #       print(group['name'],len(self.sss['rows'][0]['lessons']))
+        #       # print(3,len(self.sss[0]['lessons']))
+        #       # print(3,self.sss['rows'][0]['lessons'])
+        #       que.put(f"Теория {group['name'][:group['name'].find('_')]}")
+        #       # i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
+            
+        # elif len(pr) != 0:
+        #   # print(len(pr))
+        #   # print(pr)
+        #   # for group_idl in self.tab.frame_pr.get_check_group():
+        #   for group_idl in pr:
+        #       # print(group_idl)
+        #       group = self.ListOfDisciplines.Practice[group_idl]
+        #       # print(group)
+        #       # print(type(group))
+        #       self.sss = self.session.student_rows(group['id_group'],group['subject_id'],prac='1')
+        #       print(group['name'],len(self.sss['rows'][0]['lessons']))
+        #       # print(3,len(self.sss[0]['lessons']))
+        #       # print(3,self.sss['rows'][0]['lessons'])
+        #       que.put(f"Практика {group['name'][:group['name'].find('_')]}")
+        #       # i += self.session.close_open_lesson(group['id_group'], group['subject_id'], group['student_id'], open=open)
+            
+    
+
     def test_count_hours(self, open, que):
         """Функция для открытия/закрытия занятий"""
         i = 0

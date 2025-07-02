@@ -28,6 +28,7 @@ class Calendar(CTkFrame):
         self.mount = StringVar()
         self.date = StringVar()
         date_now = datetime.now()
+        print( date_now)
 
         CTkLabel(self, textvariable=self.date).grid(row=2, column=0, pady=10, padx=10)
         CTkLabel(self, textvariable=self.mount).grid(row=0, column=1, pady=10, padx=10)

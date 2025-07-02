@@ -55,7 +55,7 @@ class AvtoJ:
             self.period_id = int(datetime.today().strftime('%y')) + 8 + (int(datetime.today().strftime('%y')) - 23)
         else:
             self.period_id = int(datetime.today().strftime('%y')) + 8 + (int(datetime.today().strftime('%y')) - 23) + 1
-        # print('rej 58',self.period_id)
+        print('rej 58',self.period_id)
         r = self.session.get('https://ssuz.vip.edu35.ru/auth/login-page', verify=False)
         soup = BeautifulSoup(r.content, 'html.parser')
 
@@ -298,6 +298,7 @@ class AvtoJ:
     def create_score_pole(self, id_group, subject_id, lesson, date_from='', prac=''):
         '''Создание поля для оценок'''
         date_from = self.date_patch(date_from)
+        print(date_from,'date_from 1')
         nums = re.findall(r'\d+', subject_id)
         data = {
             'lesson_id': lesson,
